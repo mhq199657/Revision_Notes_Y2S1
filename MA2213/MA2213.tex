@@ -1,0 +1,944 @@
+\PassOptionsToPackage{svgnames}{xcolor}
+\documentclass[12pt]{article}
+
+
+
+\usepackage[margin=1in]{geometry}  
+\usepackage{graphicx}             
+\usepackage{amsmath}              
+\usepackage{amsfonts}              
+\usepackage{framed}               
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{amsthm}
+\usepackage[nottoc]{tocbibind}
+\usepackage{bm}
+\usepackage[object=vectorian]{pgfornament} 
+\usepackage{enumitem}
+
+\colorlet{shadecolor}{lightgray!25}
+\newcommand{\sectionline}{%
+  \noindent
+  \begin{center}
+  {\color{DarkViolet}
+    \resizebox{0.5\linewidth}{1ex}
+    {{%
+    {\begin{tikzpicture}
+    \node  (C) at (0,0) {};
+    \node (D) at (9,0) {};
+    \path (C) to [ornament=85] (D);
+    \end{tikzpicture}}}}}%
+    \end{center}
+  }
+
+  \newcommand\norm[1]{\left\lVert#1\right\rVert}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0em}
+\newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{notation}{Notation}[section]
+\theoremstyle{definition}
+\newcommand\fl[1]{\text{fl}\left(#1\right)}
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\DeclareMathOperator{\spn}{Span}
+\DeclareMathOperator{\R}{\mathbf{R}}
+\DeclareMathOperator{\diff}{d}
+\setcounter{tocdepth}{1}
+\begin{document}
+
+\title{Revision notes - MA2213}
+\author{Ma Hongqiang}
+\maketitle
+\tableofcontents
+
+\clearpage
+%\twocolumn
+\section{Computer Arithmetic and Computational Errors}
+\subsection{Number Systems}
+\begin{definition}[Decimal System]
+\hfill\\\normalfont The number system we are used to is the \textbf{decimal system} and the number "10" which plays an important role is called the \textbf{base} of the decimal system.
+\end{definition}
+In general, we can take other positive integer $N>1$ as a base. In particular, $N = 2, 8, 16$ are used in most digital computers and the systems with $N = 2,8,16$ are known as \textbf{binary}, \textbf{octal}, \textbf{hexadecimal} number systems respectively.\\
+\subsubsection{Decimal to Binary}
+The conversion of decimal number to binary is performed in two steps.\\
+Take $(53.7)_{10}$ as an example.
+\begin{enumerate}
+  \item \textbf{Integer Part}. Convert decimal integers to binary by deviding by 2 successively and recording the remainders. \\The remainders, 0 or 1, are recorded by starting at the decimal point and moving away to the left. For$ (53)_{10}$, we have
+  \begin{alignat*}{3}
+    53/2 &= 26 &&\R 1\\
+    26/2 &= 13 &&\R 0\\
+    13/2 &= 6 &&\R 1\\
+    6/2 &=3&&\R 0\\
+    3/2 &= 1&&\R 1\\
+    1/2 &= 0&&\R 1
+  \end{alignat*}
+  Therefore, the base 10 number 53 can be written as binary
+  \[
+(110101)_2 = 2^5+2^4+2^2+2^0 = 53
+  \]
+  \item \textbf{Fractional Part}. Convert $(0.7)_{10}$ to binary as follows: \\Multiply by 2 successfully and record the integer parts, moving away from the decimal point to the right:
+  \begin{alignat*}{3}
+    .7\times2 &= .4 &&+ 1\\
+    .4\times2 &= .8 &&+ 0\\
+    .8\times2 &= .6 &&+ 1\\
+    .6\times2 &=.2&&+ 1\\
+    .2\times2 &= .4&&+ 0\\
+    .4\times2 &= .8&&+ 0\\
+    \cdots&\cdots\cdots&& 
+  \end{alignat*}
+  Notice that the process repeats after four steps and will repeat infinitely exactly the same way. Therefore,
+  \[
+(0.7)_{10} = (.1\overline{0110})_2
+  \]
+  \item Hence,
+  \[
+(53.7)_{10} = (110101.1\overline{0110})_2
+  \]
+\end{enumerate}
+\subsubsection{Binary to Decimal}
+The conversion of binary number to decimal needs to tackle nonterminating binary numbers.\\
+Take $x=(.10\overline{101})_2$ as an example.\\
+Multiplying by $2^2$ shifts $x$ to
+\[
+y:=2^2 x = (10.\overline{101})_2 = (10)_2+(.\overline{101})_2 = (2)_{10}+(.\overline{101})_2
+\]
+The fractional part of $y$, i.e.,
+\[
+z:=(.\overline{101})_2
+\]
+is calculated as follows:
+\[
+2^3z = (101.\overline{101})_2
+\]
+So,
+\[
+(2^3-1)z= (101)_2 = (5)_{10}
+\]
+i.e.
+\[
+z = \left(\frac{5}{7}\right)_{10}
+\]
+Thus, 
+\[
+y=(2)_{10}+\left(\frac{5}{7}\right)_{10}=\left(\frac{19}{7}\right)_{10}
+\]
+and hence,
+\[
+x=\frac{y}{2^2}=\left(\frac{19}{28}\right)_{10}
+\]
+\begin{theorem}[Representation of Numbers]
+\hfill\\\normalfont In general, any \textbf{natural numbers} $N\geq 2$ can be used as base.\\
+Every positive real number $a$ has a unique representation of the form
+\[
+a=a_mN^m+a_{m-1}N^{m-1}+\cdots+a_1N^1+a_0N^0+a_{-1}N^{-1}+a_{-2}N^{-2}+\cdots
+\]
+where
+\[
+0\leq a_i\leq N-1,\;\;\;a_m\neq 0
+\]
+Equivalently,
+\[
+a=\sum_{i=0}^\infty a_{m-i}N^{m-i}
+\]
+where
+\[
+0<a_m<N; 0\leq a_{m-i}\leq N - 1\;\;\; \forall i\geq 1
+\]
+The above non-terminating representation of number $a$ is not feasible in practical computation. We onl deal with, in practice, numbers which have \textit{terminating} representation, i.e. of the following form
+\[
+\alpha = \sum_{i = 0}^{n-1}\alpha_{m-i}N^{m-i}
+\]
+where $0<\alpha_m<N$ and $0\leq \alpha_{m-i}<N$ for $i = 1,2,\ldots, n-1$.
+\end{theorem}
+\begin{definition}[Significant decimal digits]
+\hfill\\\normalfont If $N = 10$, then the numbers $\alpha_{m-i}, 0\leq i \leq n-1$ are called \textbf{significant decimal digits} and the number $\alpha$ is said to have $n$ significant decimal digits.
+\end{definition}
+\subsection{Chopping and Rounding}
+If the number $a$ has more significant digits than what we wish to have, then we need to replace $a$ by an approximate number $a^\ast$ which contains a smaller number of digits, say $n$. There are two ways of terminating the number $a$ to a given significant number of digits, namely \textbf{chopping} or \textbf{rounding}.
+\begin{definition}[Chopping]
+\hfill\\\normalfont In \textbf{chopping}, we retain only the first $n$ significant digits in the number $a$.
+\end{definition}
+\begin{definition}[Rounding]
+\hfill\\\normalfont In \textbf{rounding}, the following rules are usually practiced:
+\begin{itemize}
+  \item Retain the first $n$ significant digits, and
+  \item if the $(n+1)$th significant digit is less than $5$, leave the $n$th significant digit unchanged;
+  \item otherwise, if the $(n+1)$th significant digit is greater or equal to $5$, add unity to the $n$th significant digit.
+\end{itemize}
+\end{definition}
+\subsection{Floating Point Representation}
+\begin{definition}[Floating Point Numbers]
+\hfill\\\normalfont Number of the form
+\[
+\pm(0.a_1a_2a_3\ldots a_m)\times N^e, \text{with }a_1\neq 0
+\]
+are called \textbf{floating point numbers}. The factor $0.a_1a_2a_3\ldots a_n$ is called the \textbf{mantissa}, $e$ is called the \textbf{exponent} and $N$ is the \textbf{base}.
+\end{definition}
+The folating-point mode is for storing real numbers.
+\subsection{Basic Concepts in Error Estimation}
+\begin{definition}[Sources of Error]
+\hfill\\\normalfont Numerical results are affected by many types of error.
+\begin{itemize}
+  \item \textbf{Error in Given Input Data}\\The input data can be \textit{result of measurements} which are inexact, or produced by some \textit{arithmetic process using round-off process}.
+  \item \textbf{Round-off Errors During Computation}\\This is due to working with \textit{finite machine precision}.
+  \item \textbf{Truncation Error}\\Consider the Taylor series xpansion for $\sin(x)$ about $x=0$
+  \[
+\sin(x) = x-\frac{x^3}{3!}+\frac{x^5}{5!}-\frac{x^7}{7!}+\ldots
+  \]
+which is an infinite series.\\Truncation error occurs when the \textit{infinite series is broken off after a finite number of terms}.\\In general, truncation errors are error committed when \textit{a limiting process is truncated before one has come to the limiting value}.
+  \item Simplifications in the Mathematical Model
+  \item Human Error
+\end{itemize}
+\end{definition}
+\subsection{Absolute and Relative Error}
+\begin{definition}[Absolute Error]
+\hfill\\\normalfont Let $x^\ast$ be an approximation to $x$, then the \textbf{absolute error} in approximating $x$ is given by $|x-x^\ast|$.
+\end{definition}
+From the above definition, the floating point representation of $x$, $\fl{x}$ has absolute error
+\[
+|x-\fl{x}|
+\]
+\begin{definition}[Absolute Error Bound]
+\hfill\\\normalfont Any non-negative number $\delta(x^\ast)$ satisfying the inequality
+\[
+|x-x^\ast|<\delta(x^\ast)
+\]
+is called an \textbf{absolute error bound}.
+\end{definition}
+\begin{definition}[Decimal Places]
+\hfill\\\normalfont The two numbers $x$ is said to agree to $k$ \textbf{decimal places} if $k$ is the largest non-negative integer such that
+\[
+|x-x^\ast|\leq 0.5\times 10^{-k}
+\]
+\end{definition}
+\begin{definition}[Relative Error]
+\hfill\\\normalfont If $x^\ast$ is an approximation to $x$, then the \textbf{relative error} is defined by
+\[
+\frac{|x-x^\ast|}{|x|}\;\;\;\text{provided that } x\neq 0
+\]
+\end{definition}
+For a $t$-digit machine,
+\[
+\frac{|x-\fl{x}|}{|x|}\leq \frac{1}{2}\times 10^{1-t}
+\]
+in rounding mode and
+\[
+\frac{|x-\fl{x}|}{|x|}\leq 10^{1-t}
+\]
+in chopping mode.
+\subsection{Computation in Floating Point Arithmetic}
+Take the example of addition/subtraction of two floating point number $0.a_1a_2a_3\ldots a_m\times 10^{N_1}\pm 0.b_1b_2b_3\ldots b_m\times 10^{N_2}$.
+\begin{align*}
+&0.a_1a_2a_3\ldots a_m\times 10^{N_1}\pm 0.b_1b_2b_3\ldots b_m\times 10^{N_2}\\
+=&\begin{cases}
+(0.a_1a_2a_3\ldots a_m\pm 0.b_1b_2b_3\ldots b_m)\times 10^{N_1}&\text{if }N_1= N_2\\
+(0.a_1a_2a_3\ldots a_m 0\ldots 0\pm 0.0\ldots 0b_1b_2b_3\ldots b_m)\times 10^{N_1}&\text{if }N_1>N_2
+\end{cases}
+\end{align*}
+\subsection{Propagation of Errors in Function Evaluation}
+\subsubsection{Function of one variable}
+In finding the value of $f(x)$ by approximating $f(x^\ast)$, where $x^\ast$ is the known approximating value of $x$,\\let $\delta(x^\ast)$ be an absolute error bound for $|x-x^\ast|$, i.e.,
+\[
+|x-x^\ast|\leq \delta(x^\ast)
+\]
+If the function $f(x)$ is differentiable, then by the mean-value theorem, we have
+\[
+f(x)-f(x^\ast)=f^\prime(p)(x-x^\ast)
+\]
+where $p$ is some number between $x$ and $x^\ast$.\\
+Therefore, 
+\[
+\delta(f(x^\ast))\leq \max_{t\in\mathbf{I}}|f^\ast(t)|\delta(x^\ast)
+\]
+where $\mathbf{I}$ is the interval $(x,x^\ast)$ if $x<x^\ast$ or $(x^\ast,x)$.\\
+Sometimes, upper bound of $f^\prime$ is unavailable. Yet, with the following assumption:
+\begin{itemize}
+  \item $\delta(x^\ast)$ is small
+  \item $f^\prime(x^\ast)\neq 0$, and
+  \item $f^\prime(t)$ is nearly constant  near $x^\ast$ (i.e., $f^\prime(t)$ does not very greatly for $t$ between $x$ and $x^\ast$)
+\end{itemize}
+We have $D\approx |f^\prime(x^\ast)|$, and consequently
+\[
+\delta(f(x^\ast))\approx|f^\prime(x^\ast)|\delta(x^\ast)
+\]
+\subsubsection{Function of Several Variables}
+\begin{theorem}[Error bounds of function of several variables]
+\hfill\\\normalfont
+Generalisation suggests, if $x_i^\ast$ is an estimate of $x_i$, $1\leq i\leq n$, then with $x^\ast=(x_1^\ast,x_2^\ast,\ldots,x_n^\ast)$, we have
+\[
+\delta(f(x^\ast=(x_1^\ast,x_2^\ast,\ldots,x_n^\ast))\approx\left\lvert\frac{\partial f(x^\ast)}{\partial x_1}\right\rvert \delta(x_1^\ast)+\left\lvert\frac{\partial f(x^\ast)}{\partial x_2}\right\rvert \delta(x_2^\ast)+\cdots+\left\lvert\frac{\partial f(x^\ast)}{\partial x_n}\right\rvert \delta(x_n^\ast)
+\]
+\end{theorem}
+\subsection{Catastrophic Cancellation}
+Calculations involving the \textbf{subtraction} of two \textit{nearly equal} numbers can result in considerable loss of accuracy due to cancellation.\\
+Let $x_1$ and $x_2$ be two nearly equal numbers and denote the error in $x_1$ and $x_2$ by $\delta(x_1)$ and $\delta(x_2)$, respectively, we have
+\begin{alignat*}{3}
+&&y&=x_1-x_2\\
+\Rightarrow&&|\delta(y)|&\leq |\delta(x_1)|+|\delta(x_2)|\\
+\Rightarrow&&\left\lvert\frac{\delta(y)}{y}\right\lvert&\leq \frac{|\delta(x_1)|+|\delta(x_2)|}{|x_1-x_2|}
+\end{alignat*}
+Specifically, suppose two nearly equal numbers $x_1$ and $x_2$, having the same exponent $n$ and being in the $k$ digi representations, are represented in floating point form:
+\begin{align*}
+x_1&=0.a_1a_2\cdots a_p\alpha_{p+1}\cdots\alpha_{k}\times 10^n\\
+x_2&=0.a_1a_2\cdots a_p\beta_{p+1}\cdots\beta_{k}\times 10^n
+\end{align*}
+Then their difference $x_1-x_2$ in floating point representationwill have some  digits in the mantissa to be $0$, i.e.,
+\[
+x_1 - x_2 = \fl{\fl{x_1}-\fl{x_2}}=0.\gamma_{p+1}\cdots\gamma_{k}\underbrace{0\cdots 0}_{p\;0\text{'s}}\times 10^{n-p}
+\]
+So, in floating point calculation, $x_1-x_2$ has at most $k-p$ significant digits; $p$ significant digits have been lost or canceled due to the subtraction.
+\subsubsection{Ways to Avoid Subtraction} 
+\begin{theorem}[$\sqrt{x+\varepsilon}-\sqrt{x}$]
+\hfill\\\normalfont If $|\varepsilon|\ll x$, then 
+\[
+\sqrt{x+\varepsilon}-\sqrt{x}=\frac{\varepsilon}{\sqrt{x+\varepsilon}+\sqrt{x}}
+\]
+presents a better way of calculation that reduces loss of accuracy.
+\end{theorem}
+\begin{theorem}[Roots of $ax^2+bx+c=0$]
+\hfill\\\normalfont Consider the quadratic equation
+\[
+ax^2+bx+c = 0\;\;\;a\neq 0
+\]
+The roots of equations are
+\[
+x_1=\frac{-b+\sqrt{b^2-4ac}}{2a}\;\;\;\text{and}\;\;\;x_2=\frac{-b-\sqrt{b^2-4ac}}{2a}
+\]
+To reduce loss of accuracy, some alternative pathway include:
+\begin{itemize}
+\item $x_1=\frac{-2c}{b+\sqrt{b^2-4ac}}\;\;\;\text{and}\;\;\;x_2=\frac{2c}{-b+\sqrt{b^2-4ac}}$
+\item $x_1+x_2 = -b$
+\item $x_1x_2=c$
+\end{itemize}
+\end{theorem}
+\begin{theorem}[Evaluation of polynomial $f(x)$]
+\hfill\\\normalfont First note that $ax^n = \fl{\fl{a}\times\fl{x^n}}$ where $\fl{x^n}=\fl{\fl{x^{n-1}}\times\fl{x}}$ recursively.\\Instead of calculating $f(x) = \fl{\sum_{i=0}^n a_ix^i}$, nesting may provide better result:
+\[
+f(x)=\fl{(\cdots(a_nx+a_{n-1})x+\cdots)x+a_0}
+\]
+\end{theorem}
+\subsection{Numerical Instability}
+\begin{definition}[Numerical Stability]
+\hfill\\\normalfont An algorithm is said to be \textbf{stable} if the effect of its errors on the final result is \textbf{negligible}.
+\end{definition}
+\clearpage
+\section{Numerical Solution of Linear Systems of Equations}
+Definitions and method of computation of matrix can be found in \texttt{MA2101.pdf}, and are therefore omitted here.
+\subsection{System of Linear Equations}
+In this chapter, only linear systems with \textit{unique} solution is concerned.\\
+Consider the linear system
+\[
+Ax=b
+\]
+where $A\in\mathbb{M}_{n}(\mathbb{R})$ and $b\in\mathbb{R}_c^n$. If $A$ is invertible, a \textit{unique} solution $x$ exists and given by
+\[
+x=A^{-1}b
+\]
+There are two classes of method of solving $Ax=b$ numerically:
+\begin{itemize}
+  \item \textbf{Direct} methods
+  \item \textbf{Iterative} methods
+\end{itemize}
+In this chapter, only direct methods are studied.\\
+Two basic direct method include
+\begin{itemize}
+  \item Cramer's rule
+  \item Gaussian Elimination
+\end{itemize}
+\subsubsection{Direct Method: Cramer's Rule}
+\begin{definition}[Cramer's Rule]
+\hfill\\\normalfont By \textbf{Cramer's rule}, the $n\times n$ linear system
+\[
+Ax=b
+\]
+has solution
+\[
+x_i=\frac{d_i}{d} \;\;\; i = 1,\ldots, n
+\]
+where $d:=\det(A)\neq 0, d_i=\det(A_i)$, $A_i$ the matrix obtained by replacing the $i$-th column of $A$ by $b$.\\
+The determinant $d$ is given by \textbf{Laplace Theorem}:
+\[
+d=(-1)^{i+1}a_{i1}D_{i1}+(-1)^{i+2}a_{i2}D_{i2}+\cdots+(-1)^{i+n}a_{in}D_{in}
+\]
+where $D_{ij}$ is the determinant of the submatrix obtained from $A$ by deleting its $i$th row and $j$th column.
+\end{definition}
+\begin{theorem}[Computational Complexity of Cramer's Rule]
+\hfill\\\normalfont Suppose it needs $m_n$ operations of multiplication to compute the determinant of a $n\times n$ matrix. Then, we have
+\[
+m_n=n+nm_{n-1}\;\;\;m_1=1
+\]
+Here, the first term $n$ is results from multiplication of $a_{ij}$ and $D_{ij}$.\\
+Thus,  
+\begin{align*}
+m_n &=n+nm_{n-1}=n+n[(n-1)+(n-1)m_{n-2}]\\
+&=n+n(n-1)+n(n-1)(n-2)+\cdots+n(n-1)\cdots 3\cdot2\\
+&>n! 
+\end{align*}
+Hence, in order to solve an $n\times n$ linear system by Cramer's rule and Laplace Theorem, we have do at least
+\[
+(n+1)n!=(n+1)!
+\]
+  multiplication.\\Clearly, Cramer's rule is too \textit{computationally expensive}.
+\end{theorem}
+Also, solving nonlinear linear system by \textbf{matrix inversion} is \textit{computationally expensive} and often leads to more \textit{inaccuracies}.
+\subsection{Gaussian elimination}
+\begin{definition}[Elementary Row Operations]
+\hfill\\\normalfont Let $E_i$ be the $i$th equation in a linear system $Ax=b$. The three \textbf{elementary row operations} permitted to solve this linear system are:
+\begin{itemize}
+\item $E_i\leftarrow \lambda E_i$, where $\lambda$ is a nonzero constant.
+\[
+\begin{bmatrix}
+1&&&&\\
+&\ddots&&&\\
+&&\lambda&&\\
+&&&\ddots&\\
+&&&&1
+\end{bmatrix}\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+\vdots&&\vdots\\
+a_{i1}&\cdots&a_{in}\\
+\vdots&&\vdots\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}=\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+\vdots&&\vdots\\
+\lambda a_{i1}&\cdots&\lambda a_{in}\\
+\vdots&&\vdots\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}
+\]
+\item $E_i\leftarrow E_i-lE_j$, where $l$ is a nonzero constant.
+\[
+\begin{bmatrix}
+1&&&&\\
+&\ddots&&&\\
+&-l&1&&\\
+&&&\ddots&\\
+&&&&1
+\end{bmatrix}^{\footnotemark}\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+\vdots&&\vdots\\
+a_{i1}&\cdots&a_{in}\\
+\vdots&&\vdots\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}=\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+\vdots&&\vdots\\
+ a_{i1}-la_{j1}&\cdots&a_{in}-la_{jn}\\
+\vdots&&\vdots\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}
+\]\footnotetext{$-l$ is at $i$th row and $j$th column of the leftmost matrix.}
+\item $E_i\leftrightarrow E_j$
+\[
+\begin{bmatrix}
+1&&&&\\
+&\ddots&&1&\\
+&&1&&\\
+&1&&\ddots&\\
+&&&&1
+\end{bmatrix}\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+a_{i1}&\cdots&a_{in}\\
+\vdots&\cdots&\vdots\\
+a_{j1}&\cdots&a_{jn}\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}=\begin{bmatrix}
+a_{11}&\cdots&a_{1n}\\
+a_{j1}&\cdots&a_{jn}\\
+\vdots&\cdots&\vdots\\
+a_{i1}&\cdots&a_{in}\\
+a_{n1}&\cdots&a_{nn}
+\end{bmatrix}
+\]
+\end{itemize}
+\end{definition}
+By a sequence of the above operations, a linear system can be transformed to a more easily solved linear system with the \textbf{same} set of solutions.\\
+The Gaussian elimination for solving $Ax=b$ involves 2 stages/
+\begin{itemize}
+\item A forward course where a sequence of elementary row operations are applied to $\mathbf{A}$ to reduce it to an upper triangular form $\mathbf{U}$.
+\item Backward substitution process
+\end{itemize}
+\begin{theorem}[General method of Gaussian Elimination on $\mathbf{A}\mathbf{x}=\mathbf{B}$]
+\hfill\\\normalfont Let the original system be denoted by 
+\[
+\mathbf{A}^{(0)}\mathbf{x}=\mathbf{b}^{(0)}
+\]
+where $\mathbf{A}^{(0)} = \mathbf{A} = (a_{ij}^{(0)})$, $\mathbf{b}^{(0)}=\mathbf{b} = \begin{bmatrix}
+b_1^{(0)}\\
+\vdots\\
+b_i^{(0)}\\
+\vdots\\
+b_n^{(0)}
+\end{bmatrix}$\\
+Step 1: If $a_{11}^{(0)}\neq 0$, let
+\begin{alignat*}{23}
+l_{i,1}&=\frac{a^{(0)}_{i,1}}{a^{(0)}_{1,1}}\footnotemark&&\;\;\;\;\;i = 2,3,\ldots, n\\
+a^{(1)}_{i,j}&=a^{(0)}_{i,j}-l_{i,1}\times a^{(0)}_{1,j}\footnotemark&&\;\;\;\;\;i,j = 2,3,\ldots,n\\
+b^{(1)}_{i}&=b^{(0)}_i-l_{i,1}\times b^{(0)}_1&&\;\;\;\;\;i = 2,\ldots,n
+\end{alignat*}
+\footnotetext{In general, $l_{p,q}$ is used in the operations on $q$th column, and denotes the ratio between the entry on the $p$th row($p>q$),$a^{(q-1)}_{p,q}$, to the $q$th diagonal entry, $a^{(q-1)}_{q,q}$.}
+\footnotetext{In general, $a_{i,j}^{(k)}$,$(i<j)$ is obtained by operations on the $k$th column, and is the result of zeroing the $a^{(k)}_{i,k}$ entry($i>k$), so it equals the previous entry $a_{i,j}^{(k-1)}$ minus $l_{i,k}$ times the entry on the $k$th row $a^{(k-1)}_{k,j}$.}
+Then we obtain the equivalent system
+\[
+\mathbf{A}^{(1)}\mathbf{x}=\mathbf{b}^{(1)}
+\]
+where
+\[
+\mathbf{A}^{(1)}=\begin{bmatrix}
+a_{11}^{(0)}&a_{12}^{(0)}&\cdots&a_{1n}^{(0)}\\
+0&a_{22}^{(1)}&\cdots&a_{2n}^{(1)}\\
+0&\vdots&\ddots&\vdots\\
+0&a_{n2}^{(1)}&\cdots&a_{nn}^{(1)}\end{bmatrix},\;\;\; \mathbf{b}^{(1)} = \begin{bmatrix}
+b_1^{(0)}\\
+b_2^{(1)}\\
+\vdots\\
+b_n^{(1)}
+\end{bmatrix}
+\]
+Step 2: If $a_{22}^{(1)}\neq 0$, repeat Step 1 to eliminate $\mathbf{x}_2$ from row 3 to $n$.\\After $k$ steps, we obtain the equivalent system
+\[
+\mathbf{A}^{(k)}\mathbf{x}=\mathbf{b}^{(k)}
+\]
+where $\mathbf{A}^{(k)}$ takes the form
+\[
+\mathbf{A}^{(k)}=\begin{bmatrix}
+a_{11}^{(0)}&\cdots       &\cdots&\cdots            &\cdots&a_{1n}^{(0)}\\
+            &a_{22}^{(1)} &\cdots&\cdots            &\cdots&a_{2n}^{(1)}\\
+            &             &\ddots&\vdots            &\cdots&\cdots      \\
+            &             &      &a_{k+1,k+1}^{(k)} &\cdots&a_{k+1,n}^{(k)}\\
+            &             &      &\vdots            &\ddots&\vdots\\
+            &             &      &a_{n,k+1}^{(k)} &\cdots&a_{n,n}^{(k)}
+            \end{bmatrix}
+\]
+If $a_{k+1,k+1}^{(k)}\neq 0$, then let
+\begin{align*}
+l_{i,k+1}&=\frac{a^{(k)}_{i,k+1}}{a^{(k)}_{k+1,k+1}}\\
+a^{(k+1)}_{i,j}&=a^{(k)}_{i,j}-l_{i,k+1}\times a^{(k)}_{k+1,j}\\
+b_i^{(k+1)}&=b_i^{(k)}-l_{i,k+1}b^{(k)}_{k+1}
+\end{align*}
+Finally, after at most $n-1$ steps, the system becomes
+\[
+\mathbf{A}^{(n-1)}\mathbf{x}=\mathbf{b}^{(n-1)}
+\]
+which is an upper triangular system, where
+\[
+\mathbf{U}=\mathbf{A}^{(n-1)}=\begin{bmatrix}
+a_{11}^{(0)}&a_{12}^{(0)}&\cdots&a_{1n}^{(0)}\\
+ &a_{22}^{(1)}&\cdots&a_{2n}^{(1)}\\
+ & &\ddots&\vdots\\
+&&&a_{nn}^{(n-1)}\end{bmatrix}
+\]and\[
+\mathbf{b}^{(n-1)} = \begin{bmatrix}
+b_1^{(0)}\\
+b_2^{(1)}\\
+\vdots\\
+b_n^{(n)}
+\end{bmatrix}
+\]
+Step 3: The solution vector $\mathbf{x}$ is solved by back substitution:
+\[
+x_n = \frac{b_n^{(n-1)}}{a_{nn}^{(n-1)}}
+\]
+and for $k = n-1, n-2,\ldots, 1$,
+\[
+x_k = \frac{1}{a_{kk}^{(k-1)}}\left(b_k^{(k-1)}-\sum_{j=k+1}^n a_{kj}^{(k-1)}x_j\right)
+\]
+The above algorithm is known as \textbf{Gaussian elimination}.
+\end{theorem}
+\subsection{Triangular Factorisation: $\mathbf{A}=\mathbf{LU}$}
+We note, in the $(k+1)$th step of above Gaussian elimination, all rows below the $(k+1)$th row are minused by a multiple of the $(k+1)$th row. This operation can be viewed by a collection of elementary row operation 2 and represented by
+\[
+\mathbf{A}^{(k+1)}=\mathbf{L}^{(k)}\mathbf{A}^{(k)}
+\]
+where
+\[
+\mathbf{L}^{(k)}=\begin{bmatrix}
+1& & & & &\\
+ &\ddots&&&&\\
+ &&1&&&\\
+&&-l_{k+2,k+1}&\ddots&&\\
+&&\vdots&&\ddots&\\
+&&-l_{n,k+1}&&&1
+\end{bmatrix}
+\]
+This relation gives
+\[
+\mathbf{U}=\mathbf{A}^{(n-1)}=\mathbf{L}^{(n-2)}\mathbf{L}^{(n-3)}\cdots\mathbf{L}^{(0)}\mathbf{A}^{(0)}
+\]
+Also, note the inverse of $\mathbf{L}^{(k)}$ is
+\[
+(\mathbf{L}^{(k)})^{-1}=\begin{bmatrix}
+1& & & & &\\
+ &\ddots&&&&\\
+ &&1&&&\\
+&&l_{k+2,k+1}&\ddots&&\\
+&&\vdots&&\ddots&\\
+&&l_{n,k+1}&&&1
+\end{bmatrix}
+\]
+a flip of signs of all $l_{i,k+1}$ from $\mathbf{L}^{(k)}$.\\
+Therefore,
+\[
+(\mathbf{L}^{(0)})^{-1}(\mathbf{L}^{(1)})^{-1}\cdots (\mathbf{L}^{(n-2)})^{-1} \mathbf{U}=\mathbf{A}
+\]
+Note that $(\mathbf{L}^{(0)})^{-1}(\mathbf{L}^{(1)})^{-1}\cdots (\mathbf{L}^{(n-2)})^{-1}$ is upper triangular and is defined as $\mathbf{L}$:
+\[
+(\mathbf{L}^{(0)})^{-1}(\mathbf{L}^{(1)})^{-1}\cdots (\mathbf{L}^{(n-2)})^{-1}=\begin{bmatrix}
+1&&&&&\\
+l_{21}&\ddots&&&&\\
+\vdots&&1&&&\\
+l_{k+2,1}&\cdots&l_{k+2,k+1}&\ddots&&\\
+\vdots&&\vdots&&\ddots&\\
+l_{n,1}&\cdots&l_{n,k+1}&\cdots&l_{n,n-1}&1
+\end{bmatrix}:=\mathbf{L}
+\]
+Hence, $\mathbf{A}=\mathbf{L}\mathbf{U}$, where $\mathbf{U}=\mathbf{A}^{(n-1)}$ and $\mathbf{L}$ is a lower triangular matrix.
+\begin{theorem}\normalfont If $\mathbf{U}$ and $\mathbf{L}$ are the upper and lower triangular matrices defined above, then $\mathbf{A}=\mathbf{L}\mathbf{U}$.
+\end{theorem}
+\subsection{Compact Forms of Gaussian Elimination}
+If $\mathbf{A}$ admits an $\mathbf{LU}$ decomposition, we can solve the system of equations $\mathbf{LUx}=\mathbf{b}$ in two stages.
+\begin{itemize}
+  \item Set $\mathbf{z}:=\mathbf{Ux}$. Solve $\mathbf{Lz}=\mathbf{b}$ for $\mathbf{z}$.
+  \item Solve $\mathbf{Ux}=\mathbf{z}$ for $\mathbf{x}$
+\end{itemize}
+\begin{theorem}[Existence and Uniqueness of $\mathbf{LU}$ decomposition]
+\hfill\\\normalfont Let $\mathbf{A}$ be an $n\times n$ matrix and $\mathbf{A}^{(k)}$ be the $k\times k$ matrix formed from the first $k$ rows and columns of $\mathbf{A}$. If $\det(\mathbf{A}^{(k)})\neq 0 \forall k = 1,2,\ldots, n-1$, then there exists a unique lower triangular matrix $\mathbf{L}=(l_{ij})$ with $l_{ii}=1 \forall i=1,2\ldots,n$ and a unique upper triangular matrix $\mathbf{U}=(u_{ij})$ such that $\mathbf{A}=\mathbf{LU}$.
+\end{theorem}
+\subsection{Compact Forms of Gaussian Elimination}
+The $\mathbf{LU}$ decomposition can be calculated directly by Gaussian Elimination.\\
+Given that $mathbf{A}$ admits a $\mathbf{LU}$ decomposition $\mathbf{A}=\mathbf{LU}$, we have, entry-wise
+\[
+a_{ij} = \sum_{k=1}^n l_{ik}u_{kj}\;\;\;i,j = 1,2,\ldots,n
+\]
+Note that the above system has $n^2$ equations and $n^2+n$ unknowns $l_{ik}, i\geq k$ and $u_{kj},k\leq j$. Thus $n$ unknowsn may be set arbitrarily.
+\begin{theorem}[Doolittle Method]
+\hfill\\\normalfont For Doolittle Method, set diagonal entries of $\mathbf{L}$, $l_{kk}:=1, k = 1,2,\ldots n$ and assume that $u_{kk}\neq 0,\forall k \in[1,n]\cap\mathbb{Z}$.\\
+The sequence of calculation is as follows:
+\begin{enumerate}
+  \item First row of $\mathbf{U}$: $u_{1k}, 1\leq k\leq n$
+  \item First column of $\mathbf{L}$: $l_{k1}, 2\leq k\leq n$\footnote{if $k = 1, l_{k1}=l_{11}=1$ by definition}
+  \item Second row of $\mathbf{U}$: $u_{2k}, 2\leq k\leq n$.
+  \item[] $\vdots$
+\end{enumerate}
+Obviously, when calculating $k$th row of $\mathbf{U}$, row 1 to $k-1$ of $\mathbf{U}$ and column 1 to $k-1$ of $\mathbf{L}$ will be known.\\
+Also, when calculating $k$th row of $\mathbf{L}$, row 1 to $k$ of $\mathbf{U}$ and column 1 to $k-1$ of $\mathbf{L}$ will be known.\\
+Suppose $u_{kj}, (j\geq k)$ is of concern, we have
+\[
+a_{kj}=\sum_{r=1}^k l_{kr}u_{rj}
+\]
+Substitute in $l_{kk}=1$ and rearranging,
+\[
+u_{kj} = a_{kj} -\sum_{r=1}^{k-1}l_{kr}u_{rj}
+\]
+Afterwards, suppose $l_{ik}, (i > k)$ is of concern, we have
+\[
+a_{ik} = \sum_{r=1}^k l_{ir}u_{rk}
+\]
+Rearranging,
+\[
+a_{ik}=\sum_{r=1}^{k-1} l_{ir}u_{rk}+l_{ik}u_{kk}
+\]
+Therefore,
+\[
+l_{ik}=\frac{a_{ik}-\sum_{r=1}^{k-1} l_{ir}u_{rk}}{u_{kk}}
+\]
+The above two equation can be interleaved to obtain $\mathbf{L}$ and $\mathbf{U}$.
+\end{theorem}
+\begin{theorem}[Crout Method]
+\hfill\\\normalfont For Crout Method, set diagonal entries of $\mathbf{U}$, $u_{ii}=1, k = 1,2,\ldots, n$ and assume that $l_{kk}\neq 0 \forall k\in[1,n]\cap\mathbb{Z}$.\\
+The sequence of calculation is as follows:
+\begin{enumerate}
+  \item First column of $\mathbf{L}$: $l_{k1}, 1\leq k\leq n$
+  \item First row of $\mathbf{U}$: $u_{1k}, 2\leq k\leq n$
+  \item Second column of $\mathbf{L}$: $l_{k2}, 2\leq k\leq n$
+  \item[] $\vdots$
+\end{enumerate}
+Obviously, when calculating $k$th column of $L$, column 1 to $k-1$ of $\mathbf{L}$ and row 1 to $k-1$ of $\mathbf{U}$ will be known.\\
+Also, when calculating $k$th row of $\mathbf{U}$, column 1 to $k$ of $\mathbf{L}$ and row 1 to $k-1$ of $\mathbf{U}$ will be known.\\
+Suppose $l_{ik}, (i\geq k)$ is of concern, we have
+\[
+a_{ik} = \sum_{r = 1}^k l_{ir}u_{rk}
+\]
+Substitute in $u_{kk}=1$ and rearranging,
+\[
+l_{ik} = a_{ik} - \sum_{r = 1}^{k-1}l_{ir}u_{rk}
+\]
+Afterwards, suppose $u_{kj}, (j\geq k+1)$ is of concern, we have
+\[
+a_{kj} = \sum_{r = 1}^k l_{kr}u_{rj}
+\]
+Rearranging, 
+\[
+u_{kj} = \frac{a_{kj}-\sum_{r=1}^{k-1}l_{kr}u_{rj}}{l_{kk}}
+\]
+The above two equation can be interleaved to obtain $\mathbf{L}$ and $\mathbf{U}$.
+\end{theorem}
+\subsection{$\mathbf{LU}$ Decomposition for Tridiagonal Matrices}
+\begin{theorem}\hfill\\\normalfont
+Let $\mathbf{A}$ be a \textbf{tridiagonal matrices} 
+\[
+\mathbf{A}=\begin{bmatrix}
+a_1&c_1&&&&\\
+b_2&a_2&c_2&&&\\
+&\ddots&\ddots&\ddots&&\\
+&&\ddots&\ddots&\ddots&\\
+&&&b_{n-1}&a_{n-1}&c_{n-1}\\
+&&&&b_n&a_n
+\end{bmatrix}
+\]
+If an $\mathbf{LU}$ decomposition exists for $\mathbf{A}$, then
+\[
+\mathbf{A}=\mathbf{LU}
+\]
+where
+\[
+\mathbf{L}=\begin{bmatrix}
+1&&&&&\\
+\beta_2&1&&&&\\
+&\ddots&\ddots&\ddots&&\\
+&&\ddots&\ddots&\ddots&\\
+&&&\beta_{n-1}&1&\\
+&&&&\beta_n&1
+\end{bmatrix}\;\;\;\text{and}\;\;\;\mathbf{U}=\begin{bmatrix}
+\alpha_1&c_1&&&&\\
+&\alpha_2&c_2&&&\\
+&\ddots&\ddots&\ddots&&\\
+&&\ddots&\ddots&\ddots&\\
+&&&&\alpha_{n-1}&c_{n-1}\\
+&&&&&\alpha_n
+\end{bmatrix}
+\]
+By applying Doolittle's method, it can be shown that
+\[
+\alpha_1 = a_1
+\]
+and for $k = 2, 3,\ldots, n$,
+\begin{align*}
+\beta_k &=\frac{b_k}{\alpha_{k-1}}\\
+\alpha_k&=a_k - \beta_k c_{k-1}
+\end{align*}
+\end{theorem}
+\begin{theorem}[Thomas's Algorithm]
+\hfill\\\normalfont If $\mathbf{Ax}=\mathbf{g}$ and define $\mathbf{Ux} = h$ where $\mathbf{x}:=(x_1,x_2,\ldots, x_n)^\text{T}$, $\mathbf{g}=(g_1,g_2,\ldots, g_n)^\text{T}$ and $\mathbf{h}=(h_1,h_2,\ldots, h_n)^\text{T}$. 
+\begin{align*}
+h_1&=g_1\\
+h_i&=g_i-\beta_ih_{i-1},\;\;\; i = 2, 3, \ldots, n
+\end{align*}
+and
+\begin{align*}
+x_n &=\frac{h_n}{\alpha_n}\\
+x_i &=\frac{h_i-c_ix_{x+1}}{\alpha_i}
+\end{align*}
+This method is known as \textbf{Thomas algorithm}.
+\end{theorem}
+\subsection{Pivoting Strategies}
+\subsubsection{Partial Pivoting}
+\begin{definition}[Partial Pivoting]\hfill\\\normalfont
+At the $(k+1)$th step of the Gaussian Elimination process, $k = 0,1,\ldots, n-2$, choose the element having maximum absolute value in the $(k+1)$th column of $\mathbf{A}^{(k)}$ that lies on or below the diagonal so that
+\[
+|a_{s,k+1}^{(k)}|=\max_{i}|a_{i,k+1}^{(k)}|\;\;\;k+1\leq i\leq n
+\]
+and interchange row $k+1$ with row $s$.
+\end{definition}
+\subsubsection{Scaled Partial Pivoting}
+\begin{definition}[Scaled Partial Pivoting]\hfill\\\normalfont
+In the beginning, calculate $s_i$ for all row $i$, where
+\[
+s_i = \max_{1\leq j\leq n}\{|a_{ij}|\} , i = 1, \ldots, n
+\]
+At the $(k+1)$th step of the Gaussian Elimination process, $k = 0,1,\ldots, n-2$, choose $r$th row of $\mathbf{A}^{(k)}$ that lies on or below the diagonal where $r$ is determined by
+\[
+\frac{|a_{r,k+1}^{(k)}|}{s_r}=\max_{i}\frac{|a_{i,k+1}^{(k)}|}{s_i}\;\;\;k+1\leq i\leq n
+\]
+and exchange row $k+1$ with row $r$ and $s_{k+1}$ with $s_{r}$.
+\end{definition}
+\clearpage
+\section{Error of Approximation}
+\begin{definition}[Error]
+\hfill\\\normalfont Given $n+1$ data values $(x_0,f_0), (x_1,f_1),\ldots, (x_n,f_n)$, we may define the error of approximation, $E$, by
+\[
+E=\sum_{i=0}^n|p(x_i)-f_i|
+\]
+If we take $p(x)$ to be a polynomial of degree $n$ then by choosing
+\[
+p(x_i)=f_i, i= 0,1,\ldots, n
+\]
+we can make $E = 0$. The function $p(x)$ is the \textbf{Lagrange interpolating polynomial}.\\
+Alternatively, when $n$ is large, we may fit a polynomial of degree $k$ where $k\ll n$. We use
+\[
+E=\sum_{i=0}^n[p(x_i)-f_i]^2
+\]
+By minimising $E$ we achieve a \textbf{least square fit}.\\
+If the function $f(x)$ is continuous specified on the interval $[a,b]$, we may define the error $E$ in approximating $f(x)$ by $p(x)$ as
+\[
+E=\max_{a\leq x \leq b}|p(x)-f(x)|
+\]
+It is common in practice to take $p(x)$ as a polynomial and minimise $E$ with respect to variations in the coefficients. This generate the \textbf{minimax} polynomial approximation.
+\end{definition}
+The following theorem justifies the choice of polynomial for approximation
+\begin{theorem}[Weierstrass Approximation Theorem]
+\hfill\\\normalfont Suppose $f$ is defined and continuous on $[a,b]$. For each $\varepsilon>0$ there exists a polynomial $P(x)$, defined on $[a,b]$, with property that
+\[
+|f(x)-P(x)|<\varepsilon\;\;\;\forall x\in[a,b]
+\]
+\end{theorem}
+\subsection{Least Square Approximation}
+\subsubsection{Discrete Data}
+Given a set of $m+1$ discrete data points $(x_0,f(x_0)), (x_1,f(x_0)),\ldots (x_m,f(x_m))$, each carrying weight $w_0,w_1,\ldots, w_m$ respectively. \\
+The task is to find an approximating polynomial function\footnote{The subscript $n$ denotes the power of the polynomial; thus the polynomial $p_n$ has $n+1$ unknwons}
+\[
+p_n(x;a_0,a_1,\ldots, a_n):=a_0+a_1x+\cdots+a_nx^n
+\] 
+$(m>n)$ such that
+\[
+E(a_0,a_1,\ldots, a_n)=\sum_{i=0}^m w_i[f(x_i)-p_n(x_i; a_0,a_1,\ldots, a_n)]^2
+\]
+is minimised with respect to the parameters $a_0, a_1,\ldots, a_n$.\footnote{$E$ can be understood as a weighted sum of squares of residue for each data.}\\
+We require
+\[
+\frac{\partial E}{\partial a_j} = 9 \forall j = 0,1,\ldots, n
+\]
+Therefore, by differentiating with $a_j$,
+\[
+\sum_{i=0}^m w_i[f(x_i)-p_n(x_i; a_0,a_1,\ldots, a_n)]\frac{\partial}{\partial a_j}\left(-p_n(x_i;a_0,a_1,\ldots, a_n)\right)\;\;\;\forall j = 0,1,\ldots, n
+\]
+Rearranging, we have
+\[
+\sum_{i=0}^mw_i\underbrace{(a_0+a_1x_i+\cdots+a_nx_i^n)}_{p_n(x_i; a_0,a_1,\ldots, a_n)}x_i^j   =\sum_{i=0}^m w_if(x_i)x_i^j\;\;\;\forall j = 0,1,\ldots, n
+\]
+There is $n+1$ unknowns, and $n+1$ equations, so the linear system is\footnote{the $j$th column corresponding to the equation of specific $j$}
+\[
+\begin{bmatrix}
+\sum_{i=0}^m w_ix_i^0&\sum_{i=0}^m w_ix_i^1&\cdots \sum_{i=0}^m w_ix_i^n\\
+\sum_{i=0}^m w_ix_i^1&\sum_{i=0}^m w_ix_i^2&\cdots \sum_{i=0}^m w_ix_i^{n+1}\\
+\vdots&\vdots&\ddots&\vdots\\
+\sum_{i=0}^m w_ix_i^n&\sum_{i=0}^m w_ix_i^{n+1}&\cdots \sum_{i=0}^m w_ix_i^{2n}\\
+\end{bmatrix}\begin{bmatrix}
+a_0\\a_1\\\vdots\\a_n\end{bmatrix}=\begin{bmatrix}
+\sum_{i=0}^m w_if(x_i)x_i^0\\\sum_{i=0}^m w_if(x_i)x_i^1\\\vdots\\\sum_{i=0}^m w_if(x_i)x_i^n\end{bmatrix}
+\]
+\subsubsection{Continuous Function}
+Given a continuous function $f(x)$ defined on an interval $[a,b]$ with each value $x\in[a,b]$ associated with a weight $w(x)$. \\
+The task is to find an approximating polynomial function $p_n(x;a_0,a_1,\ldots, a_n)$ such that
+\[
+E(a_0,a_1,\ldots, a_n)=\int_a^b w(x)[f(x)-p_n(x;a_0,a_1,\ldots, a_n)]^2\diff x
+\]
+is minimised with respect to the parameters $a_0,a_1,\ldots, a_n$.\\
+The necessary condition sfor $E(a_0,a_1,\ldots, a_n)$ to be minimum are
+\[
+\frac{\partial E}{\partial a_j}=0 \forall j = 0,1,\ldots, n
+\]
+Differentiating with respect to $a_j$,
+\[
+\frac{\diff E}{\diff a_j} = -2\int_a^b w(x)[f(x)-p(x;a_0,a_1,\ldots, a_n)]\frac{\partial}{\partial a_j}(p_n(x;a_0,a_1,\ldots, a_n))\diff x = 0
+\]
+Rearranging,\footnote{$\frac{\partial}{\partial a_j}(p_n(x;a_0,a_1,\ldots, a_n))=x^j$ is obvious.}
+\[
+\int_a^b w(x)(a_0+a_1x+\cdots+a_nx^n)x^j\diff x = \int_a^b w(x)f(x)x^j\diff x\;\;\;\forall j = 0,1,\ldots, n
+\]
+\[
+\sum_{k = 0}^n \int_a^b w(x)x^{k+j}\diff x = \int_a^b w(x)f(x)x^j\diff x\;\;\;\forall j = 0,1,\ldots, n
+\]
+Similarly, a matrix equation can be formed from this linear system of $n+1$ variables and $n+1$ equations. However, this matrix is \textbf{ill-conditioned}. 
+\subsection{Lagrange Interpolation}
+\begin{definition}\hfill\\\normalfont
+Given a set of $n+1$ data points $(x_0,f_0),(x_1,f_1),\ldots,(x_n,f_n)$, we seek to find a polynomial $p_n(x)$ of degree $n$ which passes through each of the given points, i.e.
+\[
+p_n(x_i)=f_i\;\;\;i = 0,1,2,\ldots, n
+\]
+If we write $p_n(x)= a_0+a_1x+a_2x^2+\cdots+a_nx^n$, we have
+\[
+\begin{bmatrix}
+1&x_0&\cdots&x_0^n\\
+1&x_1&\cdots&x_1^n\\
+\vdots&\vdots&\ddots&\vdots\\
+1&x_n&\cdots&x_n^n
+\end{bmatrix}\begin{bmatrix}a_0\\a_1\\\vdots\\a_n\end{bmatrix} = \begin{bmatrix}f_0\\f_1\\\vdots\\f_n\end{bmatrix}
+\]
+The determinant of the $(n+1)\times(n+1)$ Vandermonde matrix is $\displaystyle\prod_{0\leq i<j\leq n}(x_j-x_i)$, so the system has a unique solution as long as $x_i, i = 1,2,\ldots, n$ are all distinct.\\
+The solved polynomial is the unique Lagrange interpolating polynomial.
+\end{definition}
+\begin{theorem}[Computation of Lagrange Interpolating Polynomial]
+\hfill\\\normalfont Write
+\begin{align*}
+p_n(x)&=\alpha_0(x-x_1)(x-x_2)\cdots(x-x_n)\\
+&+\alpha_1(x-x_0)(x-x_2)\cdots(x-x_n)\\
+&+\cdots\\
+&+\alpha_n(x-x_0)(x-x_1)\cdots(x-x_{n-1})
+\end{align*}
+Then, we have
+\[
+ \alpha_i = \frac{f_i}{\displaystyle\prod_{\substack{j=0\\ j\neq i}}^n(x_i-x_j)}
+\]
+So,
+\[
+p_n(x) = \sum_{i=0}^n l_i(x)f_i
+\]
+where
+\[
+l_i(x) = \prod_{\substack{j=0\\j\neq i}}^n\frac{x-x_j}{x_i-x_j}
+\]
+\end{theorem}
+Note that $l_i(x)$ admits the property that
+\begin{align*}
+l_i(x_i)&=1\\
+l_i(x_j)&\neq 1 \text{ for }j\neq i
+\end{align*}
+\begin{theorem}[$\psi(x)$ and alternative expression of Lagrange Interpolating Polynomial]
+\hfill\\\normalfont Let $\psi(x)$ denote the polynomial
+\[
+\psi(x)=(x-x_0)(x-x_1)\cdots(x-x_n) = \prod_{i=0}^n (x-x_i)
+\]
+then, by differentiating on each product term once at a time, we have
+\[
+\psi^\prime(x) = \sum_{i=0}^n\prod_{\substack{j=0\\j\neq i}}^n (x-x_j)
+\]
+and hence
+\[
+\psi^\prime (x_i) = (x_i-x_0)\cdots(x_i-x_{i-1})(x_i-x_{i+1})\cdots(x_i-x_n)
+\]
+as all other terms containing $(x-x_i)$ will vanish.\\
+Thus,\footnote{Do NOT forget multiply $(x-x_i)$ while using this formula!}
+\[
+l_i(x)=\frac{\psi(x)}{(x-x_i)\psi^\prime(x_i)}
+\]
+So $p_n(x)$ may be written as
+\[
+p_n(x)=\sum_{i=0}^n\frac{\psi(x)}{(x-x_i)\psi^\prime(x_i)} f_i
+\]
+\end{theorem}
+\subsection{Truncation Error of Interpolating Polynomial}
+\begin{theorem}[Extended Mean Value Theorem]
+\hfill\\\normalfont Suppose that
+\[
+a\leq x_0<x_1<\cdots<x_k\leq b
+\]
+\[
+f(x_0)=f(x_1)=\cdots = f(x_k)=0
+\]
+and $f(x),f^\prime(x),\ldots, f^{(k)}(x)$ are all continuous on $[a,b]$. There is a $\xi\in(x_0,x_n)\subset(a,b)$ such that
+\[
+f^k(\xi)=0
+\]
+\end{theorem}
+\begin{theorem}[Lagrange Interpolating Polynomial Error Formula]
+\hfill\\\normalfont Let $f(x)\in C^{(n+1)}[a,b]$. Further, let $p_n(x)$ interpolates $f(x)$ at $(n+1)$ distinct points $x+0,x_1,\ldots, x_n\in[a,b]$. Then, for $x\in[a,b], x\neq x_i, i = 0,1,\ldots, n$,
+\[
+f(x)-p_n(x)=\psi(x)\frac{f^{(n+1)}(\xi)}{(n+1)!}
+\]
+for some $xi\in\text{Spr}\{x,x_0,x_1,\ldots,x_n\}$.\\
+Here, $\text{Spr}\{x,x_0,x_1,\ldots, x_n\}$ denotes the smallest interval containing $x,x_0,x_1,\ldots,x_n$.
+\end{theorem}
+It follows that an upper bound for the error is
+\[
+\delta(f(x)):=|f(x)-p_n(x)| \leq \frac{M}{(n+1)!}|\psi(x)|
+\]
+where
+\[
+M=\max_{a\leq \xi\leq b}|f^{(n+1)}(\xi)|
+\]
+\end{document}

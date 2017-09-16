@@ -1,0 +1,760 @@
+\PassOptionsToPackage{svgnames}{xcolor}
+\documentclass[12pt]{article}
+
+
+
+\usepackage[margin=1in]{geometry}  
+\usepackage{graphicx}             
+\usepackage{amsmath}              
+\usepackage{amsfonts}              
+\usepackage{framed}               
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{amsthm}
+\usepackage[nottoc]{tocbibind}
+\usepackage{bm}
+\usepackage[object=vectorian]{pgfornament} 
+\usepackage{enumitem}
+\usepackage{wrapfig}
+\colorlet{shadecolor}{lightgray!25}
+\newcommand{\sectionline}{%
+  \noindent
+  \begin{center}
+  {\color{DarkViolet}
+    \resizebox{0.5\linewidth}{1ex}
+    {{%
+    {\begin{tikzpicture}
+    \node  (C) at (0,0) {};
+    \node (D) at (9,0) {};
+    \path (C) to [ornament=85] (D);
+    \end{tikzpicture}}}}}%
+    \end{center}
+  }
+
+  \newcommand\norm[1]{\left\lVert#1\right\rVert}
+  \newcommand\TCP{\texttt{TCP} }
+  \newcommand\UDP{\texttt{UDP} }
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0em}
+\newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{notation}{Notation}[section]
+\theoremstyle{definition}
+\DeclareMathOperator{\arcsec}{arcsec}
+\DeclareMathOperator{\arccot}{arccot}
+\DeclareMathOperator{\arccsc}{arccsc}
+\DeclareMathOperator{\spn}{Span}
+\setcounter{tocdepth}{1}
+\begin{document}
+
+\title{Revision notes - CS2105}
+\author{Ma Hongqiang}
+\maketitle
+\tableofcontents
+
+\clearpage
+%\twocolumn
+\section{Introduction}
+\subsection{What is the Internet?}
+\begin{definition}[Internet]
+\hfill\\\normalfont The \textit{Internet} is a network of connected computing devices known as \textbf{hosts} or \textbf{end systems}.\\
+Hosts run \textbf{network applications}.
+\end{definition}
+Examples of hosts include PC, laptops, servers and smartphones.\\
+Examples of network applications include Web, Pokemon Go, Skype.
+\subsection{Network Edge}
+Hosts access the Internet through access network. Hosts connect to the access network over different physical media.
+\begin{itemize}
+  \item \textbf{Guided media}: signals propagate in solid media, e.g. fiber
+  \item \textbf{Unguided media}: signals propagate freely, e.g., Wi-Fi, cellular
+\end{itemize}
+\subsection{Network Core}
+Network core consists of a mesh of interconnected routers. The data transmit through net via either \textbf{circuit switching} or \textbf{packet switching}.
+\begin{definition}[Circuit Switching]
+\hfill\\\normalfont In \textbf{circuit switching}, end-end resources allocated to and reserved for "call" between source and destination.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{1_3_1.png}
+\caption{In above diagram, each link has four circuits. A “call” gets 2nd circuit in top link and 1st circuit in right link.}
+\end{figure}\\
+Some properties of \textbf{circuit switching} include
+\begin{itemize}
+  \item call setup required
+  \item circuit-like (guaranteed) performance
+  \item circuit segment idle if not used by call (no sharing)
+  \item \textit{commonly used in traditional telephone networks}
+  \item divide link bandwidth into "pieces"
+  \begin{itemize}
+    \item frequency division
+    \item time division
+  \end{itemize}
+\end{itemize}
+
+\end{definition}
+\begin{definition}[Packet Switching]
+\hfill\\\normalfont In \textbf{packet switching}, host sending function by 
+\begin{itemize}
+\item breaking application message into smaller chunks known as \textbf{packets}, of length $L$ bits; and
+\item transmitting packets onto the link at \textbf{trasmission rate}\footnote{link transmission rate is also known as \textbf{link capacity} or \textbf{link bandwidth}} $R$ bits/sec.
+\end{itemize}
+\end{definition}
+\begin{definition}[Packet Trasmission Delay]
+\hfill\\\normalfont Packet transmission delay, $d_{\text{trans}}$ is defined as time nedded to transmit $L$-bit packet onto link.
+\[
+d_{\text{trans}} = \frac{L}{R}
+\]
+\end{definition}
+Packet switching adopts \textbf{store-and-forward} approach when a \textit{router} is encountered.
+\begin{itemize}
+  \item Packets are passed from one \textit{router} to the next, across links on path from source to destination.
+  \item \textbf{Store and forward}: entire packet must arrive at a router before it can be transmitted on the next link.
+\end{itemize}
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{1_3_2.png}
+\caption{End to end $d_{\text{trans}} = 2\times\frac{L}{R}$, assuming no other delays}
+\end{figure}
+\begin{definition}[Routing and Addressing]
+\hfill\\\normalfont \textbf{Routers} determines source-destination route taken by packets by routing algorithms.\\
+Addressing is achieved by each packet carrying source and destinaton information.
+\end{definition}
+Some properties of packet switching include
+\begin{itemize}
+  \item The Internet \textbf{is} a packet switching network.
+  \item User A, B, $\ldots$'s packets \textit{share} network resources
+  \item Resources are used on demand.
+  \item Excessive congestion is possible.\footnote{These properties suggest bandwidth division into "pieces", dedicated allocation and resource reservation are not available.}
+\end{itemize} 
+\begin{definition}[Internet Structure: Network of Networks]
+\hfill\\\normalfont
+\vspace{-1em}
+\begin{itemize}
+  \item Hosts connect to Internet via access \textbf{ISPs}(Internet Service Providers)
+  \item Access ISPs in turn must be interconnected.
+  \item Resulting network of networks is very complex.\\Evolution was driven by \textit{economics} and \textit{national policies}.
+  \item Therefore, the Internet is a "network-of-networks", organised into \underline{a}utonomous \underline{s}ystems(AS), each is owned by an organisation.
+\end{itemize}
+\end{definition}
+\vspace{-1em}
+\subsection{Delay, Loss and Throughput in Networks}
+Recall, the algorithm of sneding a packet in a packet switching network is
+\begin{enumerate}
+  \item Sender transmit a packet onto the link as a sequence of bits.
+  \item Bits are propagated to the next node(e.g. a router) on the link.
+  \item Router stores, processes and forwards the packet to the next link.
+  \item Steps 2 and 3 repeat till the packet arrives at the receiver.
+\end{enumerate}
+Delay and Loss could occur as packets need to queue in router buffers, waiting for turn to be send out one by one.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{1_4_1.png}
+\end{figure}\\
+\begin{itemize}
+  \item Queue(aka \textbf{buffer}) of a router has finite capacity.
+  \item Packet arriving to full queue will be dropped(aka lost).
+  \item Lost packet may be retransmitted by previous node, by source host, or not at all.
+\end{itemize}
+\begin{definition}[Four Sources of End-to-end Packet Delay]
+\hfill\\\normalfont 
+End-to-end packet delay is the time taken for a packet to travel from source to destination. It consists of:
+\begin{itemize}
+  \item transmission delay
+  \item propagation delay
+  \item processing delay
+  \item queueing delay
+\end{itemize}
+\begin{table}[h]
+\hspace{-4em}
+\begin{tabular}{|p{5.5cm}|p{4cm}|p{4.5cm}|p{4.5cm}|}
+\hline
+$d_\text{proc}$: nodal processing delay&$d_\text{queue}$: queueing delay&$d_\text{trans}$: transmission delay&$d_\text{prop}$: propagation delay\\\hline
+\begin{itemize}[leftmargin=3mm]
+  \item check bit errors
+  \item determine output link
+  \item typically $<$ msec
+\end{itemize}&
+\begin{itemize}[leftmargin=3mm]
+  \item time waiting in the queue for transmission
+  \item dependes on congestion level of router
+\end{itemize}&
+\begin{itemize}[leftmargin=3mm]
+  \item $L$: packet length
+  \item $R$: link bandwidth
+  \item $d_\text{trans} = \frac{L}{R}$
+\end{itemize}&
+\begin{itemize}[leftmargin=3mm]
+  \item $d$: length of physical link
+  \item $s$: propagation speed in medium\newline($\sim 2\times 10^8$m/sec)
+  \item $d_\text{prop} = \frac{d}{s}$
+\end{itemize}
+\\\hline
+\end{tabular}
+\end{table}
+\end{definition}
+\begin{definition}[Throughput]
+\hfill\\\normalfont \textbf{Throughput} is defined as how many bits can be transmitted per unit time.\\
+\end{definition}
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{1_4_2.png}
+\caption{The throughput is $\frac{F}{\left(\frac{F}{R_s}+\frac{F}{R_c}\right)}=\frac{R_sR_c}{R_s+R_c}$}
+\end{figure}
+\clearpage
+The difference between throughput and link capacity is that
+\begin{itemize}
+  \item Throughput is measured for end-to-end communication.
+  \item Link capacity(bandwidth) is meant for a specific link.
+\end{itemize}
+\subsection{Protocol Layers and Service Models}
+The Internet supports various network applications. Network applications exchange messages and communicate among peers according to \textbf{protocols}.
+\begin{definition}[Protocol]
+\hfill\\\normalfont \textbf{Protocols} define \textit{format} and \textit{order} of messages exchanged and the \textit{actions} taken after messages are sent or received.
+\end{definition}
+Protocols in the Internet are logically organised into "layers" according to their purposes.
+\begin{itemize}
+  \item Each layer provides a service.
+  \item Simple interfaces between layers
+  \item Hide details from each other
+\end{itemize}
+\begin{definition}[Internet Protocol Stack]
+\hfill\\\normalfont The Internet consists of five layers.
+\begin{itemize}
+  \item \textbf{Application}: supporting network applications, e.g. FTP, SMTP, HTTP
+  \item \textbf{Transport}: process-to-process data transfer, e.g. TCP, UDP
+  \item \textbf{Network}: routing of datagrams from source to destination, e.g. IP
+  \item \textbf{Link}: data transfer between neighbouring network elements,e.g. Ethernet, 802.11
+  \item \textbf{Physical}: bits "on the wire"
+\end{itemize}
+\end{definition}
+\clearpage
+\section{Application Layer}
+\subsection{Principle of Network Applications}
+\textbf{Application architectures} refer to possible structures of network applications, which include:
+\begin{itemize}
+  \item Client-server
+  \item Peer-to-peer(P2P)
+  \item Hybrid of client-server and P2P
+\end{itemize}
+\begin{definition}[Client-Server Architecture]
+\hfill\\\normalfont In \textbf{client-server} architecture,\\
+\textbf{Server}:
+\begin{itemize}
+  \item Waits for incoming requests
+  \item Provides requested service to client
+\end{itemize}
+\text{Client}:
+\begin{itemize}
+  \item Initiates contact with server("speak first")
+  \item Typically requests service from server
+  \item For Web, client is usually implemented in browser
+\end{itemize}
+\end{definition}
+\begin{definition}[P2P Architecture]
+\hfill\\\normalfont In \textbf{P2P} Architecture,
+\begin{itemize}
+\item \textit{No} always-on server
+\item Arbitrary end systems directly communicate.
+\item Peers request service from other peers, provide service in return to other peers.
+\end{itemize}
+P2P Architecture is highly scalable but difficult to manage.
+\end{definition}
+An example of Hybrid of Client-Server and P2P architecture is the instant messaging, where
+\begin{itemize}
+  \item Chatting between two users is \textbf{P2P}
+  \item Presence detection/location is \textbf{centralised}
+\end{itemize}
+Usually for applications, some considerations of \textit{transport} service include
+\begin{itemize}
+  \item Data integrity
+  \item Throughput
+  \item Timing
+  \item Security
+\end{itemize}
+\begin{definition}[Two Internet Transport Protocols]
+\hfill\\\normalfont Two Internet Transport Protocols are \texttt{TCP} and \texttt{UDP}. The main difference is that \texttt{TCP} is reliable while \texttt{UDP} is not. In detail, \\
+\texttt{TCP} service offers:
+\begin{itemize}
+  \item \textbf{reliable transport} between sending and receiving pocess
+  \item \textbf{flow control}: sender won't overwhelm receiver
+  \item \textbf{congestion control}: throttle sender when network is overloaded
+\end{itemize}
+However, \texttt{TCP} does \textit{not} provide: timing, minimum throughput guarantee, security.\\
+In contrast, \texttt{UDP} service provide \textbf{unreliable} data transfer between sending and receiving process. It does \textit{not} provide: reliability, flow control, congestion control, timing, throughput guarantee or security.
+\end{definition}
+For \textbf{application layer protocol} which is over transport layer protocol, instead it defines
+\begin{itemize}
+  \item Types of messages exchanged: e.g., request, response
+  \item Message syntax: what field in messages and how fields are delineated
+  \item Message semantics: meaning of information in fields
+  \item Rules: for when and how applications send and respond to messages
+  \item Open protocols: defined in RFCs; allow for interoperability; e.g., \texttt{HTTP}, \texttt{SMTP}
+  \item Proprietary protocols, e.g., Skype
+\end{itemize}
+\subsection{Web and \texttt{HTTP}}
+\begin{definition}[Web Page]
+\hfill\\\normalfont A \textbf{Web page} typically consists of:
+\begin{itemize}
+  \item base \texttt{HTML} file, and
+  \item several referenced \textit{objects}\\An object can be HTML file, JPEG image etc.\\Each object is addressable by a \textbf{URL},e.g.,
+  \[
+\underbrace{\texttt{www.comp.nus.edu.sg}}_{\text{host name}}\underbrace{\texttt{/~cs2105/img/doge.jpg}}_{\text{path name}}
+  \]
+
+\end{itemize}
+\end{definition}
+\begin{definition}[\texttt{HTTP}]
+\hfill\\\normalfont \texttt{HTTP} refers to \textbf{\underline{H}yper\underline{t}ext \underline{t}ransfer \underline{p}rotocol}.\\\texttt{HTTP}
+\begin{itemize}
+  \item is Web's application layer protocol
+  \item usees client/server model
+  \begin{itemize}
+    \item \textbf{client}: usually is browser that requests, receives and displays Web objects
+    \item \textbf{server}: Web server sends objects in response to requests
+  \end{itemize}
+\end{itemize}
+\end{definition} 
+Note that \texttt{HTTP} uses \texttt{TCP} as transport service.\\
+\subsubsection{Non-persistent \texttt{HTTP}}
+In \textbf{non-persistent} \texttt{HTTP/1.0},
+\begin{enumerate}
+  \item Client initiates \texttt{TCP} connection to server.
+  \item Server accepts \texttt{TCP} connection request from client.
+  \item \texttt{HTTP} messages are exchanged between browser(\texttt{HTTP} client) and Web server(\texttt{HTTP} server) over \texttt{TCP} connection.
+  \item \texttt{TCP} connection closed.
+  \item \texttt{HTTP} client receives response message containing HTML file, displays HTML. Parsing HTML file, client notices referenced objects.
+  \item Step 1$\sim$5 repeated for the referenced objects. 
+\end{enumerate}
+\begin{definition}[Round Trip Time(RTT)]
+\hfill\\\normalfont \textbf{Round trip time}(RTT) refers to the time for a packet to travel from client to server and go back.
+\end{definition}
+\begin{minipage}{0.45\textwidth}
+Clearly, the \texttt{HTTP} \textbf{response time} for one object transfer equals the sum of:
+\begin{itemize}
+  \item one RTT to establish \texttt{TCP} connection
+  \item one RTT for \texttt{HTTP} request and the first few bytes of \texttt{HTTP} response to return
+  \item file transimission time
+\end{itemize}
+As a result, the \textbf{non-persistent} \texttt{HTTP} response time = \[2\times \text{RTT}+\text{file trasmission time}\].
+
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\textwidth}
+\includegraphics[width = 8cm]{2_2_1.png}
+\end{minipage}
+\subsubsection{Persistent \texttt{HTTP}}
+The problems of non-persistent \texttt{HTTP} include:
+\begin{itemize}
+  \item requires 2 RTTs per object
+  \item OS overhead for \textit{each} \texttt{TCP} connection
+  \item browsers often open parallel \texttt{TCP} connections to fetch referenced objects
+\end{itemize}
+\textbf{Persistent} \texttt{HTTP/1.1} solves these issues by:
+\begin{itemize}
+  \item server leaves connection open after sending response
+  \item subsequent \texttt{HTTP} messages between same client/server sent over the same \texttt{TCP} connection
+  \item client sends requests as soon as it encounters a referenced object(\textit{persistent with pipelining})
+  \item as little as one RTT for all the referenced objects
+\end{itemize}
+Example \texttt{HTTP} request message usually entails both \textbf{request} and \textbf{response}.\\
+A \texttt{HTTP} \textbf{request} message looks like:
+
+\begin{verbatim}
+GET /~cs2105/demo.html HTTP/1.1
+Host: www.comp.nus.edu.sg
+User-Agent: Mozilla/5.0
+Connection: close
+\r\n
+\end{verbatim}
+The 1st line is the request line. Subsequent 3 lines are header lines. Last extra blank line indicates end of header lines.\\
+A \texttt{HTTP} \textbf{response} message looks like:
+\begin{verbatim}
+HTTP/1.1 200 OK
+Date: Thu, 15 Jan 2015 13:02:41 GMT
+Server: Apache/2.4.6 (Unix)
+Content-Type: text/html
+\r\n
+data data data data ...
+\end{verbatim}
+The 1st line is the protocol status line. Subsequent 3 lines are header lines. After the extra blank line is the data of the requested HTML file.
+\subsubsection{Cookies}
+\texttt{HTTP} is desisned to be \textbf{stateless}, in a sense that server maintains \textit{no} information about past client requests.\\
+However, sometimes it is good to maintain states(history) at server/client over multiple transactions.
+\begin{definition}[Cookies]
+\hfill\\\normalfont Cookies allow sites to keep track of users.\\Cookie technology has four components:
+\begin{itemize}
+  \item A cookie header line in the \texttt{HTTP} response message
+  \item A cookie header line in the \texttt{HTTP} request message
+  \item A cookie file kept on the user's end system and managed by the user's browser
+  \item A back-end database at the Web site
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{2_2_2.png}
+\end{figure}
+\end{definition}
+\subsubsection{Conditional \texttt{GET}}
+The goal of conditional \texttt{GET} is to \textbf{not} send object if client cache has \textbf{up-to-date} cached version.\\
+In the client cache, date of cached copy in \texttt{HTTP} request is specified by \texttt{If-modified-since: <date>}.\\
+In the server response, no object will be contained in the response if cached copy is up-to-date, and return \texttt{HTTP/1.0 304 Not Modified}.
+\subsection{Domain Name System}
+There are two ways to identify a host:
+\begin{enumerate}
+  \item \textbf{Hostname}, e.g., www.comp.nus.edu.sg
+  \item \texttt{IP} \textbf{address}, e.g., 137.132.80.57
+\end{enumerate}
+\begin{definition}[DNS]
+\hfill\\\normalfont Domain Name System(DNS) translates between hostname and \texttt{IP} address.
+\end{definition}
+A client must carry out a DNS query to determine the \texttt{IP} address corresponding to the server name (e.g., www.comp.nus.edu.sg) prior to the connection.
+\begin{definition}[DNS Resource Records]
+\hfill\\\normalfont \textbf{DNS resource records} are mappings between host names and \texttt{IP} addresses and others.
+The format of resource records is
+\begin{center}
+\fbox{\begin{minipage}{0.4\textwidth}\centering\texttt{(name, value, type, TTL)}\end{minipage}}
+\end{center}
+There are 4 \texttt{type} if resource records.
+\begin{enumerate}
+  \item \texttt{type} = A: \texttt{(hostname, IP address, A, TTL)}
+  \item \texttt{type} = CNAME: \texttt{(caconical name, real name, CNAME, TTL)}
+  \item \texttt{type} = NS: \texttt{(domain name, hostname of authoritative name server for this domain, NS, TTL)}
+  \item \texttt{type} = MX: \texttt{(domain name, mail server, MX, TTL)}
+\end{enumerate}
+\end{definition}
+DNS stores resource records in distributed databases implemented in hierarchy of many name servers.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{2_2_3.png}
+\end{figure}
+For example, if a client wants \texttt{IP} address for www.facebook.com:
+\begin{itemize}
+  \item Client queries root server to find .com DNS server
+
+  \item Client queries .com DNS server to get facebook.com DNS server
+
+  \item Client queries facebook.com DNS server to get \texttt{IP} address for www.facebook.com
+\end{itemize}
+Here, \textbf{root servers} answer requests for records in the root zone by returning a list of the authoritative name servers for the appropriate top-level domain(TLD).\\
+\textbf{Top level domain}(TLD) servers us responsible for com,org,net.edu and all top-level country domains and returns a list of authoritative servers.\\
+\textbf{Authoritative servers} are organisation's own DNS servers, providing authoritative hostname to \texttt{IP} mappings for organisation's named hosts(e.g., web, mail). They can be maintained by organisation or service provider.\\
+\textbf{Local DNS server} is also called \textit{default name server}. It does not strictly belong to the hierarchy; each ISP has one local DNS server. When host makes a DNS query, query is sent to its local DNS server and
+\begin{itemize}
+  \item Retrieve name-to-address translation from local cache;
+  \item if answer is not found \textit{locally}, acts as proxy and forwards query into hierarchy if answer is not found locally
+  \item Once it learns mapping, it caches mapping. Cache entries will expire after Time to Live(TTL) countdown.
+\end{itemize}
+Note that DNS runs over \texttt{UDP} for speed. \texttt{UDP} is faster since compared to \texttt{TCP}, it avoids one RTT induced by \texttt{TCP} handshake.
+\clearpage
+\section{Socket Programming}
+\subsection{Processes}
+\begin{definition}[Process]
+\hfill\\\normalfont Applications runs in hosts as \textbf{processes}.
+\begin{itemize}
+  \item Within the \textit{same} host, two processes communicate using \textbf{inter-process communication} (defined by OS).
+  \item Processes in \textit{different} hosts communicate by exchanging \textbf{messages} (according to protocols).
+\end{itemize}
+\end{definition}
+In Client/Server model, \textbf{server process} waits to be contacted; \textbf{client process} initiates the communication.
+\begin{theorem}[Addressing processes]
+\hfill\\\normalfont A process is identified by (\textbf{IP address}, \textbf{port number}), where \textbf{port number} is a 16-bit integer.
+\end{theorem}
+\clearpage
+\subsection{Sockets}
+\begin{definition}[Socket]
+\hfill\\\normalfont \textbf{Socket} is the software interface between app processes and transport layer protocols.
+\begin{itemize}
+  \item Process sends/receives messages to/from its socket.
+  \item Programming-wise: a set of \textbf{API} calls
+\end{itemize}
+\end{definition}
+Refer to Lecture Notes for programming details.
+\clearpage
+\section{Transport Layer Protocol}
+\subsection{Transport-layer Services}
+Internet transport layer protocols mainly are:
+\begin{itemize}
+  \item \TCP: connection-oriented and reliable
+  \item \UDP: connection-less and unreliable
+\end{itemize}
+Transport layer protocols run in hosts.
+\begin{itemize}
+  \item Sender side:
+  \begin{itemize}
+    \item breaks app message into \textbf{segments}
+    \item passes them to network layer
+  \end{itemize}
+  \item Receiver side:
+  \begin{itemize}
+    \item reassembles segments into message
+    \item passes it to application layer
+  \end{itemize}
+\end{itemize}
+\subsection{\UDP: User Datagram Protocol}
+\UDP adds very little service on top of $\texttt{IP}$:
+\begin{itemize}
+  \item Connectionless multiplexing/de-multiplexing
+  \item Checksum
+\end{itemize}
+\UDP transmission is \textbf{unreliable}. Therefore, to achieve reliable transmission over \UDP, application layer protocol should implement error detection and recovery mechanism.\\
+\UDP has advantage over \TCP in
+\begin{itemize}
+  \item No connection establishment (No handshake delay)
+  \item Simple: no connection state at sender and receiver
+  \item Small header size
+  \item No congestion control
+\end{itemize}
+\subsubsection{Connectionless De-multiplexing}
+Connectionless de-multiplexing is achieved by information on port numbers.
+\begin{itemize}
+  \item \UDP sender:
+  \begin{itemize}
+    \item creates a socket with \textbf{local port number}.
+    \item When creating a datagram to send to \UDP socket, sender must specify \textbf{destination }\texttt{IP}\textbf{ address} and \textbf{port number}.
+  \end{itemize}
+  \item When \UDP receiver receives a \UDP segment:
+  \begin{itemize}
+    \item Checks \textbf{destination port number} in segment.
+    \item Directs \UDP segment to the socket with that port number.
+    \item \texttt{IP} datagram from different sources with the \textbf{same destination port number} will be directed to the same \UDP socket at destination.
+  \end{itemize}
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{4_2_1.png}
+\end{figure}
+\subsubsection{\UDP Header}
+\begin{definition}[\UDP Header]
+\hfill\\\normalfont \UDP \textbf{header} consists of 64 bits:
+\begin{figure}[h]
+\begin{minipage}{0.55\textwidth}
+\begin{itemize}
+  \item bit $1\sim16$: source port number ($0\sim65535$)
+  \item bit $17\sim32$: destination port number ($0\sim65535$)
+  \item bit $33\sim48$: length of \UDP segment in \textbf{bytes}, including header
+  \item bit $49\sim64$: checksum
+\end{itemize}
+\end{minipage}\hfill\begin{minipage}{0.3\textwidth}
+\centering
+\includegraphics[width=\textwidth]{4_2_2.png}
+\end{minipage}
+\end{figure}
+\end{definition}
+\clearpage
+\subsubsection{\UDP Checksum}
+\UDP Checksum is used to detect errors in transmitted segment.\\
+\begin{itemize}
+  \item Sender
+  \begin{enumerate}
+    \item Compute checksum value
+    \item Put checksum value into \UDP checksum field
+  \end{enumerate}
+  \item Receiver
+  \begin{enumerate}
+    \item Computer checksum of received segment
+    \item Check if computed checksum equals checksum field value
+    \begin{itemize}
+      \item NO -- error detected
+      \item YES -- no error with respect to the checksum check
+    \end{itemize}
+  \end{enumerate}
+\end{itemize}
+\begin{theorem}[Checksum Computation]
+\hfill\\\normalfont CHecksum is computed accordingly
+\begin{enumerate}
+  \item Treat \UDP segment as a sequence of \textbf{16-bit} integers.
+  \item Apply binary addition on every 16-bit integer. If the last integer is of length less than 16 bit, add zeroes to the right of last integer until 16 bit is reached.
+  \item Carry (if any) from the most significant bit will be added to the result
+  \item Compute 1's complement to get \UDP checksum.
+\end{enumerate}
+\end{theorem}
+\subsection{Principle of Reliable Data Transfer 3.0}
+In this section, we assume the underlying channel
+\begin{itemize}
+  \item \textit{may} flip bits in packets
+  \item \textit{may} lose packets
+  \item \textit{may} incur arbitrarily long packet delay
+  \item \textit{will NOT} reorder packets
+\end{itemize}
+Reliable data transfer involves a sender and a receiver.
+\begin{itemize}
+\item The sender sends out \textbf{segments};
+\item the receiver replies \textbf{ACK} message.
+\end{itemize}
+A \textbf{sequence ID} is assigned by sender to each packet. \textbf{Acknowledgements} contains the sequence ID of the last successfully received packet.\\ 
+\subsubsection{Behavior of Sender}
+In reliable data transfer, sender maintains a \textbf{timer}. The timer will start when a segment is sent and stops by receiving ACK with sequence ID of this segment. Until then, another packet with a different sequence ID will be sent, with the whole process again. Otherwise, the timer will timeout, in which case this same packet is sent again.\\All incoming packets(ACK) will be ignored if the sender waits to send, in which case there is no timer running.
+\subsubsection{Behaviour of the receiver}
+The data transfer is initiated by sender sending the first segment. On receiving a packet, \textit{corrupted} copy will trigger an ACK of last correctly received copy. Receiver will also check the sequence ID for duplicate segment for duplicated copy. However, ACK of that copy's sequence ID will be sent regardless of whether it is a duplicate or not; the only difference is that duplicated copy will be discarded. If it is not corrupted and not a duplicate packet, it will be delivered to application layer.
+\subsubsection{Bit Error}
+Bit error occurs when some bits of the segment are flipped.\\
+Bit error can occur in
+\begin{itemize}
+  \item \textbf{segment}, in which case
+  \begin{enumerate}
+    \item receiver detects bit error using checksum
+    \item receiver ignores packet
+    \item receives send ACK with sequence ID of last successfully transmitted segment
+  \end{enumerate}
+  \item ACK message, in which case
+  \begin{enumerate}
+    \item sender will ignore the corrupted ACK
+  \end{enumerate}
+\end{itemize}
+\subsubsection{Packet Loss}
+Packet loss occurs in
+\begin{itemize}
+  \item Segment, in which case receiver will do nothing;
+  \item ACK message, in which case sender will do nothing.
+\end{itemize}
+\subsubsection{Arbitrarily Long Packet Delay}
+Arbitrarily long packet delay can occur in
+\begin{itemize}
+  \item Segment, in which case receiver reply ACK accordingly once received;
+  \item ACK message, in which case sender will only act according to timer.
+\end{itemize}
+\subsubsection{Finite State Machine Diagram of Reliable Transfer Protocol}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.9\textwidth]{4_3_1.png}
+\caption{Reliable Data Transfer Sender Finite State Machine}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.9\textwidth]{4_3_2.png}
+\caption{Reliable Data Transfer Receiver Finite State Machine}
+\end{figure}
+\clearpage
+\subsubsection{Performance of rdt 3.0}
+\begin{definition}[Utilisation]
+\hfill\\\normalfont \textbf{Utilisation} is defined as the fraction of time sender is busy sending.
+\end{definition}
+rdt 3.0 stinks in performance, given its \textbf{stop-and-wait} nature. \textbf{Pipelining} can be used to increase utilisation, which allows multiple "in-flight", yet-to-be-acknowledged packets.\\Two generic form of pipelined protocols are
+\begin{itemize}
+\item Go-Back-N
+\item Selective Repeat
+\end{itemize}
+\subsection{Go-back-N}
+\subsubsection{Sender Behaviour}
+\begin{itemize}
+\item Sender maintains a window size of $N$, i.e., there can be $N$ packets in pipeline, where the \textit{first} is unACKed.
+\item There will be a timer for the first packet in the window.
+\item Packets in the window will be \textit{cumulatively} ACKed.
+\item If the sender receive ACK of a packet with sequence ID $k$, all packet no later than sequence ID $k$ will be ACKed; the window will slide until the next packet of sequence ID $k+1$.\footnote{This is due to cumulative acknowledgement.} Sender will send the packets newly entered in the window.
+\item Else, the first packet's timer will timeout by receiving no ACK with sequence ID in the window. The sender will retransmit all the packets in the window.
+\end{itemize}
+\subsubsection{Receiver Behaviour}
+\begin{itemize}
+  \item Same as rdt 3.0, corrupted packets will be discarded. 
+  \item Acknowledge packet in order, by maintaining an \texttt{expectedSeqNum}. Any packet of different sequence ID from \texttt{expectedSeqNum} will be discarded.
+  \item In all cases, acknowledgement is \textbf{cumulative}. \\When the expected packet is received, ACK with sequence ID \texttt{expectedSeqNum} will be sent and \texttt{expectedSeqNum++}.\\When other packet is received, ACK with sequence ID \texttt{expectedSeqNum-1} will be sent.\\
+  As such, ACK $k$ means all packets up to $k$ are received.
+  \end{itemize}
+The benefit of cumulative ACK is that lost ACK packet will not cause retransmission as long as one ACK packet after this lost packet is received by sender before timeout. Therefore, timeout value shall be delicately chosen.\\
+
+However, Go-back-N will waste network resources in a sense corrupt-free packet will be discarded merely for being out-of-order. 
+\subsection{Selective Repeat}
+Selective repeat solves the problem by \textbf{buffering} the out-of-order packets.
+\subsubsection{Sender Behaviour}
+\begin{itemize}
+\item Sender maintains a window size of $N$. Window will be maintained such that the first packet of the window is unACKed.
+\item There will be a timer for \textit{every} packet in the window.
+\item Packets in the window will be \textit{individually} ACKed.
+\item If one timer timeout, \textit{only} the timed-out packet will be resent.
+\item Upon sliding of window due to acknowledgement of first packet, packets newly entered the window will be sent.
+\end{itemize}
+\subsubsection{Receiver Behaviour}
+\begin{itemize}
+  \item Same as rdt 3.0, corrupted packets will be discarded.
+  \item Acknowledge packet individually.
+  \item Maintain a \textbf{receiver window} of equal length $N$ to the sender window. The first packet in receiver window is not received.
+  \item All the packets received \textit{correctly}, which either are inside the receiver window, or outside the receiver window but within just one window length $N$ before the first UnACKed packet, will fire an individual ACK message.
+  \item If packets correctly received is in-order, all consecutive packets buffered in the receiver window will be delivered to application layer. The receiver window will slide to maintain the "first UnACKed" property.
+  \item If packets correctly received is out-of-order, it will be buffered.
+  \item All the packets \textit{corrupted}, or out of the specified range before will not be buffered, and will not fire ACK.
+  \end{itemize}
+  \clearpage
+\section{\TCP: Transport Control Protocol}
+\TCP is \textbf{connection-oriented} in a sense handshaking is required before sending application data. \\\TCP supports a \textbf{reliable, in-order} byte stream: Application passes data to \TCP and \TCP forms packets in view of \textbf{MSS}(maximum segment size).\footnote{MSS excludes the length of \TCP header.}\\\TCP also offers \textbf{flow control} and \textbf{congestion control}.
+\subsection{Connection-oriented De-mux}
+De-multiplexing in \TCP is achieved by driecting a segment to the appropriate socket.\\A \TCP connection socket is identified by 4-tuple: \texttt{(srcIPAddr, srcPort, destIPAddr, destPort)}.
+\subsection{\TCP Header}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{5_1_1.png}
+\end{figure}
+\subsubsection{Sequence Number}
+\TCP sequence number refers to the "byte number" of the first byte of data transferred in the segment in the file. Note the sequence number is $0$-indexed.\\The first sequence number used in handshake is randomly selected and this randomly selected number will be used as offset for all subsequent sequence number.
+\subsubsection{\TCP ACK Number}
+\TCP Acknowledgement number records the sequence number of the \textit{next} byte of data \textit{expected} by receiver.\\
+
+\TCP implements \textbf{cumulative} acknowledgement, in a sense \TCP ACKs up to the first missing byte in the stream.\\
+
+However, \TCP spec doesn't say how receiver should handle out-of-order segments - it's up to implementer.\\
+
+The $A$ bit in the header:
+\begin{itemize}
+  \item $A=0$ denotes a data packet
+  \item $A=1$ denotes a ACK packet
+\end{itemize}
+There is only 1 timer running on the sender side.
+\subsubsection{\TCP Sender Behaviour}
+\begin{itemize}
+  \item Event: \texttt{data} received from application above
+  \begin{enumerate}
+    \item Create \TCP segment with sequence number \texttt{NextSeqNum}
+    \item Start timer if it is not running
+    \item Send the packet
+    \item Update sequence number used by next segment:\texttt{NextSeqNum = NextSeqNum + length(data)}
+    \item Send until sender window is full.
+  \end{enumerate}
+  \item Event: Timer timeout
+  \begin{enumerate}
+    \item Retransmit not-yet-acknowledged segment with \textit{smallest} sequence number\footnote{Only the oldest unACKed packet is retransmitted}
+    \item Start timer
+  \end{enumerate}
+  \item Event: ACK received, with ACK field value \texttt{y}
+  \begin{enumerate}
+    \item If \texttt{y>send\_base}, shift sender window: \texttt{send\_base=y}.
+    \item If there are currently any not-yet-acknowledged segment, start timer.
+  \end{enumerate}
+\end{itemize}
+\subsubsection{\TCP Receiver Behaviour}
+\begin{itemize}
+  \item Event: Arrival of in-order segment with sequence number \texttt{seqNum}
+  \begin{itemize}
+    \item if all data up to \texttt{seqNum} are already ACKed, wait up to 500ms for next segment. Send ACK if no next segment arrival.
+    \item if one other segment is awaiting to send ACK, send single cumulative ACK, to ACK both in-order segment
+    \end{itemize}
+  \item Event: Arrival of out-of-order segment with higher than expected \texttt{seqNum}(gap formed and detected)
+  \begin{itemize}
+  \item Immediately send \textbf{duplicate} ACK, indicating \texttt{seqNum} of next expected segment\footnote{i.e. ACK the last correctly received packet}
+  \end{itemize}
+  \item Event: Arrival of segment that partially or completely fills gap
+  \begin{itemize}
+  \item Immediately send ACK, provided that the segment starts at lower end of gap.
+  \end{itemize}
+  \end{itemize} 
+  \subsubsection{\TCP Timeout Value}
+  \TCP computes and keeps updating timeout interval based on estimated RTT.
+  \begin{align*}
+  \text{Estimated RTT} &= (1-\alpha)\times\text{ Estimated RTT }+\alpha\times\text{ Sample RTT}\\
+  &\text{typical value of }\alpha = 0.125\\
+  \text{DevRTT} &= (1-\beta)\times\text{ DevRTT}+\beta\times|\text{SampleRTT --EstimatedRTT}|\\
+  &\text{typical value of }\beta = 0.25\\
+  \text{TimeoutInterval} &=\text{EstimatedRTT } +4\times\text{ DevRTT}
+  \end{align*}
+  \subsubsection{\TCP Fast Retransmission}
+  \TCP adopts \textbf{fast retransmission} if sender receives 3 duplicate ACKs for the same data\footnote{1+3 = 4 ACKs of the same data in total}, it supposes that  segment after the last ACKed segment is lost. Thus it will resend segment before timer expires\footnote{Retransmission will not reset the timer}.
+  \subsubsection{Establishing Connection}
+  Before exchanging data, \TCP sender and receiver "shake hands".
+  \begin{enumerate}
+    \item Client chooses initial sequence number $x$, and send \TCP SYN msg, by setting $S= 1$.
+    \item Server chooses initial sequence number $y$, and send \TCP SYNACK msg, by setting $A = 1$,$S=1$.
+    \item Client sends ACK msg by setting $A=1$. In this message, it can contain client-to-server data.
+  \end{enumerate}
+  \subsubsection{Closing Connection}
+  Client and server will close their side of connection by
+  \begin{enumerate}
+    \item Client sends FIN msg by setting $F=1$. After this segment sent, client can no longer send application data, but can receive data.
+    \item Server send ACKFIN msg by setting $A = 1$, $F = 1$. Server can no longer send application data after this segment.
+    \item Client sends ACK mssg by setting $A = 1$.
+  \end{enumerate}
+\end{document}
