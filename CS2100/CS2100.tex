@@ -1309,9 +1309,12 @@ The sequence of availability of output is that
 \begin{definition}[Decoder]
 \hfill\\\normalfont A \textbf{decoder} converts binary information from $n$ input lines to $2^n$ output lines.
 \end{definition}
+\subsubsection{Truth table}
 The truth table for $2^n$ output, when input is enumerated in increasing sequence, is diagonal. The column of output is arranged according to the increasing order of minterm of the function.\\
 
-Therefore, any boolean function with $n$ input with $m$ output can be built using a $n:2^n$ decoder, which generates the minterms, and $m$ \texttt{OR} gates to form the sum.\\
+\begin{theorem}[Building functions using decoder]\hfill\\\normalfont
+Any boolean function with $n$ input with $m$ output can be built using a $n:2^n$ decoder, which generates the minterms, and $m$ \texttt{OR} gates to form the sum.
+\end{theorem}
 
 Decoders often come with an \textbf{enable control} signal, so that the device is only activated when the enable $E = 1$. \\
 \begin{figure}[h]
@@ -1320,6 +1323,208 @@ Decoders often come with an \textbf{enable control} signal, so that the device i
 \caption{Implementation of 2:4 Encoder with \textbf{one-enable} control $E=1$}
 \end{figure}
 In most MSI decoders, enable signal is \text{zero-enable}, usually denoted by $E^\prime$. The decoder is enabled when signal $E$ is low.\\
-
+\subsubsection{Larger Decoder}
 Larger decoders can be constructed, with one inverter from smaller ones by treating $E$ as the most significant bit which selects the smaller decoders.
+\subsubsection{Implementing functions}
+We may implement the functions using a decoder in several ways.\\Suppose a function is specified as $f(A,B,C) = \sum m(0,1,4,6,7) = \prod M(2,3,5)$, we may implement it 
+\begin{itemize}
+  \item using a decoder with active high outputs\footnote{Given any input, only one of the output will be 1 and rest 0} with a \texttt{OR} gate on minterms:
+  \[
+f = m_0+m_1+m_4+m_6+m_7
+  \]
+  \item using a decoder with active low outputs\footnote{Given any input, only one of the output will be 0 and rest 1} with a \texttt{NAND} gate on minterms:
+  \[
+f = (m_1^\prime\cdot m_2^\prime\cdot m_4^\prime\cdot m_6^\prime\cdot m_7^\prime)^\prime
+  \]
+  \item Using a decoder with active high outputs with a \texttt{NOR} gate on maxterms:
+  \[
+f = (m_2+m_3+m_5)^\prime
+  \]
+  \item Using a decoder with active low outputs with a \texttt{AND} gate on maxterms:
+  \[
+f = m_2^\prime\cdot m_3^\prime\cdot m_5^\prime
+  \]
+\end{itemize}
+\subsection{Encoders}
+\begin{definition}[Encoder]
+\hfill\\\normalfont Given $2^n$ input lines, of which \textit{exactly} 1 is high, the \textbf{encoder} provides a $n$ bit code that corresponds to that input line.
+\end{definition}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_7.png}
+\end{figure}
+\subsubsection{Truth Table}
+For the truth table of an encoder, when exactly 1 out of $2^n$ inputs is high, say $F_i$, the output $D_n D_{n-1}\cdots D_1 D_0$ is the binary string $i_2$; if more than 1 input are high, the output becomes don't care.
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_2.png}
+\caption{$D_0 = F_1+F_3$, $D_1 = F_2+F_3$}
+\end{figure}
+The implementation of a specified output is the sum of inputs whose specified output are high, given the benefits of don't cares. \\Therefore, encoders can be designed using \texttt{OR} gate.
+\subsubsection{Priority Encoder}
+In priority encoder, each of the inputs is assigned a \textbf{priority}.\\The \textbf{most} significant bit of the input has the \textbf{highest} priority while the least significant bit has the lowest priority.
+
+If two input lines goes high, only the \textit{higher} priority one will be considered as high. This generates a truth table with don't cares in inputs.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_3.png}
+\caption{Truth table of priority encoder}
+\end{figure}
+
+\subsection{Demultiplexers}
+\begin{definition}[Demultiplexers]
+\hfill\\\normalfont Given an input line and a set of $n$ selection lines, a \textbf{demultiplexer} directs data from the input to \textit{one} selected output line out of $2^n$.
+\end{definition}
+Suppose the selection lines admits a $N=(S_{n-1}\ldots S_0)_2$ binary number, the output line $Y_N$ will correspondingly be selected such that $Y_N = D$, the input.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{7_4.png}
+\end{figure}
+\subsubsection{Truth Table}
+The truth table for outputs from demultiplexers of $n$ selection lines, when the selection lines is enumerated in increasing sequence, is diagonal $D$, where $D$ is the input.\\There is similarity of truth table between demultiplexers and decoders. In fact,a demultiplexer of $n$ selection line can be implemented using a $n:2^n$ decoder with selection lines connected to the input of decoders and data input connected to the enable bit.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_5.png}
+\end{figure}
+\subsection{Multiplexers}
+\begin{definition}[Multiplexers]
+\hfill\\\normalfont A \textbf{multiplexer} is a device with has $2^n$ input lines, $n$ selection lines and 1 output line. It steers one of $2^n$ inputs to a single output line.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_6.png}
+\end{figure}
+\end{definition}
+\subsubsection{Truth Table}
+The output $Y$ equals to $I_i$, the $i$th input, where binary representation of $i$ equals to the binary string given by selection lines $S_{n-1}\ldots S_0$.\\
+Therefore, a $2^n:1$ multiplexer can be made from connecting selection lines to an $n:2^n$ decoder and adding the $2^n$ output to the $2^n$ input lines, each with \texttt{AND} gate, and \texttt{OR} the $2^n$ processed input.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.4\textwidth]{7_7.png}
+\end{figure}
+It is also common to see enable bit in multiplexers.
+\subsubsection{Larger Multiplexers}
+Larger multiplexers can be constructed from smaller ones, by seperating selection lines into multiple hierarchies of multiplexers.
+\subsubsection{Implementing functions}
+Just like decoder, Boolean functions can be implemented using multiplexers. Specifically, a $2^n:1$ multiplexer can implement a Boolean function of $n$ input variables, as follows:
+\begin{itemize}
+  \item Express in sum-of-minterms form.
+  \item Connect $n$ variables to the $n$ selection lines.
+  \item Put a $1$ on data input if it is a minterm of the function or $0$ otherwise.
+\end{itemize}
+A Boolean function of $n$ input variables can be implemented by a smaller $2^{n-1}:1$ multiplexer.
+\begin{itemize}
+  \item Express Boolean function in sum-of-minterms form
+  \item Reserve one variable for input lines and use the rest for selection lines.
+  \item se a truth table and deduce multiplexer input by comparing the reserved variable and the function value for corresponding selection line values. It may take $1, 0, V, V^\prime$, one of the four possibilities.
+\end{itemize}
+\subsection{Carry-select Adders}
+Carry-Select Adders reduce waiting time of the carry chain by divide-and-conquer using multiplexers.
+
+To add two $n$-bit numbers $A$ and $B$ to produce the result $C$, split $A, B, C$ into two equal halves: $A_H A_L, B_H, B_L, C_H,C_L$.\footnote{$H$ stands for high, $L$ stands for low.}
+\begin{figure}[h]
+\centering
+\includegraphics[width = \textwidth]{7_9.png}
+\end{figure}
+The idea is that the addition of $A_L + B_L$ will either has a carry or not, so it computes the two scenarios for $A_H+B_H+c$ along with $A_L+B_L$, and the carry out $c$ from $A_L+B_L$ will select the final carry out and $C_H$.
+\subsection{Shifters}
+Shifting is a common operation, as left shift by 1 bit is equivalent to multiplying by 2, and right shift by 1 bit is equivalent to dividing by 2, for positive numbers.
+\subsubsection{Arithmetic Shift}
+In arithmetic left shift, $0$ is used to fll in the LSB.\\
+In arithmetic right shift, the original MSB is duplicated at MSB; for 2's complement, only the part other than the sign bit is shifted.
+\subsubsection{Barrel Shifters}
+Barrel Shifters perform fast shifting in $O(\log n)$ time by always shifting in the power of $2$. \footnote{Shifting by 11 is performed by shifting $8+2+1$, a total of 3 times.}
+The fast shifting is implemented using multiplexers.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{7_10.png}
+\end{figure}
+At each shifting stage, the selection line $S_k$, calculated from the amount of total shifts, we decide whether to shift by $2^k$ bits or remain unchanged. 
+\clearpage
+\section{Sequential Logic}
+There are two types of sequential circuits:
+\begin{itemize}
+  \item \textbf{Synchronous}: outputs change only at specific time
+  \item \textbf{Asynchronous}: outputs change at any time
+  \end{itemize}
+\begin{definition}[Finite State Machines]
+\hfill\\\normalfont \textbf{Finite State Machines} are built with combinatorial logic and \textbf{memory}, which stores the state. \\Next state depends on current state and inputs. 
+\end{definition}
+\subsection{$S-R$ Latch}
+$S-R$ latch consists of two \textbf{inputs} $S$ and $R$, stands for SET and RESET respectively.\\It has two \textbf{complementary output} $Q$ and $Q^\prime$. $Q=1\Leftrightarrow$ latch is in SET state; $Q=0\Leftrightarrow$ latch is in RESET state.
+\subsubsection{Characteristic Table}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$S$&$R$&$Q$&$Q^\prime$&\\\hline
+0&0&NC&NC&No change to present state\\\hline
+1&0&1&0&Latch SET\\\hline
+0&1&0&1&Latch RESET\\\hline
+1&1&0&0&Invalid Condition\\\hline
+\end{tabular}
+\end{table}
+From this table, we have $Q(t+1) = S+R^\prime\cdot Q(t)$.\\
+The implementation of $S-R$ latch is as follows
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.3\textwidth]{8_1.png}
+\end{figure}
+A $S-R$ latch is gated if it has an enable input($EN$). Its output will change only when $EN$ is high. Its implementation becomes\footnote{Note the position of $S$ and $R$ relative to $Q$}
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.35\textwidth]{8_2.png}
+\end{figure} 
+
+\subsection{Gated $D$ Latch}
+If $R:=S^\prime$, a gated $S-R$ latch becomes a gated $D$ latch.\\$D$ latch eliminates the invalid state by admitting the following characteristic table
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+$EN$&$D$&$Q(t+1)$&\\\hline
+1&0&0&RESET\\\hline
+1&1&1&SET\\\hline
+0&X&$Q(t)$&No change\\\hline
+\end{tabular}
+\end{table}
+Hence, when $EN = 1$, $Q$ follows $D$ input in a sense $Q(t+1) = D$.
+\subsection{Flip-flops}
+\begin{definition}[Flip-flops]
+\hfill\\\normalfont \textbf{Flip-flops} are \textbf{synchronous bistable} devices. Output changes state at a specified point on a triggering input called the \textbf{clock}. 
+\end{definition}
+Flip-flops change state eigher at the positive edge or at the negative edge of the clock signal. \\
+Flip-flop family has $S-R$ flip-flop, $D$ flip-flop and $J-K$ fllip-flop.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{8_3.png}
+\end{figure} 
+\subsection{$S-R$ flip-flop}
+$S-R$ flip-flop has the only difference from the $S-R$ latch in that its output changes onlyon the triggering edge of the clock pulse.\\Its characteristic table is
+
+\clearpage\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$S$&$R$&$CLK$&$Q(t+1)$&\\\hline
+0&0&X&Q(t)&No change\\\hline
+0&1&$\uparrow$&0&RESET\\\hline
+1&0&$\uparrow$&1&SET\\\hline
+1&1&$\uparrow$&?&Invalid\\\hline
+\end{tabular}
+\end{table}
+\subsection{$D$ flip-flop}
+$D$ flip-flop has single input $D$ and is similar to gated $D$ latch. Its characteristic table is
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+$D$&$CLK$&$Q(t+1)$&\\\hline
+1&$\uparrow$&1&SET\\\hline
+0&$\uparrow$&0&RESET\\\hline
+\end{tabular}
+\end{table}
+$D$ flip-flop is useful in parallel data transfer.
+\subsection{$J-K$ flip-flop}
 \end{document}

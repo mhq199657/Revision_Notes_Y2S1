@@ -46,6 +46,8 @@
 \DeclareMathOperator{\TV}{TV}
 \DeclareMathOperator{\diff}{d}
 \DeclareMathOperator{\expec}{E}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\cov}{Cov}
 \DeclareMathOperator{\CE}{CE}
 \DeclareMathOperator{\RP}{RP}
 \newcommand\cf[1]{\mathbf{#1}}
@@ -515,4 +517,81 @@ An individual with an initial wealth of $w_0$ can invest a portion (say $\alpha 
 \]
 Note that $\frac{\diff^2}{\diff\alpha^2}\expec[U(W)]<0$, hence setting the first order derivative to 0 always yields maxima $\alpha^\ast$, although there is no guarantee that such $\alpha^\ast\in[0,1]$.
 \clearpage
+\section{Mean-Variance Analysis}
+In this chapter, the accumulation function is constant 1. Therefore, we do not consider time value.
+\subsection{Return and Risk of Asset}
+\begin{definition}[Rate of Return]
+\hfill\\\normalfont Asset is a tradable financial instruments. We denote that each asset is traded over one time period, from $t=0$(initial) to $t=1$(end-of-period).\\
+If $W_0$ invested in an asset at time $t=0$ is worth a \textbf{random} amount of $W_1$ at time $t=1$, then the \textbf{rate of return} of the asset, denoted by $r$, is a \textbf{random variable} given by
+\[
+r=\frac{W_1-W_0}{W_0} = \frac{W_1}{W_0}-1
+\]
+Equivalently, $W_1 = W_0(1+r)$.
+
+The rate of return can also be defined in terms of the initial and end-of-period prices of the asset. Let $P_0$ be the price at $t=0$ and $P_1$ be the \textbf{random} price at $t=1$. Then
+\[
+r=\frac{P_1-P_0}{P_0} = \frac{P_1}{P_0}-1
+\]
+Equivalently, $P_1 = P_0(1+r)$,
+\end{definition}
+\begin{definition}[Risk of Asset]
+\hfill\\\normalfont The standard deviation, $\sigma_i = \sqrt{\var(r_i)}$, of the rate of return of asset $i$, is a measure of the risk of asset $i$.
+\[
+\sigma_i = \sqrt{\var(r_i)}=\sqrt{\expec[(r_i-\expec(r_i))^2]} = \sqrt{\expec[r_i^2-E(r_i)^2]}
+\]
+\end{definition}
+\begin{definition}[Correlation of Returns]
+\hfill\\\normalfont A statistical measure of the association of the returns of two assets, $i$ and $j$, is the covariance $\sigma_{i,j} = \cov(r_i,r_j)$.
+\[
+\sigma_{i,j} = \cov(r_i,r_j) =\expec[(r_i-\expec(r_i))(r_j-\expec(r_j))] = \expec[r_ir_j]-\expec(r_i)\expec(r_j) = \expec[r_i(r_j-\expec(r_j))]
+\]
+A standardised measure is the correlation coefficient defined by
+\[
+\rho_{i,j} = \frac{\sigma_{i,j}}{\sigma_i\sigma_j}
+\]
+It can be shown that $|\rho_{i,j}|\leq 1$.
+\end{definition}
+\begin{definition}[Short Selling]
+\hfill\\\normalfont Short selling of an asset refers to one borrowing a certain number of units of the asset from the lender at $t=0$ and seems them immediately to receive an amount $W_0$. At some preagreed date $t=1$, the short seller will buy the same number of units of the asset for an amount $W_1$ and return the asset to the lender.\\
+The borrower will make a profit of $W_0-W_1$ which is positive if and only if the value of the asset falls.
+\end{definition}
+Obviously, the loss can be unlimited but the gain is bounded above by $W_0$.
+\subsection{Portfolio Mean and Variance}
+At time $t=0$, an individual invests in $n$ assets in such a way that a fraction $w_i$ of his investment capital is invested in asset $i$. It is possible that $w_i<0$, which means the individual short sells asset $i$. \\We call the vector $\mathbf{w} = (w_1,w_2,\ldots, w_n)^T$ the individual's \textbf{portfolio weight vector}, or simply \textbf{portfolio}. \\It is assumed that
+\[
+\sum_{i=1}^n w_i = 1
+\] 
+We will then have its final wealth $W_1 = \sum_{i=1}^n w_iW_0(1+r_i)$.\\
+The rate of return $r_p$ of the portfolio is related to the rate of return of individual assets, $r_1$, by
+\[
+r_p = \sum_{i=1}^n w_ir_i
+\]
+It follows that the expected rate of return of the portfolio, or \textbf{portfolio mean}, is
+\[
+\mu_p = \expec(r_p) = \sum_{i=1}^n w_i\mu_i = \mathbf{w}^T\mu
+\]
+where 
+\[
+\mathbf{\mu} = (\mu_1,\ldots, \mu_n)^T
+\]
+is the vector of expected rates of return of the assets $(r_1,\ldots, r_n)$ respectively. This vector is called \textbf{mean vector} for simplicity.\\
+The variance of rate of return of portfolio $\var(r_p)$, or simply \textbf{portfolio variance}, of $\mathbf{w}$, is
+\begin{align*}
+\sigma_p^2 &= \var(r_p) = \cov(\sum_{i=1}^n w_ir_i,\sum_{j=1}^n w_jr_j )\\
+&=\sum_{i=1}^n\sum_{j=1}^n w_iw_j\cov(r_i,r_j)\\
+&=\sum_{i=1}^n\sum_{k=1}^n \sigma_{ij}\\
+&=\mathbf{w}^T\mathbf{C}\mathbf{w}\text{ in matrix notation}
+\end{align*}
+where
+\[
+\mathbf{C} = \begin{pmatrix}
+\sigma_{11}&\cdots&\sigma_{1n}\\
+\vdots&\ddots&\vdots\\
+\sigma_{n1}&\cdots&\sigma{nn}\end{pmatrix}
+\]
+is known as the \textbf{covariance matrix} of the random vector $\mathbf{r} = (r_1,\cdots, r_n)$.
+We also have, by noting $\sigma_{ii} = \var(r_i) := \sigma_i^2$ and $\sigma_{ij} = \sigma_{ji}$,
+\[
+\var(r_p) = \sum_{i=1}^n w_i^2 \sigma_i^2 + 2\sum_{i=1}^n\sum_{j<i}^n w_iw_j\sigma_{ij}
+\]
 \end{document}

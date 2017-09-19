@@ -34,6 +34,7 @@
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
   \newcommand\TCP{\texttt{TCP} }
   \newcommand\UDP{\texttt{UDP} }
+  \newcommand\IP{\texttt{IP}}
 \setlength{\parindent}{0cm}
 \setlength{\parskip}{0em}
 \newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
@@ -41,10 +42,6 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{notation}{Notation}[section]
 \theoremstyle{definition}
-\DeclareMathOperator{\arcsec}{arcsec}
-\DeclareMathOperator{\arccot}{arccot}
-\DeclareMathOperator{\arccsc}{arccsc}
-\DeclareMathOperator{\spn}{Span}
 \setcounter{tocdepth}{1}
 \begin{document}
 
@@ -757,4 +754,142 @@ There is only 1 timer running on the sender side.
     \item Server send ACKFIN msg by setting $A = 1$, $F = 1$. Server can no longer send application data after this segment.
     \item Client sends ACK mssg by setting $A = 1$.
   \end{enumerate}
+  \clearpage
+\section{Network Layer}
+Network layer is responsible for delivering packets to receiving hosts. Routers will examine header fields of \IP datagrams passing it and direct it to the right destination.
+\subsection{\IP Address}
+
+\begin{definition}[{\IP}v4 address]
+\hfill\\\normalfont {\IP}v4 address is a 32-bit binary integer used to identify a host.
+\end{definition}
+A host can get an \IP address either
+\begin{itemize}
+  \item manually configured by system administrator, or
+  \item automatically assigned by a DHCP server.
+\end{itemize}
+\subsection{Dynamic Host Configuration Protocol(DHCP)}
+DHCP allows a host to dynamically obtain its \IP address from DHCP server when it joins network. It has the following benefits:
+\begin{itemize}
+  \item \IP address is renewable
+  \item allow reuse of address (only hold address while connected)
+  \item support mobile users who want to join network
+\end{itemize}
+\begin{theorem}[DHCP \IP assignment]\hfill\\\normalfont
+Assignment of \IP address by DHCP server involves a 4-step process:
+\begin{enumerate}
+  \item Host broadcasts "DHCP \textbf{discover}" message\\
+  \underline{Format}:\\
+  \texttt{src: 0.0.0.0:68}\\
+  \texttt{dest: 255.255.255.255:67}\\
+  \texttt{yiaddr: 0.0.0.0}\\
+  \texttt{transaction ID: 654}
+  \item DHCP server responds with "DHCP \textbf{offer}" message\\
+  \underline{Format}:\\
+  \texttt{src: 223.1.2.5:67} (\IP address of DHCP server)\\
+  \texttt{dest: 255.255.255.255:68}\\
+  \texttt{yiaddr: 223.1.2.4}\\
+  \texttt{transaction ID:654}\\
+  \texttt{lifetime: 3600 secs}
+  \item Host requests \IP address: "DHCP \textbf{request}" message\\
+  \underline{Format}:\\
+  \texttt{src: 0.0.0.0:68}\\
+  \texttt{dest: 255.255.255.255:67}\\
+  \texttt{yiaddr: 223.1.2.4}\\
+  \texttt{transaction ID: 655}\\
+  \texttt{lifetime: 3600 secs}
+  \item DHCP server sends address: "DHCP \textbf{ACK}" message\\
+  \underline{Format}:\\
+  \texttt{src: 223.1.2.5:67}\\
+  \texttt{dest: 255.255.255.255:68}\\
+  \texttt{yiaddr: 223.1.2.4}\\
+  \texttt{transaction ID: 655}\\
+  \texttt{lifetime: 3600 secs}
+\end{enumerate}
+\end{theorem}
+In addition to host \IP address assignment, DHCP may also provide a host additional network information, such as
+\begin{itemize}
+  \item \IP address of first-hop router
+  \item \IP address of local DNS server
+  \item Network Mask(network prefix)
+\end{itemize}
+Note, DHCP runs over \UDP 
+\begin{itemize}
+  \item DHCP server port number: 67
+  \item DHCP client port number: 68
+\end{itemize}
+\subsection{Special \IP address}
+\begin{table}[h]
+\centering
+\begin{tabular}{| p{3.4cm}|p{10cm}|}
+\hline
+Special Addresses&Present Use\\\hline
+\begin{minipage}{3.3cm} \centering 0.0.0.0/8\end{minipage}&\textbf{Non-routable meta-address} for special use\\\hline
+\begin{minipage}{3.3cm} \centering 127.0.0.0/8\end{minipage}& \begin{minipage}{9.9cm}\textbf{Loopback address}\\ A datagram sent to an address within this block loops back inside the host. \\This is ordinarily implemented using only 127.0.0.1/32.\end{minipage}\\\hline
+\begin{minipage}{3.3cm}\centering 10.0.0.0/8\\172.16.0.0/12\\192.168.0.0/16\end{minipage}&\begin{minipage}{9.9cm}\textbf{Private addresses}\\They can be used without any coordination with IANA or an Internet registry.\end{minipage}\\\hline
+\begin{minipage}{3.3cm}\centering 255.255.255.255/32\end{minipage}&\begin{minipage}{9.9cm}\textbf{Broadcast address}\\All hosts on the same subnet receive a datagram with such a destination address.\end{minipage}\\\hline
+\end{tabular}
+\end{table}
+\subsection{\IP address and Network Interface}
+An \IP address is associated with a \textbf{network interface}.
+\begin{itemize}
+  \item A host usually has one or two network interfaces(e.g. wired Ethernet and WiFi).
+  \item A router typically has multiple interfaces (e.g. subnet)
+\end{itemize}
+\subsubsection{\IP address and Subnet}
+An \IP address logically comprises two parts:
+\[
+\overbrace{\underbrace{\text{Network (subnet) prefix}}_{n \text{ bits}}|\underbrace{\text{host ID}}_{32-n \text{ bits}}}^{32 \text{bits}}
+\]
+\begin{definition}[Subnet]\hfill\\\normalfont
+\textbf{Subnet} is a network formed by a group of "directly" interconnected hosts.
+\end{definition}
+\begin{theorem}[Properties of subsets]
+\hfill\\\normalfont
+\begin{itemize}
+  \item Hosts in the same subnet have the \textit{same} network prefix in their \IP address.
+  \item Hosts in the same subnet can physically reach each other \textit{without} intervening router.
+  \item They connect to the outside world through a router.
+  \end{itemize}
+\end{theorem}
+\subsection{\IP address assignment in Internet}
+Internet's \IP address assignment strategy is known as \textbf{Classless Inter-domain Routing}(CIDR). For corporations, they will be offered with a continuum of \IP address with fixed subnet prefix by an ISP.
+\begin{itemize}
+  \item Subnet prefix of \IP address is of arbitrary length.
+  \item Address format: \texttt{a.b.c.d/x}, where \texttt{x} is the number of bits in subnet prefix of \IP address.
+\end{itemize}
+\textbf{Subnet mask} is used to determine which subnet an \IP address beong to.\\Subnet mask is calculated by setting all subnet prefix bits to 1 and hosts ID bits to 0.
+\subsection{Hierarchical Addressing}
+This hierarchical addressing via restricting subnet prefix at all levels allows efficient advertisement of routing information. \\Router uses \textbf{longest prefix match} in forwarding table when determining to which next hop a \IP datagram is sent.
+\clearpage
+\section{\IP{ and Routing}}
+\subsection{\IP{v4} Datagram Format}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{6_1_1.png}
+\end{figure}
+The key fields in the \IP{v4} datagram are the following
+\begin{itemize}
+  \item Version Number: These 4 bits specify the \IP protocol version.
+  \item Datagram length: Total length of \IP datagram (header \textit{plus} data), measured in \textbf{bytes}.
+  \item Identifier, flags, fragmentation offset are used in \IP fragmentation.
+  \item Time-to-live(TTL) refers to number of remaining hops, decremented at each router
+  \item Header checksum is used to detect error for the \IP header
+  \item source and destination \IP address refers to the initial sender and final receiver's \IP address
+\end{itemize}
+A typical \IP{v4} header is 20 bytes long.
+\subsection{\IP Fragmentation and Reassembly}
+\IP fragmentation is used as different links may have different \textbf{maximum transfer unit}(MTU) specified by underlying link layer, and \IP datagrams could be so large that need to be fragmented to fit into MTU.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.6\textwidth]{6_2_1.png}
+\end{figure}
+When destination hosts reassembles the packet, \IP header fields are used to identify fragments and their relative order.
+\textbf{Flag}: flag is set to 
+\begin{itemize}
+  \item 1 if there is next fragment from the same segment
+  \item 0 if this is the last fragment
+\end{itemize}
+\textbf{Offset}: offset is expressed in unit of 8-bytes, indicating the first byte of the data of this datagram in relative to the original fragmented datagram.\\
+\textbf{ID}: Same datagram will use the same ID.\\
+\textbf{Length}: Length field will change accordingly in smaller packets.
 \end{document}
