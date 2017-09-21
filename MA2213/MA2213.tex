@@ -941,4 +941,53 @@ where
 \[
 M=\max_{a\leq \xi\leq b}|f^{(n+1)}(\xi)|
 \]
+\subsection{Divided Differences}
+\begin{definition}[Divided Differences]
+\hfill\\\normalfont Let $(x_0,f(x_0)), \ldots, (x_n,f(x_n))$ be $n+1$ given data points. The \textbf{first divided difference} of $f(x)$ between $x_0$ and $x_1$, denoted by $f[x_0,x_1]$ is defined by
+\[
+f[x_0,x_1]:=\frac{f(x_1)-f(x_0)}{x_1-x_0}
+\]
+Analogously, the \textbf{second divided difference} for the triplet $(x_0,x_1,x_2)$ is defined by
+\[
+f[x_0,x_1,x_2]:=\frac{f[x_1,x_2]-f[x_0,x_1]}{x_2-x_0}
+\]
+And, the $n$th divided difference of $f(x)$ at $(n+1)$-tuple $(x_0,\ldots, x_n)$ is defined recursively in terms of the $(n-1)$th divided difference as follows:
+\[
+f[x_0,x_1,\ldots, x_n]:=\frac{f[x_1,\ldots, x_n]-f[x_0,\ldots, x_{n-1}]}{x_n-x_0}
+\]
+\end{definition}
+\begin{theorem}[Divided difference of self]
+\hfill\\\normalfont We define $f[x_i,x_i]$ by
+\[
+f[x_i,x_i] = \lim_{x_{i+1}\to x_i}f[x_i,x_{i+1}] = f^\prime(x_i)
+\]
+provided $f^\prime(x_i)$ exists.\\
+Similarly, we define $r$th divided difference of self is
+\[
+f[\underbrace{x_i,\ldots, x_i}_{r x_i's}] = \frac{1}{r!}f^{(r)}(x_i)
+\]
+\end{theorem}
+\subsection{Newton Interpolation Formula}
+It is easy to see, by definition of first order divided difference, that
+\[
+f(x) = f(x_0)+(x-x_0)f[x,x_0]
+\]
+Therefore, we can obtain
+\begin{align*}
+f(x) &= f(x_0)+(x-x_0)f[x_0,x_1]+\cdots +(x-x_0)\cdots(x-x_{n-1})f[x_0,\ldots, x_n]+R_n(x)\\
+&=f(x_0)+\sum_{i=0}^{n-1}f[x_0,\ldots, x_{i+1}]\prod_{j=0}^i (x-x_j)+R_n(x)
+\end{align*}
+where
+\[
+R_n(x) = \psi(x)f[x,x_0,x_1,\ldots, x_n]
+\]
+The Newton interpolating formula of these $n+1$ data points is 
+\[
+p_n(x) = f(x_0)+(x-x_0)f[x_0,x_1]+\cdots +(x-x_0)\cdots(x-x_{n-1})f[x_0,\ldots, x_n]
+\]
+To see this, we note that at $x_0, \ldots, x_n$, $R_n=0$, so $f(x) = p_n(x)$; also $p_n(x)$ is at most of degree $n$.
+
+When expanding the formula $p_n$ to $p_{n+1}$, we note that $f = p_{n+1} = p_n + (x-x_0)\cdots(x-x_n)f[x_0,\cdots, x_{n+1}]$, so the divided difference can be easily acquired.\\
+
+\textbf{Remark}: $f[x_0,\ldots,x_n] = f[x_{i_0},\ldots, x_{i_n}]$, where $\{i_k\}_{k=1}^n$ is a permutation of $\{k\}_{k=1}^n$.
 \end{document}
