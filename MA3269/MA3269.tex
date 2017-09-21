@@ -594,4 +594,62 @@ We also have, by noting $\sigma_{ii} = \var(r_i) := \sigma_i^2$ and $\sigma_{ij}
 \[
 \var(r_p) = \sum_{i=1}^n w_i^2 \sigma_i^2 + 2\sum_{i=1}^n\sum_{j<i}^n w_iw_j\sigma_{ij}
 \]
+\subsubsection{Diversification}
+Let $\overline{\sigma}^2$ and $\overline{\phi}$ be the average variance and average covariance of an $n$ assets, that is
+\[
+\overline{\sigma}^2 = \frac{1}{n}\sum_{i=1}^n\sigma_i^2\;\;\;\text{ and }\;\;\;\overline{\phi}=\frac{1}{n(n-1)}\sum_{i=1}^n\sum_{\substack{j=1\\j\neq i}}^n
+\] 
+Suppose that $\overline{\sigma}^2\to\sigma^2$ and $\overline{\phi}\to\phi$ as $n\to\infty$, then for an equally weighted portfolio, we have
+\[
+\sigma_p^2 = \frac{1}{n^2}\sum_{i=1}^n \sigma_i^2 +\frac{1}{n^2}\sum_{i=1}^n\sum_{\substack{j=1\\j\neq i}}^n \sigma_{ij}\to\phi
+\]
+Therefore, there is limitation of diversification as a tool to reduce portfolio risk.\\While the asset specific risk $\overline{\sigma}^2$ can be driven to zero, the market wide risk, $\overline{\phi}$ cannot be eliminated even if one holds infinitely many assets.
+\subsection{Portfolio of Two Assets}
+Consider a portfolio with weight vector $\mathbf{w} = \begin{pmatrix}\alpha&1-\alpha\end{pmatrix}^t$ of two assets. The portfolio mean is
+\[
+\mu_p = \alpha\mu_1+(1-\alpha)\mu_2
+\]
+and
+\begin{align*}
+\sigma_p^2 &= \alpha^2\sigma_1^2 +(1-\alpha)^2\sigma_2^2+2\alpha(1-\alpha)\sigma_{12} = \alpha^2\sigma_1^2 +(1-\alpha)^2\sigma_2^2+2\alpha(1-\alpha)\rho_{12}\sigma_1\sigma_2 \\
+&=(\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2)\alpha^2+2\sigma_2(\rho_{12}\sigma_1-1)\alpha+\sigma_2^2\;\;\;\;\;(\#)
+\end{align*}
+\subsubsection{Global Minimum-variance Portfolio}
+A risk averse individual seeks a portfolio with the \textit{smallest} risk. He will thus seek the optimal value of $\alpha$ that minimises $\sigma_p^2$.\\From the above equation $(\#), $, $\sigma_p^2$ admits a parabola concave upwards, and the minimum portfolio variance $\sigma_p^2$ occurs when
+\[
+\alpha=\alpha^\ast = \frac{\sigma_2(\sigma_2-\rho_{12}\sigma_1)}{\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2}
+\]
+and the minimum portfolio variance is
+\[
+(\sigma_p^2)^\ast = \frac{\sigma_1^2\sigma_2^2(1-\rho_{12}^2)}{\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2}
+\]
+The corresponding portfolio mean can then be determined from
+\[
+\mu_p^\ast = \alpha^\ast\mu_1+(1-\alpha^\ast)\mu_2
+\]
+We call the portfolio with minimum variance the global minimum-variance portfolio.
+\subsubsection{Portfolio Graph}
+\begin{definition}[Portfolio Graph]
+\hfill\\\normalfont Portfolio graph is the graph of portfolio mean $\mu_p$ against portfolio risk $\sigma_p$.\end{definition}
+From $\mu_p = \alpha\mu_1+(1-\alpha)\mu_2$, we have
+\[
+\alpha = \frac{\mu_p-\mu_2}{\mu_1-\mu_2}
+\]
+and by substituting the above equation to $(\#)$, we obtain an equation of the form
+\[
+\sigma_p^2 = A\mu_p^2+B\mu_p+C
+\]
+for some constants $A,B$ and $C$, with $A>0$.\footnote{This is due to the quadratic coefficient of $(\#)$ is greater than 0.}\\
+This is an equation of a hyperbola. Rearranging
+\[
+\sigma_p^2 = A(\mu_p-\frac{B}{2A})^2+(C-\frac{B^2}{4A})
+\]
+Therefore, $\min\sigma_p^2 = C-\frac{B^2}{4A}$ at $\mu_p = -\frac{B}{2A}$. This corresponds to the global minimum-variance portfolio.\\The asymptotes of this graph are
+\[
+\sigma_p = \pm \sqrt{A}(\mu_p+\frac{B}{2A})
+\]
+or more naturally,
+\[
+\mu_p = \pm\frac{1}{\sqrt{A}}\sigma_p -\frac{B}{2A}
+\]
 \end{document}
