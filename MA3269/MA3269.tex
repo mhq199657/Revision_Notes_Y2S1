@@ -52,6 +52,7 @@
 \DeclareMathOperator{\RP}{RP}
 \newcommand\cf[1]{\mathbf{#1}}
 \setcounter{tocdepth}{1}
+\setcounter{section}{-1}
 \begin{document}
 
 \title{Revision notes - MA3269}
@@ -61,6 +62,24 @@
 
 \clearpage
 %\twocolumn
+\section{Preliminary Result}
+\subsection{Summation of series}
+\begin{itemize}
+  \item $\sum_{i=0}^n y^i = \frac{1-y^{n+1}}{1-y}$
+  \item $\sum_{i=0}^\infty y^i = \frac{1}{1-y}\text{ provided }|r|<1$.
+  \item $\sum_{i=1}^n iy^{i-1} = \frac{1-y^n(1+n-ny)}{(1-y)^2}$
+  \item $\sum_{i=1}^\infty iy^{i-1} = \frac{1}{(1-y)^2}\text{ provided }|r|<1$.
+  \item $\sum_{i=1}^n i = \frac{1}{2}n(n+1)$
+  \item $\sum_{i=1}^n i^2 = \frac{1}{6}n(n+1)(2n+1)$
+  \item $\sum_{i=1}^n i^3 = \frac{1}{4}n^2(n+1)^2$
+\end{itemize}
+\subsection{Newton Rhapson Method}
+\[
+x_{i+1} = x_i-\frac{f(x_i)}{f^\prime(x_i)}
+\]
+\subsection{Standard Derivatives}
+
+\clearpage
 \section{Theory of Interest}
 \subsection{Interest}
 \begin{definition}[Accumulation Function]
