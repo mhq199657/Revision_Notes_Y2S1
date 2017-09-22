@@ -990,4 +990,125 @@ To see this, we note that at $x_0, \ldots, x_n$, $R_n=0$, so $f(x) = p_n(x)$; al
 When expanding the formula $p_n$ to $p_{n+1}$, we note that $f = p_{n+1} = p_n + (x-x_0)\cdots(x-x_n)f[x_0,\cdots, x_{n+1}]$, so the divided difference can be easily acquired.\\
 
 \textbf{Remark}: $f[x_0,\ldots,x_n] = f[x_{i_0},\ldots, x_{i_n}]$, where $\{i_k\}_{k=1}^n$ is a permutation of $\{k\}_{k=1}^n$.
+\subsection{Cubic Spline Interpolation}
+Cubic Spline interpolation is a piecewise approximation used to replace high order polynomial interpolation, latter of which has the problem of wild oscillation.
+\begin{definition}[Cubic Spline Approximation]
+\hfill\\\normalfont Given a function $f$ defined on $[a,b]$ and a set of data points $x_i$ with $a=x_0<x_1<\cdots<x_{n-1}<x_n=b$, a \textbf{cubic spline interpolant} to $f$ is a \textit{piecewise} function $S$ satisfying the following conditions:
+\begin{enumerate}
+  \item $S$ is a cubic polynomial, denoted $S_j$ on the subinterval $[x_j,x_{j+1}]$ for $j = 0,1,\ldots, n-1$.
+  \item Interpolation condition: $S(x_j) = f(x_j)$.
+  \item $S\in C^1(a,b)$:$S^\prime_j(x_{j+1}) = S^\prime_{j+1}(x_{j+1})\;\;\;j = 0,1,\ldots, n-2$.
+  \item $S\in C^2(a,b)$:$S^{\prime\prime}_j(x_{j+1}) = S^{\prime\prime}_{j+1}(x_{j+1})\;\;\;j = 0,1,\ldots, n-2$.
+  \item One of the following sets of boundary condition is satisfied
+  \begin{itemize}
+    \item $S_0^{\prime\prime}(x_0)=S_{n-1}^{\prime\prime}(x_n)=0$ (Natural boundary condition)
+    \item Or, $S_0^\prime(x_0) = f^\prime(x_0)$ and $S_{n-1}^\prime(x_n)= f^\prime(x_n)$ (Clamped boundary condition)
+  \end{itemize}
+\end{enumerate}
+\end{definition}
+\begin{theorem}[Solving cubic spline interpolation efficiently]
+\hfill\\\normalfont The following method will produce the cubic spline interpolation of $n+1$ data points by solving a linear system of maximum size $(n+1)\times(n+1)$.
+
+Let $s_i(x)$ be a cubic polynomial on $[x_i,x_{i+1}]$. Then $s^{\prime\prime}_i(x)$ is the linear polynomial on $[x_i,x_{i+1}]$.\\Let $M_i = s^{\prime\prime}_i(x_i)$. $M_i$ will be calculated later using (3) and (5).
+
+Using lagrange interpolation polynomial, we have
+\[
+s^{\prime\prime}_i(x) = \frac{x_{i+1}-x}{h_i}M_i+\frac{x-x_i}{h_i}M_{i+1}
+\]
+where $h_i = x_{i+1}-x_i$ the step size.\\
+Integrating twice, we have
+\[
+s_i(x) = \frac{(x_{i+1}-x)^3}{6h_i}M_i+\frac{(x-x_i)^3}{6h_i}M_{i+1}+Ax+B
+\]
+for some constant $A$ and $B$.\\
+Using (2), i.e.,
+\[
+s_i(x_i) = f_i\;\;\;\;\;s_i(x_{i+1})=f_{i+1}
+\]
+we have, nicely\footnote{At each substitution, one cubic power vanishes and the other degenerates to $h_i$, which simplifies the calculation.}
+\begin{align*}
+\frac{h_i^2}{6}M_i+Ax_i+B&=f_i\\
+\frac{h_i^2}{6}M_{i+1}+Ax_{i+1}+B=f_{i+1}
+\end{align*}
+Solving which we have
+\[
+\begin{cases}
+A&=\frac{f_{i+1}-f_i}{h_i}+\frac{h_i}{6}(M_i-M_{i+1})\\
+B&=\frac{x_{i+1}f_i-x_if_{i+1}}{h_i}+\frac{h_i}{6}(x_iM_{i+1}-x_{i+1}M_i)
+\end{cases}
+\]
+Therefore,
+\begin{align*}
+s_i(x) &= \frac{6}{h_i}[(x_{i+1}-x)^3M_i+(x-x_i)^3M_{i+1}]\\
+      &-\frac{h_i}{6}[(x_{i+1}-x)M+(x-x_i)M_{i+1}]\\
+      &+\frac{1}{h_i}[(x_{i+1}-x)f_i+(x-x_i)f_{i+1}]
+\end{align*}
+From here, differentiate $s_i(x)$, we have expression for $s_i^\prime(x)$:
+\[
+s_i^\prime(x) = \frac{1}{2h_i}[-(x_{i+1}-x)^2M_i+(x-x_i)^2M_{i+1}]-\frac{h_i}{6}(-M_i+M_{i+1})+\frac{1}{h_i}(-f_i+f_{i+1})
+\]
+Replacing the subscript $i$ by $i-1$, we have
+\[
+s_{i-1}^\prime(x) = \frac{1}{2h_{i-1}}[-(x_{i}-x)^2M_{i-1}+(x-x_{i-1})^2M_{i}]-\frac{h_{i-1}}{6}(-M_{i-1}+M_{i})+\frac{1}{h_{i-1}}(-f_{i-1}+f_{i})
+\]
+Imposing (3), i.e. $s^\prime_{i-1}(x_i) = s^\prime_{i}(x_i)$, we will have
+\[
+h_{i-1}M_{i-1}+2(h_{i-1}+h_i)M_i+h_iM_{i+1} = 6\frac{f_{i+1}-f_i}{h_i}-6\frac{f_i-f_{i-1}}{h_{i-1}}
+\]
+for $i = 1,\ldots n-1$. This equation represents a system of $n-1$ linear equations with $n+1$ unkwowns; the other 2 equation is obtained from the boundary condition.\\
+\textbf{Natural boundary condition}:\\
+Under natural boundary condition, $M_0 = M_n = 0 $ by definition. Then we have 
+\[
+\mathbf{Am} = \mathbf{b}
+\] 
+where 
+\[
+\mathbf{A} = \begin{pmatrix} 2(h_0+h_1)&h_1&&&&\\
+h_1&2(h_1+h_2)&h_2&&&\\
+&\ddots&\ddots&\ddots&&\\
+&&h_{n-3}&2(h_{n-3}+h_{n-2})&h_{n-2}&\\
+&&&h_{n-2}&2(h_{n-2}+h_{n-1})\end{pmatrix}
+\]
+\[
+\mathbf{m} = \begin{pmatrix} M_1&M_2&\cdots&M_{n-1}\end{pmatrix}^t
+\]
+and
+\[
+\mathbf{b} = 6\times\begin{pmatrix}
+\frac{f_0}{h_0}-\frac{f_1}{h_0}-\frac{f_1}{h_1}+\frac{f_2}{h_1}\\
+\vdots\\
+\frac{f_{i-1}}{h_{i-1}}-\frac{f_i}{h_{i-1}}-\frac{f_i}{h_i}+\frac{f_{i+1}}{h_i}\\
+\vdots\\
+\frac{f_{n-2}}{h_{n-2}}-\frac{f_{n-1}}{h_{n-2}}-\frac{f_{n-1}}{h_{n-1}}+\frac{f_n}{h_{n-1}}\end{pmatrix}
+\]
+\textbf{Clamped boundary condition}:\\
+Under clamped boundary condition, $s_0^\prime(x_0) = f^\prime(x_0)$ and $s_{n-1}^\prime(x_n) = f^\prime(x_n)$, which we will have, from $s_i^\prime (x)$ equation,
+\begin{align*}
+2h_0M_0+h_0M_1 &= 6(-\frac{f_0}{h_0}+\frac{f_1}{h_0}-f^\prime_0)\\
+h_{n-1}M_{n-1}+2h_{n-1}M_n &= 6(\frac{f_{n-1}}{h_{n-1}}-\frac{f_n}{h_{n-1}}+f^\prime_n)
+\end{align*}
+Therefore, we can form $\mathbf{Am}=\mathbf{b}$ accordingly, where
+\[
+\mathbf{A} = \begin{pmatrix} 2h_0&h_0&&&&\\
+h_0&2(h_0+h_1)&h_1&&&\\
+&\ddots&\ddots&\ddots&&\\
+&&h_{n-2}&2(h_{n-2}+h_{n-1})&h_{n-1}&\\
+&&&h_{n-1}&2h_{n-1}\end{pmatrix}
+\]
+\[
+\mathbf{m} = \begin{pmatrix} M_0&M_1&\cdots&M_{n}\end{pmatrix}^t
+\]
+and
+\[
+\mathbf{b} = 6\times\begin{pmatrix}
+-\frac{f_0}{h_0}+\frac{f_1}{h_0}-f_0^\prime\\
+\frac{f_0}{h_0}-\frac{f_1}{h_0}-\frac{f_1}{h_1}+\frac{f_2}{h_1}\\
+\vdots\\
+\frac{f_{i-1}}{h_{i-1}}-\frac{f_i}{h_{i-1}}-\frac{f_i}{h_i}+\frac{f_{i+1}}{h_i}\\
+\vdots\\
+\frac{f_{n-2}}{h_{n-2}}-\frac{f_{n-1}}{h_{n-2}}-\frac{f_{n-1}}{h_{n-1}}+\frac{f_n}{h_{n-1}}\\
+\frac{f_{n-1}}{h_{n-1}}-\frac{f_n}{h_{n-1}}+f_n^\prime
+\end{pmatrix}
+\]
+\end{theorem}
 \end{document}
