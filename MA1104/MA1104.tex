@@ -917,5 +917,131 @@ B=\{(x,y,z):a\leq x\leq b, c\leq y\leq d, r\leq z\leq s\}
 \]
 Furthermore, the iterated integral may be evaluated in any order.
 \end{theorem}
-
+\clearpage
+\section{Line Integrals}
+\subsection{Line Integral of Scalar Field}
+\begin{definition}[Line Integrals of Scalar Field]\hfill\\\normalfont If $f$ is defined on a smooth curve $C$ given by $\mathbf{r}(t) = \langle x(t),y(t)\rangle , a\leq t\leq b$. Then the \textbf{line integral} of $f$ along $C$ is
+\[
+\int_Cf(x,y)\diff s = \lim_{n\to\infty}\sum_{i=1}^n f(x_i^\ast, y_i^\ast)\Delta s_i
+\]
+provided this limit exists and is the same for every choice of $(x_i^\ast, y_i^\ast)$.
+\end{definition}
+\begin{theorem}[Formula for evaluation of Line Integral of Scalar Field]
+\hfill\\\normalfont Suppose $C$ is given by $\mathbf{r}(t) = \langle x(t),y(t)\rangle, a\leq t\leq b$, then
+\begin{align*}
+\int_Cf(x,y)\diff s &= \int_a^bf(x(t),y(t))\norm{\mathbf{r}^\prime(t)}\diff t\\
+&=\int_a^bf(x(t),y(t))\sqrt{\left(\frac{\diff x}{\diff t}\right)^2+\left(\frac{\diff y}{\diff t}\right)^2}\diff t
+\end{align*}
+Similarly, suppose that $C$ is smooth space curve given by $\mathbf{r}(t)=\langle x(t),y(t),z(t)\rangle, a\leq t\leq b$. Then
+\begin{align*}
+\int_C f(x,y,z)\diff s &=\int_a^b f(x(t),y(t),z(t))\norm{\mathbf{r}^\prime(t)}\diff t\\
+&=\int_C f(x(t),y(t),z(t))\sqrt{\left(\frac{\diff x}{\diff t}\right)^2+\left(\frac{\diff y}{\diff t}\right)^2+\left(\frac{\diff z}{\diff t}\right)^2}\diff t
+\end{align*}
+\end{theorem}
+\textbf{Remark:} If $f(x,y)=1$ for all $x,y$, the line integral formula evaluates the \textbf{arc length} of $C$.\\
+More generally, one can interpret the line integral $\int_Cf(x,y)\diff s$ as the \textbf{area} of the fence, whose base is $C$ and height above the point $(x,y)$ is $f(x,y)$.
+\begin{theorem}[Piecewise Parametrisation]
+\hfill\\\normalfont Suppose $C$ is a union of a finite number of smooth curves $C_1, C_2,\ldots, C_n$, where the initial point of $C_{i+1}$ is the terminal point of $C_i$. Then
+\[
+\int_Cf(x,y)\diff s = \sum_{i=1}^n \int_{C_i}f(x,y)\diff s
+\]
+\end{theorem}
+\begin{theorem}[Parametrisation of Line Segment]
+\hfill\\\normalfont A vector parametrisation of line segment that starts from $\mathbf{r}_0$ and ends at $\mathbf{r}_i$ is given by
+\[
+\mathbf{r}(t) = \mathbf{r}_0+t(\mathbf{r}_1-\mathbf{r}_0),\;\;\;\;\;0\leq t\leq 1
+\]
+\end{theorem}
+\subsection{Vector Field}
+\begin{definition}[Vector field]
+Let $D\subseteq \mathbb{R}^2$. A \textbf{vector field} on $D$ is a function $\mathbf{F}$ that assigns to each point $(x,y)\in D$ a 2D vector $\mathbf{F}(x,y)$.\\
+Let $D\subseteq \mathbb{R}^3$. A \textbf{vector field} on $D$ is a function $\mathbf{F}$ that assigns to each point $(x,y,z)\in D$ a 3D vector $\mathbf{F}(x,y,z)$.
+\end{definition}
+\begin{theorem}[Vector Field in Component Form]
+\hfill\\\normalfont For vector field $\mathbf{F}$ on $\mathbb{R}^2$,
+\[
+\mathbf{F}(x,y) = P(x,y)\mathbf{i}+Q(x,y)\mathbf{j} = \langle P(x,y),Q(x,y)\rangle
+\]
+or for short
+\[
+\mathbf{F} = \langle P,Q\rangle
+\]
+Similarly, for vector field on $\mathbf{F}$ on $\mathbb{R}^3$,
+\[
+\mathbf{F} = \langle P,Q,R\rangle
+\]
+\end{theorem}
+\begin{definition}[Line Integral of Vector Field]
+\hfill\\\normalfont Let $\mathbf{F}$ be a continuous vector field defined on a smooth curve $C$ given by a vector function $\mathbf{r}(t) = \langle x(t),y(t),z(t)\rangle, a\leq t\leq b$. \\Then, the \textbf{line integral} of $\mathbf{F}(x,y,z)$ along $C$ is
+\[
+\int_C\mathbf{F}\cdot \diff\mathbf{r} :=\int_C\mathbf{F}\cdot\mathbf{T}\diff s = \int_a^b \mathbf{F}(x(t),y(t),z(t))\cdot \mathbf{r}^\prime(t)\diff t
+\]
+\end{definition}
+\begin{theorem}\hfill\\\normalfont We have
+\[
+\int_{-C}\mathbf{F}\cdot\diff \mathbf{r} = -\int_C\mathbf{F}\cdot\diff\mathbf{r}
+\]
+\end{theorem}
+\begin{theorem}[Component Form]
+\hfill\\\normalfont If $\mathbf{F}(x,y,z)=\langle P,Q,R\rangle$ then we have
+\[
+\int_C\mathbf{F}\cdot\diff\mathbf{r} = \int_C P\diff x+Q\diff y+R\diff z
+\]
+Sometimes a curve $C$ is a union of finitely many smooth curves $C_1,\ldots, C_n$. In such cases,
+\[
+\int_C \mathbf{F}\cdot\diff\mathbf{r} = \sum_{i=1}^n\int_{C_i}\mathbf{F}\cdot\diff\mathbf{r}
+\]
+\end{theorem}
+\subsection{Conservative Vector Field}
+\begin{definition}[Conservative Vector Field]
+\hfill\\\normalfont A vector field $\mathbf{F}$ is \textbf{conservative vector field} on $D$ if we can write
+\[
+\mathbf{F}= \nabla f
+\]
+for some scalar function $f$ on $D$.
+\end{definition}
+The function $f$ is called the \textbf{potential function} of $\mathbf{F}$.
+\begin{theorem}[Recovering {$f$} from {$\mathbf{F}$}]\hfill\\\normalfont
+\begin{itemize}
+  \item Suppose $\mathbf{F} = \langle P,Q\rangle$, we have $f_x = P, f_y = Q$.
+  \item Integrating $f_x$ with respect to $x$, we have
+  \[
+f(x,y) = j(x,y)+h(y)
+  \]
+  where $\frac{\partial}{\partial x}j(x,y) = f_x$.
+  \item Differentiate $f(x,y)$ with respect to $y$, we have
+  \[
+f_y = \frac{\partial }{\partial y}j(x,y)+h^\prime(y)
+  \]
+  and by comparing the above expression with $Q$, we have\[g^\prime(y) = Q-\frac{\partial }{\partial y}j(x,y)\]
+  \item Integrating $g^\prime(y)$ with respect to $y$, we will have $g(y)$, which we substitute back to obtain $f(x,y)$.
+\end{itemize}
+\end{theorem}
+\begin{theorem}[Test for Conservative Field]
+\hfill\\\normalfont Suppose $\mathbf{F}(x,y)=\langle P,Q\rangle$ is a vector field in an \textit{open} and \textit{simply-connected} region $D$ and both $P$ and $Q$ have continuous first-order partial derivatives on $D$. Then
+\[
+\frac{\partial Q}{\partial x} = \frac{\partial P}{\partial y}
+\]
+at \textit{each} point $(x,y)$ in $D$ if and only if $\mathbf{F}$ is \textbf{conservative} on $D$.\\
+Similarly, suppose $\mathbf{F}(x,y,z) = \langle P,Q,R\rangle$ is a vector field in an open and simply-connected region $D$ in space and both $P,Q,R$ have continuous first-order partial derivatives on $D$. Then
+\begin{align*}
+\frac{\partial R}{\partial y}&=\frac{\partial Q}{\partial z}\\
+\frac{\partial R}{\partial x}&=\frac{\partial P}{\partial z}\\
+\frac{\partial Q}{\partial x}&=\frac{\partial P}{\partial y}\\
+\end{align*}
+for each point $(x,y,z)$ in $D$ if and only if $\mathbf{F}$ is \textbf{conservative} on $D$.
+\end{theorem}
+\subsection{Fundamental Theorem for Line Integral}
+The \textbf{fundamental theorem for line integrals} says that we can evaluate the line integral of a \textbf{conservative} vector field by only knowing the \textbf{potential function} at the \textbf{endpoint}.
+\begin{theorem}[Fundamental Theorem for Line Integrals]
+\hfill\\\normalfont Suppose $\mathbf{F}$ is a conservative vector field with \textbf{potential function} $f$, and $C$ a smooth curve with \textit{initial} point $A$ and \textit{terminal} point $B$. Then
+\[
+\int_C\mathbf{F}\cdot\diff\mathbf{r} = \int_C\nabla f\cdot \diff \mathbf{r} = f(B)-f(A)
+\] 
+\end{theorem}
+The fundamental theorem of line integral says that the line integral of conservative field is \textbf{independent} of the paths with the same initial point and terminal point.\\
+\begin{theorem}[Another test for non-conservativeness]
+\hfill\\\normalfont Vector field is \textbf{not} conservative if there are \textbf{two} paths with the same initial and terminal points but their line integrals are \textit{different}.
+\end{theorem}
+\clearpage
 \end{document}
