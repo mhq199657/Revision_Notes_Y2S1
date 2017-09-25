@@ -77,6 +77,12 @@
 \[
 x_{i+1} = x_i-\frac{f(x_i)}{f^\prime(x_i)}
 \]
+\subsection{Force of Interest}
+Accumulation function $a(s,t)$ can be derived from \textbf{force of interest} as such:
+\[
+a(s,t) = e^{\int_s^t \delta(r)\diff r}
+\]
+where $\delta(r)$ is the force of interest with $s\leq r\leq t$.
 \subsection{Standard Derivatives}
 
 \clearpage
@@ -400,7 +406,7 @@ By Taylor series, it can be show that
 \]
 Therefore,
 \[
-\Delta P \approx P\left[-D_M\Delta\lambda + \frac{1}{2}C(\lambda)^2\right]
+\Delta P \approx P\left[-D_M\Delta\lambda + \frac{1}{2}C(\Delta\lambda)^2\right]
 \]
 This obtains a better approximation of the change in price.\\
 Also, from the bond pricing formula $P=\sum_{i=1}^n\frac{c_i}{\left(1+\frac{\lambda}{m}\right)^i}$, we have
