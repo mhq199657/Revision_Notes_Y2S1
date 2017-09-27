@@ -634,7 +634,7 @@ rdt 3.0 stinks in performance, given its \textbf{stop-and-wait} nature. \textbf{
 \item Sender maintains a window size of $N$, i.e., there can be $N$ packets in pipeline, where the \textit{first} is unACKed.
 \item There will be a timer for the first packet in the window.
 \item Packets in the window will be \textit{cumulatively} ACKed.
-\item If the sender receive ACK of a packet with sequence ID $k$, all packet no later than sequence ID $k$ will be ACKed; the window will slide until the next packet of sequence ID $k+1$.\footnote{This is due to cumulative acknowledgement.} Sender will send the packets newly entered in the window.
+\item If the sender receive ACK of a packet with sequence ID $k$, all packet no later than sequence ID $k$ will be ACKed; the window will slide until the next packet of sequence ID $k+1$.\footnote{This is due to cumulative acknowledgement.} Sender will send the packets newly entered in the window. If there is no timer running, start the timer to take the oldest unACKed packet. 
 \item Else, the first packet's timer will timeout by receiving no ACK with sequence ID in the window. The sender will retransmit all the packets in the window.
 \end{itemize}
 \subsubsection{Receiver Behaviour}
