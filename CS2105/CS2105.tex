@@ -34,7 +34,7 @@
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
   \newcommand\TCP{\texttt{TCP} }
   \newcommand\UDP{\texttt{UDP} }
-  \newcommand\IP{\texttt{IP}}
+  \newcommand\IP{\texttt{IP} }
 \setlength{\parindent}{0cm}
 \setlength{\parskip}{0em}
 \newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
@@ -892,4 +892,114 @@ When destination hosts reassembles the packet, \IP header fields are used to ide
 \textbf{Offset}: offset is expressed in unit of 8-bytes, indicating the first byte of the data of this datagram in relative to the original fragmented datagram.\\
 \textbf{ID}: Same datagram will use the same ID.\\
 \textbf{Length}: Length field will change accordingly in smaller packets.
+\subsection{Intra-AS Routing}
+The Internet is a network-of-networks, organised in a hierarchy of \textbf{autonomous systems}(AS). \\Due to the size of the Internet and the decentralised administration of the Internet, routing on the Internet is done \textbf{hierarchically}:
+\begin{itemize}
+  \item Intra-AS routing
+  \begin{itemize}
+    \item Finds a good paths between two routers within an AS.
+    \item Commonly used protocols: RIP, OSPF
+  \end{itemize}
+  \item Inter-AS routing
+  \begin{itemize}
+    \item Handles the interfaces between ASes.
+    \item The de facto standard protocol: BGP
+  \end{itemize}
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{7_2_1.png}
+\end{figure}
+The aim of routing may differ between intra-AS routing and inter-AS routing.
+\begin{itemize}
+  \item Intra-AS routing
+  \begin{itemize}
+    \item Single admininistrator, so no policy decisions in needed.
+    \item Routing mostly focus on performance.
+  \end{itemize}
+  \item Inter-AS routing
+  \begin{itemize}
+    \item Administrator often wants to control over how its traffic is routed, who routes through its net, etc.
+    \item Policy may dominate over performance
+  \end{itemize}
+\end{itemize}
+We can abstractly view a network of routers as a \textit{graph}, where vertices are routers and edges are physical links between routers.\\
+Costs can be associated to each link, represented as the weight of respective edge. 
+
+In this sense, routing is the problem of finding a least cost path between two vertices in a graph.
+\subsubsection{Link State Algorithm}
+For link state algorithm, \textit{all} routers have the complete knowledge of network topology and link cost. Routers will periodically broadcast link costs to each other.
+
+The least cost path can be found using dijkstra algorithm.
+\subsubsection{Distance Vector Algorithm}
+Routers know \textit{physically-connected neighbours} and \textit{link costs to neighbours}. Router exchange \textbf{local views} with neighbours and update own local view, based on neighbours' view.
+
+It admits an iterative process of computation converging slowly:
+\begin{itemize}
+  \item Swap local view with \textit{direct} neighbours.
+  \item Update own's local view.
+  \item Repeat 1 -- 2 till no more change to local view.
+\end{itemize}
+Let $c(x,y)$ be the cost of link between routers $x$ and $y$. $c(x,y) = \infty$ if $x$ and $y$ are note direct neighbours. \\Let $d_x(y)$ be the cost of the \textit{least}-cost path from $x$ to $y$, from $x$ point of view. This $d$ is called teh distance vector.
+
+Distance vector algorithm then utilises Bellman-Ford Equation:
+\[
+d_x(y) = \min_{v\text{ neighbour of }x}\{c(x,v)+d_v(y)\}
+\]
+The first term is easily obtained since it is mostly manually configured. The distance vector in second term is obtained from exchange of local views between neighbours.
+\subsubsection{Bellman-Ford behaviour}
+Router will maintain a $N\times N$ table where $N$ is number of routers in the network, storing $d_\text{from}(\text{to})$.
+\begin{itemize}
+\item In the beginning, router $x$ has only $c(x,v)$ known. $c(x,v)$ is $\infty$ if $v$ is not a neighbour. Therefore, $d_x(v)$ is initialised as $c(x,v)$ and others to infinity.
+\item Router will exchange $d_\cdot(v)$ with each other. After each exchange, $x$ will update $d_x(v)$ according to Bellman-Ford Equation.
+\item In addition, $x$ will note down the next hop router to every destination, based on the least cost path. This information will be used to create forwarding table of $x$.
+\item Eventually this table will converge to provide optimal routing service.
+\end{itemize}
+\subsection{Routing Information Protocol(RIP)}
+\begin{itemize}
+\item Routing Information Protocol implements the Distance Vector Algorithm. It uses \textbf{hop counts} as the cost metric.\footnote{Therefore, it has the drawback of being insensitive to network congestion.}\\
+\item Entries in the routing table are aggregated subnet masks.
+\item Routers exchange routing table every 30 seconds over \UDP port 520.
+\item Self-repair mechanism: if there is no update from a neighbour router for 3 minutes, the neighbour is assumed to be failed.
+\end{itemize}
+\subsection{Network Address Translation(NAT)}
+Network Address Translation is used by routers connecting to both local network and the internet, for translating \IP addresses with the aid of port number. \\It is necessary since private \IP addresses cannot be used for routing on the Internet.
+\subsubsection{Implementation of NAT}
+NAT enabled routers must:
+\begin{itemize}
+  \item Maintain a NAT translation table, in which mapping between (source \IP address, port \#) of the private network and (NAT \IP address, \textit{new} port \#) used on the Internet are stored.
+  \item For \textbf{outgoing} datagrams, replace (source \IP address, port \#) to (NAT \IP address, \textit{new} port \#).
+  \item For \textbf{incoming} datagrams, replace (NAT \IP address, \textit{new} port \#) in destination fields with coresponding (source \IP address, port \#) by NAT translation table.
+\end{itemize} 
+The benefits of NAT include:
+\begin{itemize}
+  \item There is no need to rent a range of public \IP addresses from ISP, just one public \IP for the NAT router.
+  \item All hosts use private \IP addresses. Addresses of hosts in local network without notifying the outside world.
+  \item ISP can be changed without changing addresses of hosts in local network.
+  \item Hosts inside local network are not explicitly addressable and visible by outside world.
+\end{itemize}
+\subsection{Internet Control Message Protocol(ICMP)}
+Internet Control Message Protocol(ICMP) is used by hosts and routers to communicate network-level information.
+\begin{itemize}
+  \item Error reporting: unreachable host / netowrk / port / protocol
+  \item Echo request/reply (used by \texttt{ping})
+\end{itemize}
+ICMP messages are carried in \IP datagrams. ICMP header starts \textbf{after} \IP header.
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}\hline
+Type&Code&Description\\\hline
+8&0&echo request(\texttt{ping})\\\hline
+0&0&echo reply(\texttt{ping})\\\hline
+3&1&dest host unreachable\\\hline
+3&3&dest port unreachable\\\hline
+11&0&TTL expired\\\hline
+12&0&bad \IP header\\\hline
+\end{tabular}
+\end{table}
+\subsubsection{\texttt{ping} and \texttt{traceroute}}
+Command \texttt{ping} sees if a remote host will respond to us -- check for connection.
+
+Command \texttt{traceroute} sends a series of small packets across a network and attempts to display the route (or path) that the messages would take to get to a remote host.
+\clearpage
 \end{document}
