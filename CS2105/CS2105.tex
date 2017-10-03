@@ -13,23 +13,9 @@
 \usepackage{amsthm}
 \usepackage[nottoc]{tocbibind}
 \usepackage{bm}
-\usepackage[object=vectorian]{pgfornament} 
+
 \usepackage{enumitem}
 \usepackage{wrapfig}
-\colorlet{shadecolor}{lightgray!25}
-\newcommand{\sectionline}{%
-  \noindent
-  \begin{center}
-  {\color{DarkViolet}
-    \resizebox{0.5\linewidth}{1ex}
-    {{%
-    {\begin{tikzpicture}
-    \node  (C) at (0,0) {};
-    \node (D) at (9,0) {};
-    \path (C) to [ornament=85] (D);
-    \end{tikzpicture}}}}}%
-    \end{center}
-  }
 
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
   \newcommand\TCP{\texttt{TCP} }

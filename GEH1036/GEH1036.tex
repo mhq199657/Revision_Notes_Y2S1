@@ -13,25 +13,10 @@
 \usepackage{amsthm}
 \usepackage[nottoc]{tocbibind}
 \usepackage{bm}
-\usepackage[object=vectorian]{pgfornament} 
 \usepackage{enumitem}
 \usepackage{mathtools}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
-\colorlet{shadecolor}{lightgray!25}
-\newcommand{\sectionline}{%
-  \noindent
-  \begin{center}
-  {\color{DarkViolet}
-    \resizebox{0.5\linewidth}{1ex}
-    {{%
-    {\begin{tikzpicture}
-    \node  (C) at (0,0) {};
-    \node (D) at (9,0) {};
-    \path (C) to [ornament=85] (D);
-    \end{tikzpicture}}}}}%
-    \end{center}
-  }
 
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
 \setlength{\parindent}{0cm}
@@ -543,5 +528,5 @@ S\times T\equiv U\pmod n
 \]
 where $S,T,U$ are the sums of digits of $A,B,C$ respectively.
 \subsection{Dates and days of the weak}
-\end{theoremw}
+\end{theorem}
 \end{document}
