@@ -1029,4 +1029,101 @@ The fundamental theorem of line integral says that the line integral of conserva
 \hfill\\\normalfont Vector field is \textbf{not} conservative if there are \textbf{two} paths with the same initial and terminal points but their line integrals are \textit{different}.
 \end{theorem}
 \clearpage
+\section{Green's Theorem and Surface Integral of Scalar Field}
+\subsection{Green's Theorem}
+There are three methods of computing surface integral, each of different applicability.
+
+\textbf{Method 1}: Parametrize $C$ by $\mathbf{r}(t) = \langle x(t), y(t), z(t)\rangle, a\leq t\leq b$, then
+\[
+\int_C\mathbf{F}\cdot \diff\mathbf{r} = \int_a^b\mathbf{F}(x(t),y(t),z(t))\cdot \mathbf{r}^\prime(t)\diff t
+\]
+\textbf{Method 2}: If $\mathbf{F}$ is conservative, then apply Fundamental Theorem for  Line Integrals:
+\[
+\int_C\mathbf{F}\cdot\diff\mathbf{r} = f(B)-f(A)
+\]
+where $\mathbf{F} = \nabla f$, for some scalar function $f$, $B$ is the terminal point of $C$ and $A$ the initial point.
+\textbf{Method 3}: \textbf{Green's theorem}. 
+\begin{theorem}[Green's Theorem]
+\hfill\\\normalfont Let $C$ be a positively oriented\footnote{A curve has \textbf{positive orientation} if it is traversed in counterclockwise direction.}, piecewise-smooth, simply closed curve in the plane and let $D$ be the region bounded by $C$.\\Let $\mathbf{F}(x,y)= P(x,y)\mathbf{i}+Q(x,y)\mathbf{j}$.\\If $P(x,y)$ and $Q(x,y)$ have continuous partial derivatives on an open region that contains $D$, then
+\[
+\int_C\mathbf{F}\cdot \diff\mathbf{r} = \int_C P\diff x+Q\diff y =\iint_D\left(\frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}\right)\diff A
+\] 
+\end{theorem}
+Green's theorem can be considered as the Fundamental Theorem of Calculus for double integrals.
+\subsection{Application of Green's Theorem on Area of Plane Region}
+To evaluate the area of a plane region $\iint_D 1\diff A$, we construct $P$ and $Q$ such that
+\[
+\frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}=1
+\]
+Therefore, we have the following possibilities
+\[
+\iint_D 1\diff A = \int_Cx\diff y = \int_C -y\diff x = \frac{1}{2}\int_C x\diff y -y\diff x 
+\]
+\subsection{Parametric Surfaces}
+\begin{definition}[Parametric Surface]\hfill\\\normalfont
+The 2-variable vector function
+\[
+\mathbf{r}(u,v)=\langle x(u,v),y(u,v),z(u,v)\rangle, (u,v)\in D
+\]
+\textbf{parametrizes} a surface $S$ in the $xyz$-plane.
+\end{definition}
+There are usually more than one ways to parametrize the surface. One special case is the parametrization of the sphere of radius $rho$ centered at origin:
+\begin{align*}
+x&=\rho \sin\phi\cos\theta\\
+y&=\rho\sin\phi\sin\theta\\
+z&\rho\cos\phi
+\end{align*}
+\subsection{Surface Integral of Scalar Field}
+\begin{definition}[Surface Integral of Scalar Field]
+\hfill\\\normalfont
+\[
+\iint_Sf(x,y,z)\diff S = \lim_{m,n\to \infty}\sum_{i=1}^m\sum_{j=1}^nf(P_{ij}^\ast)\Delta S_{ij}
+\]
+provided the limit exists and is the same for all choices of the evaluation points $P_{ij}^\ast$.
+\end{definition}
+We also require the parametrix surface to be smooth.
+\begin{definition}[Smooth surface]\hfill\\\normalfont
+A surface $S$ is \textbf{smooth} if it has a parametrization $\mathbf{r}(u,v), u,v\in D$, such that $\mathbf{r}_u$ and $\mathbf{r}_v$ are continuous and $\mathbf{r}_u\times\mathbf{r}_v\neq \mathbf{0}$ for all $(u,v)\in D$.
+\end{definition}
+\begin{theorem}[Two important properties of {$\mathbf{r}_u$} and {$\mathbf{r}_v$}]
+\hfill\\\normalfont 
+\begin{enumerate}
+  \item $\mathbf{r}_u\times\mathbf{r}_v$ is normal to the surface $D$.
+  \item We can approximate the patch area $\Delta S_{ij}$ as follows:
+  \[
+\Delta S_{ij} \approx \norm{\mathbf{r}_u\times\mathbf{r}_v}\Delta u\Delta v
+  \]
+\end{enumerate}
+\end{theorem}
+From the two properties, we arrive at two useful theorems.
+\begin{theorem}[Tangent Plane of Smooth Surface]\hfill\\\normalfont Suppose a surface $S$ is smooth and has a parametrization of $\mathbf{r}(u,v) = \langle x(u,v), y(u,v), z(u,v)\rangle, (u,v)\in D$.\\Then $\mathbf{r}_u(a,b)\times \mathbf{r}_v(a,b)$ is normal to the tangent plane of $S$ at the point $(x(a,b),y(a,b),z(a,b))$.
+\end{theorem}
+\begin{theorem}[Surface Integral Formula]
+\hfill\\\normalfont
+\[ \iint_Sf(x,y,z)\diff S = \iint_Df(x(u,v),y(u,v),z(u,v))\norm{\mathbf{r}_u\times\mathbf{r}_v}\diff A
+\]
+\end{theorem}
+If $S$ is instead a \textbf{union} of finitely many smooth surfaces $S_1,\ldots,S_n$ that intersect only along their boundaries, then the surface integral of $f$ over $S$ is the sum of the surface integrals over each $S_i$.
+\begin{theorem}\hfill\\\normalfont
+\[
+\iint_S f(x,y,z)\diff S = \sum_{i=1}^n \iint_{S_i}f(x,y,z)\diff S
+\]
+\end{theorem}
+\subsection{Surface Area}
+A special case of parametrization is that the surface is given by $z=g(x,y), (x,y)\in D$. Then we can take $x,y$ as parameters
+\[
+\mathbf{r}(x,y) = \langle x,y,g(x,y)\rangle
+\]
+In this case we have a special formula for surface integral.
+\begin{theorem}
+\hfill\\\normalfont 
+\[
+\iint_Sf(x,y,z)\diff S = \iint_Df(x,y,g(x,y))\left(\left(\frac{\partial g}{\partial x}\right)^2+\left(\frac{\partial g}{\partial y}\right)^2+1\right)\diff A
+\]
+\end{theorem}
+On a irrelevant note, surface area of any parametricx surface $D$ traced by $\mathbf{r}(u,v)$ can be evaluated as
+\begin{theorem}[Surface Area]\hfill\\\normalfont
+\[
+A(S)=\iint_S 1\diff S = \iint_D\norm{\mathbf{r}_u\times\mathbf{r}_v}\diff A
+\]\end{theorem}
 \end{document}

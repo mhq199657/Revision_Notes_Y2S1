@@ -527,6 +527,45 @@ N\equiv S\pmod 9
 S\times T\equiv U\pmod n
 \]
 where $S,T,U$ are the sums of digits of $A,B,C$ respectively.
-\subsection{Dates and days of the weak}
 \end{theorem}
+\clearpage
+\section{Coding}
+\subsection{Number representation System}
+Number representation systems are covered in \texttt{CS2100 Revision Notes}.
+\subsection{Error Detection Code}
+\begin{definition}[Weighted Sum]
+\hfill\\\normalfont Given the sequence (or word) $S_nS_{n-1}\cdots S_2S_1$, its \textbf{weighted sum} is the sum
+\[
+\sum_{i=1}^n i\times e_i
+\]
+where $e_i$ is the numerical value which corresponds to the symbol $S_i, 1\leq i\leq n$.
+\end{definition}
+\begin{theorem}[Encoding Procedure Modulo 37]
+\hfill\\\normalfont
+\textbf{Input}: A sequence $\mathbf{S} = S_nS_{n-1}\cdots S_2, n\leq 36$.
+\begin{enumerate}
+  \item Find the \textit{check digit} $c$ such that
+  \[
+w(e_ne_{n-1}\cdots e_2c)\equiv 0\;\;\; \mod 37
+  \]
+  where $w$ denotes the weighted sum.
+  \item Find the symbol $S_1$ that corresponds to $c$.
+\end{enumerate}
+\textbf{Output}: The encoded sequence is
+\[
+S_nS_{n-1}\cdots S_2S_1
+\]
+\end{theorem}
+\begin{definition}[Error]
+\hfill\\\normalfont A word is said to contain $k$ errors if $k$ of its letters are erroneous.
+\end{definition}
+\begin{theorem}[Error Detection]
+\hfill\\\normalfont If $A$ is a correctly encoded word, and during transmission, some errors occur and the word $A^\prime$ is received. The errors in $A^\prime$ is said to be detected if its weighted sum
+\[
+w(A^\prime)\not\equiv 0\;\;\; \mod 37
+\]
+\end{theorem}
+\begin{theorem}\normalfont In weighted sum encoding modulo 37, if a single error occurs, then it can be detected.
+\end{theorem}
+\begin{theorem}\normalfont Weighted sum modulo 37 can detect a transposition error.\end{theorem}
 \end{document}

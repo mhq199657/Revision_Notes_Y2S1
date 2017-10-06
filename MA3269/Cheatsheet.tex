@@ -37,14 +37,37 @@
 \setcounter{tocdepth}{1}
 \begin{document}
 \twocolumn
+\section{Preliminary Result}
+\subsection{Summation of series}
+\begin{itemize}
+  \item $\sum_{i=0}^n y^i = \frac{1-y^{n+1}}{1-y}$
+  \item $\sum_{i=0}^\infty y^i = \frac{1}{1-y}\text{ provided }|r|<1$.
+  \item $\sum_{i=1}^n iy^{i-1} = \frac{1-y^n(1+n-ny)}{(1-y)^2}$
+  \item $\sum_{i=1}^\infty iy^{i-1} = \frac{1}{(1-y)^2}\text{ provided }|r|<1$.
+  \item $\sum_{i=1}^n iy^{i} = \frac{y(1-y^n)-ny^{n+1}(1-y)}{(1-y)^2}$t
+  \item $\sum_{i=1}^\infty iy^{i} = \frac{y}{(1-y)^2}\text{ provided }|r|<1$.  
+  \item $\sum_{i=1}^n i = \frac{1}{2}n(n+1)$
+  \item $\sum_{i=1}^n i^2 = \frac{1}{6}n(n+1)(2n+1)$
+  \item $\sum_{i=1}^n i^3 = \frac{1}{4}n^2(n+1)^2$
+\end{itemize}
+\subsection{Newton Rhapson Method}
+\[
+x_{i+1} = x_i-\frac{f(x_i)}{f^\prime(x_i)}
+\]
+\subsection{Force of Interest}
+Accumulation function $a(s,t)$ can be derived from \textbf{force of interest} as such:
+\[
+a(s,t) = e^{\int_s^t \delta(r)\diff r}
+\]
+where $\delta(r)$ is the force of interest with $s\leq r\leq t$.
 \section{Theory of Interest}
 \subsection{Interest}
 \begin{definition}[Accumulation Function]
-\hfill\\\normalfont When a principal of 1 dollar is deposited in an interest-paying account at time $t=0$, it earns some interest over the time interval $[0,t]$. \\
+\normalfont When a principal of 1 dollar is deposited in an interest-paying account at time $t=0$, it earns some interest over the time interval $[0,t]$. \\
 The accumulated value of 1 dollar at time $t \geq 0$, denoted by $a(t)$, is known as the \textbf{accumulation function}. Clearly, $a(0)=1$.
 \end{definition}
 \begin{definition}[Simple and Compound Interest]
-\hfill\\\normalfont Let $r$ be the annual rate of interest.\\
+\normalfont Let $r$ be the annual rate of interest.\\
 Based on the \textbf{simple-interest} method of calculating interest,
 \[
 a(t)=1+rt\;\;\;\text{for }t \geq 0
@@ -62,9 +85,9 @@ a(t_j)=1+\sum_{i=1}^j r_it_i \;\;\;\text{when simple interest is used;}
 a(t_j)=\prod_{i=1}^j (1+r_i)^{t_i}\;\;\;\text{when compound interest is used;}
 \]
 \begin{definition}[Frequency of Compounding]
-\hfill\\\normalfont When an interest of $r = r^{(p)}$ is paid $p$ times a year (or equivalently, $r^{(p)}$ is \textbf{convertible} $p$\textbf{thly} or $r^{(p)}$ is compounded $p$ times a year), we call $p$ the \textbf{frequency of compounding} and $r^{(p)}$ the \textbf{nominal} rate of interest.
+\normalfont When an interest of $r = r^{(p)}$ is paid $p$ times a year (or equivalently, $r^{(p)}$ is \textbf{convertible} $p$\textbf{thly} or $r^{(p)}$ is compounded $p$ times a year), we call $p$ the \textbf{frequency of compounding} and $r^{(p)}$ the \textbf{nominal} rate of interest.
 \end{definition}
-The interest to be paid over the period, is $\frac{r^{(p)}}{p}$. Effectively, \$1 invested at time $t=0$ will grow to $\left(1+\frac{r^{(p)}}{p}\right)$ over a period of length $\frac{1}{p}$, so that the accumulated amount after one year is$\left(1+\frac{r^{(p)}}{p}\right)^p$.
+The interest to be paid over the period, is $\frac{r^{(p)}}{p}$. Effectively, \$1 invested at time $t=0$ will grow to $\left(1+\frac{r^{(p)}}{p}\right)$ over a period of length $\frac{1}{p}$, so that the accumulated amount after one year is$\left(1+\frac{r^{(p)}}{p}\right)^p$.\\
 \textbf{Remarks}
 \begin{enumerate}
   \item We write the superscript $(p)$ for $r^{(p)}$ to indicate the frequency of compounding $p$.
@@ -72,7 +95,7 @@ The interest to be paid over the period, is $\frac{r^{(p)}}{p}$. Effectively, \$
   \item $p = 2, 4, 12 $ correspond to semi-annual, quarterly and monthly compounding respectively,
 \end{enumerate}
 \begin{definition}[Equivalent Interest Rates]
-\hfill\\\normalfont Two nominal interest rates are said to be \textbf{equivalent} if and only if they yield same accumulation amount over a year. Hence, the nominal rates $r^{(p)}$ and $r^{(q)}$ are equivalent if and only if
+\normalfont Two nominal interest rates are said to be \textbf{equivalent} if and only if they yield same accumulation amount over a year. Hence, the nominal rates $r^{(p)}$ and $r^{(q)}$ are equivalent if and only if
 \[
 \left(1+\frac{r^{(p)}}{p}\right)^p=\left(1+\frac{r^{(q)}}{q}\right)^q
 \]
@@ -87,7 +110,7 @@ a(t) = (1+r_e)^t = \left(1+\frac{r^{(p)}}{p}\right)^{pt}
 \end{definition}
 It can be shown that $r_e\geq r^{(p)}$ for $p>1$.
 \begin{definition}[Continuous Compounding]
-\hfill\\\normalfont The interest is \textbf{compounded continuously} when the frequency of compounding tends to infinity.\\
+\normalfont The interest is \textbf{compounded continuously} when the frequency of compounding tends to infinity.\\
 Let $r^{(\infty)}$ denote the nominal rate of interest under continuous compounding. Then,
 \[
 a(1)=\Lim{p\to\infty}\left(1+\frac{r^{(\infty)}}{p}\right)^p = e^{r^{(\infty)}}
@@ -106,7 +129,7 @@ e^r>\left(1+\frac{r}{p}\right)^p
 for any $r>0$ and for any $p\in\mathbb{Z}^+$.
 \subsection{Present Value}
 \begin{definition}[Present Value, Time Value]
-\hfill\\\normalfont Let $a(t)$ be the accumulation function. Let $X$ be the amount that must be invested at time $t=0$ to accumulate to 1 dollar at $t=T$. Then
+\normalfont Let $a(t)$ be the accumulation function. Let $X$ be the amount that must be invested at time $t=0$ to accumulate to 1 dollar at $t=T$. Then
 \[
 X\cdot a(T)=1
 \]
@@ -119,7 +142,7 @@ More generally, for a cash flow $\cf{C} = \{(c_1,t_1),(c_2,t_2),\ldots,(c_n,t_n)
 \PV(\cf{C})=\sum_{i=1}^n\frac{c_i}{a(t_i)}
 \] 
 \begin{definition}[Time Value]
-\hfill\\\normalfont The \textbf{time value} of the cash flow $\cf{C}$ at time $t\geq 0$, denoted by $\TV(\cf{C},t)$, is given by
+\normalfont The \textbf{time value} of the cash flow $\cf{C}$ at time $t\geq 0$, denoted by $\TV(\cf{C},t)$, is given by
 \[
 \TV(\cf{C},t) = \PV(\cf{C})\times a(t)
 \]
@@ -129,11 +152,11 @@ A consequence of the above definition is that for $0<s<t$,
 \TV(\cf{C},t)=\frac{a(t)}{a(s)}\times\TV(\cf{C},s)
 \]
 \begin{definition}[Principle of Equivalence]
-\hfill\\\normalfont In an environment where both the \textit{interest rate} and its \textit{method of accumulation} remain the same over any time period, two cash flows streams are \textbf{equivalent} if and only if they have the same present value.\\(Alternatively, if and only if they have the same time value at $t=T$ for any $T\geq 0$).
+\normalfont In an environment where both the \textit{interest rate} and its \textit{method of accumulation} remain the same over any time period, two cash flows streams are \textbf{equivalent} if and only if they have the same present value.\\(Alternatively, if and only if they have the same time value at $t=T$ for any $T\geq 0$).
 \end{definition}
 It follows that the cash flow $\cf{C}=\{(c_1,t_1),(c_2,t_2),\ldots,(c_n,t_n)\}$ is equivalent to a single payment of $\PV(\cf{C})=\sum_{i=1}^n\frac{c_i}{a(t_i)}$ at time $t=0$.
 \begin{definition}[Deferred Cash Flow]
-\hfill\\\normalfont Let $k>0$ and define the cash flow $\cf{C}_{(k)}=\{(c_1,t_1+k),(c_2,t_2+k),\ldots,(c_n,t_n+k)\}$ which is essentially the cash flow $\cf{C} = \{(c_1,t_1),(c_2,t_2),\ldots,(c_n,t_n)\}$ deferred by $k$ years.\\
+\normalfont Let $k>0$ and define the cash flow $\cf{C}_{(k)}=\{(c_1,t_1+k),(c_2,t_2+k),\ldots,(c_n,t_n+k)\}$ which is essentially the cash flow $\cf{C} = \{(c_1,t_1),(c_2,t_2),\ldots,(c_n,t_n)\}$ deferred by $k$ years.\\
 If the accumulation function is $a(t)$, then
 \[
 \frac{\PV(\cf{C})}{\PV(\cf{C}_{(k)})}=a(k)
@@ -146,26 +169,26 @@ For the special case when $t_i = i-1$,
 \]
 can be written as $(c_1,c_2,\ldots, c_n)$.
 \begin{definition}[Equation of Value]
-\hfill\\\normalfont Consider the cash flow stream $\cf{C}=\{(c_1,t_1),)c_2,t_2),\ldots,(c_n,t_n)\}$. The equation
+\normalfont Consider the cash flow stream $\cf{C}=\{(c_1,t_1),)c_2,t_2),\ldots,(c_n,t_n)\}$. The equation
 \[
 \PV(\cf{C})=\sum_{i=1}^n\frac{c_i}{(1+r)^{t_i}} = 0
 \]
 is known as the \textbf{equation of value}.
 \end{definition}
 \begin{definition}[Internal Rate of Return(IRR)]
-\hfill\\\normalfont Any non-negative root, $r$ of the equation of value is called the \textbf{yield} or \textbf{internal rate of return (IRR)}, of the cash flow stream.
+\normalfont Any non-negative root, $r$ of the equation of value is called the \textbf{yield} or \textbf{internal rate of return (IRR)}, of the cash flow stream.
 \end{definition}
 \subsection{Annuities}
 \begin{definition}[Annuities Immediate and Annuities Due]
-\hfill\\\normalfont An annuity is a series of payment made at regular intervals.\\
+\normalfont An annuity is a series of payment made at regular intervals.\\
 An \textbf{annuity-due} is one for which payments are made at the \textit{beginning} of each period.\\
 An \textbf{annuity-immediate} is one for which payments are made at the \textit{beginning} of each period.
 \end{definition}
 \begin{definition}[Perpetuity]
-\hfill\\\normalfont A \textbf{perpetuity} is an annuity with an infinite number of payments.
+\normalfont A \textbf{perpetuity} is an annuity with an infinite number of payments.
 \end{definition}
 \begin{definition}[Loans]
-\hfill\\\normalfont \textbf{Loans} are normally repaid by a series of installment payments made at \textit{periodic} intervals. The size of each installment can be determined using present-value analysis.\\
+\normalfont \textbf{Loans} are normally repaid by a series of installment payments made at \textit{periodic} intervals. The size of each installment can be determined using present-value analysis.\\
 Specifically, if we let $L$ be the amount of loan taken at time $t=0$ and let $\cf{C} =\{(c_1,t_1),(c_2,t_2),\ldots,(c_n,t_n)\}$ be the series of repayments, then
 \[
 L :=\PV(\cf{C})
@@ -173,7 +196,7 @@ L :=\PV(\cf{C})
 \end{definition}
 We can also compute the balance of the loan at any point in time.\\
 \begin{definition}[Loan Balance]
-\hfill\\\normalfont
+\normalfont
 The \textbf{loan balance} $L_m^{\text{Balance}}$ immediately after the $m$th installment has been paid is the \textbf{time value} at $t = m$ of the remaining $(n-m)$ installment payments.\\
 Suppose installment is paid annually with effectively annual rate $r$ and each repayment of value $c_i$ for year $m+i$, the loan balance
 \[
@@ -187,7 +210,7 @@ L=\PV(0,\underbrace{A,A,\ldots,A}_{n \text{payments}})+\PV(\{(B,t)\})
 \section{Bonds and Term Structure}
 \subsection{Bond Terminology}
 \begin{definition}[Bond]
-\hfill\\\normalfont
+\normalfont
 A \textbf{bond} is a written contract between the issuers(borrowers) and the investers(lenders) which specifies the following:
 \begin{itemize}
   \item \textbf{Face value}, $F$, of the bond: the amount based on which periodic interest payments are computed
@@ -208,7 +231,7 @@ We use the following notations in connection with the bond pricing formula that 
   \item $\lambda$ = nomial yield
 \end{itemize}
 \begin{theorem}[Price of a Bond]
-\hfill\\\normalfont
+\normalfont
 The price of a bond equals to the present value of the cash flow consisting of all coupon payments and the redemption value at maturity, calculated at yield $\lambda$.\\
 For the case when the cash flow is made up of:
 \begin{itemize}
@@ -237,32 +260,32 @@ From the proceding bond pricing formula, it is clear
   \item \makebox[3cm]{$P<F$\hfill}\makebox[3cm]{if and only if\hfill}\makebox[3cm]{$c<\lambda$}
 \end{itemize}
 \begin{theorem}[Makeham Formula]
-\hfill\\\normalfont Let $K=\frac{F}{\left(1+\frac{\lambda}{m}\right)^n}$, we have
+\normalfont Let $K=\frac{F}{\left(1+\frac{\lambda}{m}\right)^n}$, we have
 \[
 P=K+\frac{c}{\lambda}(F-K)
 \]
 \end{theorem}
 \begin{theorem}
-\hfill\\\normalfont
+\normalfont
 Let $P_k$ be the price immediately after the $k$ the coupon payment. Then
 \[
 P_{k+1}=P_{k}\left(1+\frac{\lambda}{m}\right)-\frac{cF}{m}
 \]
 \end{theorem}
 \begin{definition}[Zero Coupon Bonds]
-\hfill\\\normalfont \textbf{Zero coupon bonds} are bonds that pay no coupons. The cash flow for a $N$-year zero-coupon bond is the maturity value, $R$ at $t=N$. Hence, at an annual yield of $\lambda$,
+\normalfont \textbf{Zero coupon bonds} are bonds that pay no coupons. The cash flow for a $N$-year zero-coupon bond is the maturity value, $R$ at $t=N$. Hence, at an annual yield of $\lambda$,
 \[
 P=\frac{R}{(1+\lambda)^N}
 \]
 \end{definition}
 \begin{definition}[Perpetual Bonds]
-\hfill\\\normalfont A bond that never matures (i.e., $n\to \infty$) is called a \textbf{perpetual bond}. Clearly,
+\normalfont A bond that never matures (i.e., $n\to \infty$) is called a \textbf{perpetual bond}. Clearly,
 \[
 P=\frac{cF}{\lambda}
 \]
 \end{definition}
 \begin{definition}[Bond Price Between Coupon Payments]
-\hfill\\\normalfont The price of a bond traded in $t=\frac{k+\varepsilon}{m}, (0\leq \varepsilon < 1$, which is between $k$th and $k+1$th coupon payment dates is
+\normalfont The price of a bond traded in $t=\frac{k+\varepsilon}{m}, (0\leq \varepsilon < 1$, which is between $k$th and $k+1$th coupon payment dates is
 \[
 P_{k+\varepsilon} = (1+\mu)^\varepsilon P_k
 \]
@@ -270,7 +293,7 @@ where $\mu$ is the effective annual yield of the bond over the period $[k,k+1)$.
 \end{definition}
 \subsection{Macaulay Duration and Modified Duration}
 \begin{definition}[Macaulay Duration]
-\hfill\\\normalfont The \textbf{Macaulay duration} is one of the commonly used measures of bond's price sensitivity to changes in interest rate.\\
+\normalfont The \textbf{Macaulay duration} is one of the commonly used measures of bond's price sensitivity to changes in interest rate.\\
 For cash flow stream $\cf{C}=\{(c_i,t_i)\mid i = 1, 2, \ldots, n\}$, the Macaulay duration, $D$. is defined by
 \[
 D=\frac{\sum_{i=1}^nt_i\cdot\PV(c_i)}{\sum_{i=1}^n\PV(c_i)}
@@ -281,7 +304,7 @@ D=\sum_{i=1}^nw_it_i
 \]
 where weight $w_i = \frac{\PV(c_i)}{\sum_{j=1}^n\PV(c_j)}$.
 \end{definition}
-\begin{theorem}[Properties of Macaulay Duration]\hfill\\\normalfont
+\begin{theorem}[Properties of Macaulay Duration]\normalfont
 \begin{itemize}
   \item If $c_i\geq 0$ for all $i$, then $t_0\leq D\leq t_n$.
   \item For a zero-coupon bond, $D=t_n$.
@@ -291,7 +314,7 @@ We can extend definition of Macaulay duration $D$ to any infinite cash flow stre
 \[
 D=\frac{\sum_{i=1}^\infty t_i\cdot\PV(c_i)}{\sum_{i=1}^\infty\PV(c_i)}
 \] 
-\begin{theorem}[Macaulay Duration of bonds]\hfill\\\normalfont
+\begin{theorem}[Macaulay Duration of bonds]\normalfont
 For a bond that pays a total of $n$ coupons at a frequency of $m$ payments a year. Let the nominal bond yield be $\lambda$ and nominal coupon rate be $c$ respectively. The cash flow stream in this case is
 \[
 \cf{C}=\{(\frac{cF}{m}, t_1),\ldots, (\frac{cF}{m},t_{n-1}),(\frac{cF}{m}+F,t_n)\}
@@ -323,7 +346,7 @@ To see this, differentiate the pricing formula, we will have
 \frac{\diff P}{\diff \lambda}=\left(-\frac{1}{1+\frac{\lambda}{m}}D\right)P
 \]
 \begin{definition}[Modified duration]
-\hfill\\\normalfont The term $\frac{1}{1+\frac{\lambda}{m}}D$ is defined as the \textbf{modified duration} and is denoted by $D_\text{M}$.
+\normalfont The term $\frac{1}{1+\frac{\lambda}{m}}D$ is defined as the \textbf{modified duration} and is denoted by $D_\text{M}$.
 \end{definition}
 In general, for a cash flow $\cf{C}=\{(c_i, t_i)\mid i = 1, 2,\ldots, n\}$ at an effective annual rate of $r$, the relation 
 \[
@@ -331,13 +354,13 @@ In general, for a cash flow $\cf{C}=\{(c_i, t_i)\mid i = 1, 2,\ldots, n\}$ at an
 \]
 still holds.
 \begin{theorem}[Linear Approximation of Price Change]
-\hfill\\\normalfont If $\Delta\lambda$ is a small change in $\lambda$, then
+\normalfont If $\Delta\lambda$ is a small change in $\lambda$, then
 \[
 \Delta P = -D_\text{M}P\Delta\lambda
 \]
 \end{theorem}
 \begin{definition}[Duration of Bond Portfolio]
-\hfill\\\normalfont Consider a bond portfolio consisting of $\alpha_i$ units of bond $i$, $i = 1, 2, \ldots, n$, assuming that the bonds have a \textit{common} effective annual yield to maturity.\\
+\normalfont Consider a bond portfolio consisting of $\alpha_i$ units of bond $i$, $i = 1, 2, \ldots, n$, assuming that the bonds have a \textit{common} effective annual yield to maturity.\\
 Let $P_i$ and $D_i$ be respectively the price and duration of bond $i$. Then, the \textbf{duration} $D_p$ \textbf{of a portfolio} of $n$ bonds of equal yield to maturity, $\lambda$ is given by
 \[
 D_p = \sum_{i=1}^nw_iD_i
@@ -345,7 +368,7 @@ D_p = \sum_{i=1}^nw_iD_i
 where the \textbf{portfolio weight} $w_i = \frac{\alpha_i P_i}{\sum_{i=1}^n\alpha_i P_i}$
 \end{definition}
 \begin{definition}[Convexity $C$]
-\hfill\\\normalfont \textbf{Convexity} of the bond $C$, is defined as the second derivative of the bond price with respect to bond yield, divided by the price of the bond.
+\normalfont \textbf{Convexity} of the bond $C$, is defined as the second derivative of the bond price with respect to bond yield, divided by the price of the bond.
 \[
 C:=\frac{\frac{\diff^2 P}{\diff \lambda^2}}{P}
 \]
@@ -367,13 +390,13 @@ C&=\frac{\frac{\diff^2 P}{\diff \lambda^2}}{P} \\
 \end{align*}
 \subsection{Yield curves and Term Structure of Interest Rates}
 \begin{definition}[Spot Rates]
-\hfill\\\normalfont A \textbf{spot rate} is the \textit{annual} interest rate that begins today ($t=0$) and lasts until some future time $t$. We denote this rate by $s_t$.\\In effect the spot rate $s_t$ is the yield to maturity of a zero-coupon bond that matures at $t$.
+\normalfont A \textbf{spot rate} is the \textit{annual} interest rate that begins today ($t=0$) and lasts until some future time $t$. We denote this rate by $s_t$.\\In effect the spot rate $s_t$ is the yield to maturity of a zero-coupon bond that matures at $t$.
 \end{definition}
 \begin{definition}[Forward Rate]
-\hfill\\\normalfont The interest rate observed at some future time $t_1>0$ and lasts until a time $t_2>t_1$ is called a \textbf{forward rate}, denoted by $f_{t_1,t_2}$. \\Note that $f_{0,t}=s_t$
+\normalfont The interest rate observed at some future time $t_1>0$ and lasts until a time $t_2>t_1$ is called a \textbf{forward rate}, denoted by $f_{t_1,t_2}$. \\Note that $f_{0,t}=s_t$
 \end{definition}
 \begin{theorem}
-\hfill\\\normalfont In general,
+\normalfont In general,
 \[
 (1+s_k)^k = (1+s_j)^j(1+f_{j,k})^{k-j}
 \] 

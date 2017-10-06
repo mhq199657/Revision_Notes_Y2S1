@@ -1095,4 +1095,141 @@ and
 \end{pmatrix}
 \]
 \end{theorem}
+\clearpage
+\section{Numerical Integration}
+\subsubsection{Prerequisite -- Useful Theorems}
+\begin{theorem}[Intermediate Value Theorem]
+\hfill\\\normalfont 
+If $f(x)$ is continuous on $[a,b]$, let $m=\displaystyle{\min_{a\leq x\leq b}f(x)}$ and $M=\displaystyle{\max_{a\leq x\leq b}f(x)}$, then for any $K$ satisfying $m\leq K\leq M$, there exists $xi\in(a,b)$ such that $f(\xi)=K$.
+\end{theorem}
+From this theorem we have the following theorem.
+\begin{theorem}[Mean Value Theorem for Integrals]
+\hfill\\\normalfont Let $g(x)$ be a \textbf{non-negative} or \textbf{non-positive} integrable function on $[a,b]$. If $f(x)$ is continuous on $[a,b]$, then there is at least one point $\xi$ in $[a,b]$ such that
+\[
+\int_a^b f(x)g(x)\diff x = f(\xi)\int_a^bg(x)\diff x
+\]
+\end{theorem}
+\subsection{Quadrature based on Interpolation Polynomials}
+We first select a set of $(n+1)$ distinct nodes $\{x_0,\ldots, x_n\}$ from the interval $[a,b]$. The Lagrange interpolating polynomial is
+\[
+p_n(x)=\sum_{i=0}^n l_i(x)f(x_i)
+\]
+with truncation error term
+\[
+E_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}\psi(x)
+\]
+which admits $f(x)=p_n(x)+E_n(x)$.
+
+We approximate $\int_a^b f(x)$ by considering the integral of $p_n(x)$, denoted by $I_n(f)$
+\[
+I_n(f):=\int_a^b p_n(x)\diff x = \int_a^b\sum_{i=0}^n l_i(x)f(x_i)\diff x = \sum_{i=0}^n a_if(x_i)
+\]
+where $a_i = \int_a^b l_i(x)$.
+Therefore, the truncation error will generate the error term of $I_n(f)$, denoted by $E_n(f)$
+\[
+E_n(f):=\int_a^b \frac{f^{(n+1)}(\xi(x))\psi(x)}{(n+1)!}\diff x = \frac{1}{(n+1)!}\int_a^b f^{(n+1)}(\xi(x))\psi(x)\diff x
+\]
+where $\xi(x)$ is in $[a,b]$ for each $x$. \\Therefore we can write the integral of $f(x)$ as
+\[
+I(f):=\int_a^b f(x)\diff x = I_n(f)+E_n(f)
+\]
+where $I(f)\approx I_n(f)$.
+\subsection{Trapezoidal Rule}
+Trapezoidal rule is produced by let $n=1$, $x_0 = a$ and $x_1=b$. \\Under these condition, interpolating polynomial is
+\[
+p_1(x) = \frac{x-b}{a-b}f(a)+\frac{x-a}{b-a}f(b)
+\]
+a line passes through $(a,f(a))$ and $(b,f(b))$.\\ Then,
+\begin{align*}
+I(f)=\int_a^bf(x)\diff x &= \int_a^b p_1(x)\diff x +E_1(f)\\
+&\approx \frac{b-a}{2}[f(a)+f(b)]\;\;\;(\text{Trapezoidal Rule})
+\end{align*}
+by ignoring error term $E_1(f)$.\\The error term is
+\begin{align*}
+E_1(f)&=\int_a^b\frac{1}{2}f^{\prime\prime}(\xi(x))(x-a)(x-b)\diff x\\
+&= \frac{1}{2}f^{\prime\prime}(\xi)\int_a^b (x-a)(x-b)\diff x\;\;\;(\text{by MVT for integrals})\\
+&=\frac{1}{2}f^{\prime\prime}(\xi)\left(-\frac{(b-a)^3}{6}\right)\\
+&=-\frac{1}{12}f^{\prime\prime}(\xi)
+\end{align*}
+\begin{definition}[Degree of Precision]
+\hfill\\\normalfont A quadrature formula $I_n(f)$ that approximates $I(f)$ has degree of precision $m$ if it is exact for all polynomial $f$ of degree $\leq m$, and $I_n(f)\neq I(f)$ for some polynomial $f$ of degree $m+1$.
+\end{definition}
+\begin{theorem}[Equivalent Definition of degree of precision]
+\hfill\\\normalfont The following are equivalent.
+\begin{enumerate}
+  \item $I_n(f)$ has degree of precision $m$.
+  \item $\int_a^b f(x)\diff x -I_n(f)=0\;\;\forall f(x)=p_m(x)$ and
+  $\int_a^b f(x)\diff x -I_n(f)\neq 0\;\;\text{for some }f(x)=p_{m+1}(x)$
+  \item $\int_a^b x^i\diff x-I_n(x^i)=0\;\;\forall i = 0,1,\ldots, m$ and
+  $\int_a^b x^{m+1}\diff x -I_n(x^{m+1})\neq 0$ 
+\end{enumerate}
+\end{theorem}
+\subsection{Simpson's Rule}
+Using the similar technique, by setting $n=2$, a three equidistant point $x_0=a, x_1=\frac{1}{2}(a+b)$ and $x_2=b$, we have
+\begin{align*}
+p_2(x)&=\frac{(x-x_1)(x-x_2)}{(x_0-x_1)(x_0-x_2)}f(x_0)+\frac{(x-x_0)(x-x_2)}{(x_1-x_0)(x_1-x_2)}f(x_1)+\frac{(x-x_0)(x-x_1)}{(x_2-x_0)(x_2-x_1)}f(x_2)\\
+&=\frac{1}{2h^2}[(x-x_1)(x-x_2)f(x_0)-2(x-x_0)(x-x_2)f(x_1)+(x-x_0)(x-x_1)f(x_2)]
+\end{align*}
+where $h=\frac{1}{2}(b-a)=x_{i+1}-x_i, i=0,1$ is the step size, and
+\[
+E_2(f)=\frac{f^{\prime\prime\prime}(\xi)}{3!}\psi(x)=(x-x_0)(x-x_1)(x-x_2)f[x,x_0,x_1,x_2]
+\]
+It can be shown that $I_2(f)$ is
+\[
+I_2(f)=\frac{h}{3}[f(x_0)+4f(x_1)+f(x_2)]
+\]
+and
+\[
+E_2(f)=-\frac{h^5}{90}f^{(4)}(\xi)
+\]
+for some $\xi\in[x_0,x_2]$.\\
+It is then clear the degree of precision of Simpson's rule is $m=3$.
+\subsubsection{Proof of Simpson's error formula}
+let $F$ be an anti-derivative of $f$, i.e. $F^\prime = f$. WLOG, $a+b=0$, set $x=\frac{b-a}{2}$ then we are interested in the error expression
+\[
+E_4(f)=F(x)-F(-x)-\frac{x}{3}(f(x)+4f(0)+f(-x))
+\]
+This has derivatives
+\begin{alignat}{2}
+g'(x)&=\frac23(f(x)-2f(0)+f(-x))&&-\frac x3 (f'(x)-f'(-x))
+\\
+g''(x)&=\frac13(f'(x)-f'(-x))&&-\frac x3(f''(x)+f''(-x))
+\\
+g'''(x)&=&&-\frac x3(f'''(x)-f'''(-x))\;\;\;(\#).
+\end{alignat}
+Consequently, as $g(0)=g^\prime(0)=g''(0)=g'''(0)=0$, we have, by extended mean value theorem\footnote{Extended mean value theorem: }
+\[
+\frac{g(x)}{x^5}=\frac{g'(x_1)}{5x_1^4}=\cdots =\frac{g'''(x_3)}{(5\cdot4\cdot3x_3^2)}
+\]
+By substituting $(\#)$, we have
+\begin{align*}
+\frac{g(x)}{x^5}=\frac{-\frac{x_3}{3}(f'''(x_3)-f'''(-x_3))}{60x_3^2}&=-\frac{1}{90}\cdot\frac{f'''(x_3)-f'''(-x_3)}{2x_3}\\
+&=\frac{1}{90}\cdot f^{(4)}(x_4)\;\;\;\text{By MVT}
+\end{align*}
+
+Other error bounds are
+\begin{itemize}
+  \item $|E_2(f)|\leq \frac{h^5}{12}|f^{(4)}(\xi)|$. This is derived by $E_2(f)=\int_{x_0}^{x_1} E_2(x)\diff x+\int_{x_1}^{x_2}E_2(x)\diff x$ and apply integral MVT on each integral.\footnote{Integral of $\int_{x_0}^{x_n}(x-x_0)\cdot(x-x_n)\diff x$ can be more easily evaluated by substitution: $x=x_0+th$, where $h=x_{i+1}-x_i$ is the step size. Another useful substitution is to make the above integrand symmetric.}
+  \item $|E_2(f)|=-\frac{h^5}{12}[\frac{1}{3}f^{(4)}(\eta_1)-\frac{1}{5}f^{(4)}(\eta_2)]$. This is proved by (1) Taylor expansion of $f(x)$ around $x_1$ with remainder containing 4th power derivative. Odd power derivative are eliminated due to symmetry. (2) Next, consider Taylor expansion with remainder containing 4th power derivative around $x_0$ and $x_2$, both evaluated at $x_1$, to obtain an expression for $f''$ , as odd power derivatives are again eliminated. The fourth power derivative is bounded by IVT. Together the result is proved. 
+\end{itemize}
+\subsection{General Newton Cotes formula}
+\begin{theorem}[Newton Cotes formula]
+\hfill\\\normalfont Suppose that
+\[
+\sum_{i=0}^n a_if(x_i)
+\]
+denotes the $(n+1)$-point Newton-Cotes formula with
+\[
+x_0=a,\;\;x_n=b,\;\;h=\frac{b-a}{n} 
+\]
+There exists $\xi\in(a,b)$ such that
+\[
+\int_a^bf(x)\diff x = \sum_{i=0}^n a_if(x_i)+\frac{h^{n+3}f^{(n+2)}(\xi)}{(n+2)!}\int_0^nt^2(t-1)\cdot(t-n)\diff t
+\]
+if $n$ is \textbf{even} and $f\in C^{n+2}[a,b]$; and
+\[
+\int_a^bf(x)\diff x = \sum_{i=0}^n a_if(x_i)+\frac{h^{n+2}f^{(n+1)}(\xi)}{(n+1)!}\int_0^nt(t-1)\cdot(t-n)\diff t
+\]
+if $n$ is \textbf{odd} and $f\in C^{n+1}[a,b]$.\\
+Therefore, when $n$ is an \textbf{even} integer, the degree of precision is $n+1$; when $n$ is \text{odd}, the degree of precision is only $n$.
 \end{document}

@@ -54,6 +54,8 @@
   \item $\sum_{i=0}^\infty y^i = \frac{1}{1-y}\text{ provided }|r|<1$.
   \item $\sum_{i=1}^n iy^{i-1} = \frac{1-y^n(1+n-ny)}{(1-y)^2}$
   \item $\sum_{i=1}^\infty iy^{i-1} = \frac{1}{(1-y)^2}\text{ provided }|r|<1$.
+  \item $\sum_{i=1}^n iy^{i} = \frac{y(1-y^n)-ny^{n+1}(1-y)}{(1-y)^2}$
+  \item $\sum_{i=1}^\infty iy^{i} = \frac{y}{(1-y)^2}\text{ provided }|r|<1$.  
   \item $\sum_{i=1}^n i = \frac{1}{2}n(n+1)$
   \item $\sum_{i=1}^n i^2 = \frac{1}{6}n(n+1)(2n+1)$
   \item $\sum_{i=1}^n i^3 = \frac{1}{4}n^2(n+1)^2$
@@ -98,7 +100,7 @@ a(t_j)=\prod_{i=1}^j (1+r_i)^{t_i}\;\;\;\text{when compound interest is used;}
 \begin{definition}[Frequency of Compounding]
 \hfill\\\normalfont When an interest of $r = r^{(p)}$ is paid $p$ times a year (or equivalently, $r^{(p)}$ is \textbf{convertible} $p$\textbf{thly} or $r^{(p)}$ is compounded $p$ times a year), we call $p$ the \textbf{frequency of compounding} and $r^{(p)}$ the \textbf{nominal} rate of interest.
 \end{definition}
-The interest to be paid over the period, is $\frac{r^{(p)}}{p}$. Effectively, \$1 invested at time $t=0$ will grow to $\left(1+\frac{r^{(p)}}{p}\right)$ over a period of length $\frac{1}{p}$, so that the accumulated amount after one year is$\left(1+\frac{r^{(p)}}{p}\right)^p$.
+The interest to be paid over the period, is $\frac{r^{(p)}}{p}$. Effectively, \$1 invested at time $t=0$ will grow to $\left(1+\frac{r^{(p)}}{p}\right)$ over a period of length $\frac{1}{p}$, so that the accumulated amount after one year is$\left(1+\frac{r^{(p)}}{p}\right)^p$.\\
 \textbf{Remarks}
 \begin{enumerate}
   \item We write the superscript $(p)$ for $r^{(p)}$ to indicate the frequency of compounding $p$.
@@ -662,4 +664,5 @@ or more naturally,
 \[
 \mu_p = \pm\frac{1}{\sqrt{A}}\sigma_p -\frac{B}{2A}
 \]
+When $\rho_{12}=1,-1$, this hyperbola degenerate into a pair of lines.
 \end{document}

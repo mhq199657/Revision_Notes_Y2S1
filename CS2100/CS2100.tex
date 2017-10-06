@@ -1665,5 +1665,85 @@ We define
 \includegraphics[width = \textwidth]{8_14.png}
 \end{minipage}\end{figure}
 \clearpage
+\section{Understanding Performance}
+\subsection{Defining Performance}
+To improve performance, we are interested to minimise
+\begin{itemize}
+  \item Response time/\textbf{Execution time}: the time between the start and the completion of a task.\\
+  Execution time is \textit{inversely} related to the performance.
+  \[
+\text{performance} = \frac{1}{\text{execution time}}
+  \] 
+  \item \textbf{Throughput} -- Total amount of work done in a given time\\
+  Decreasing response time always improves throughput.
+\end{itemize}
+\textbf{Remark:} \textit{elapsed} time do not equal execution time.
+\begin{itemize}
+  \item CPU execution time(CPU time) is the time CPU spends working on a task
+  \item CPU execution time does \textit{not} include time (1) waiting for I/O or (2) running other programmes.
+\end{itemize}
+\subsection{CPU Execution Time}
+\begin{definition}[CPU Execution Time]
+\hfill\\\normalfont CPU execution time for a program is given by
+\begin{align*}
+\text{CPU execution time} &= {\# \text{ of CPU clock cycle}}\times\text{clock cycle time (s)}\\
+&=\frac{\#\text{ of CPU clock cycle}}{\text{clock rate (Hz)}}
+\end{align*}
+\end{definition}
+Therefore, there are 2 ways to improve performance, by either
+\begin{enumerate}
+  \item Reducing the length of the clock cycle, or
+  \item Reducing the \# of clock cycles required for a program
+\end{enumerate}
+\begin{definition}[Clock Rate]
+\hfill\\\normalfont Clock rate is the inverse of clock cycle time.
+\[
+\text{Clock rate(CR)} = \frac{1}{\text{Clock Cycle Time(CC)}}
+\]
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.6\textwidth]{9_1.png}
+\end{figure}
+\end{definition}
+\subsection{Clock Cycles per Instruction}
+Different instructions take different amount of time to execute. On average, we have
+\[
+\text{\# of CPU cycles} = \text{\# of Instructions}\times\text{Average Clock Cycles per Instruction(CPI)}
+\]
+where Clock Cycles per Instruction is defined as:
+\begin{definition}[Clock Cycle per Instruction]
+\hfill\\\normalfont \textbf{Clock cycles per instruction} is the average number of clock cycles each instruction takes to execute.
+\end{definition}
+This allows the measurement of clock cycles per instruction for different instruction class. \\Overall, we can calculate \textbf{effective CPI} defined as below.
+\begin{definition}[Effective CPI]
+\hfill\\\normalfont Overall effective CPI is calculated by a weighted average of clock cycle per instruction among all classes of instructions.
+\[
+\text{Overall effective CPI} = \sum_{i\in I} \text{CPI}_i\times\text{IC}_i
+\]
+where IC stands for the \textbf{percentage} of instruction count, serving as the weight.
+\end{definition}
+\subsection{CPU performance}
+\begin{definition}[Performance Equation]
+\hfill\\\normalfont The performance equation of CPU is
+\[
+\text{CPU time} = \text{instruction count(IC)}\times\text{CPI}\times\text{clock cycle} = \frac{\text{IC}\times\text{CPI}}{\text{clock rate}}
+\]
+\end{definition}
+This equation gives us a way to calculate average CPI.
 
+There are multiple factors affecting CPU performance.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+&Instruction Count&CPI&Clock Cycle\\\hline
+Algorithm&*&*&\\\hline
+Programming language&*&*&\\\hline
+Compiler&*&*&\\\hline
+ISA&*&*&*\\\hline
+Processor Organisation&&*&*\\\hline
+Technology&&&*\\\hline
+\end{tabular}
+\end{table}
+\clearpage
 \end{document}
