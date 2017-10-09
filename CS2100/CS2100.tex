@@ -1746,4 +1746,149 @@ Technology&&&*\\\hline
 \end{tabular}
 \end{table}
 \clearpage
+\section{MIPS}
+\subsection{Basic Concepts}
+\subsubsection{Program Translation}
+\begin{itemize}
+\item Programs are written in high level programming languages like \texttt{C}, such as the arithemetic sum operation \texttt{A+B}.
+\item \textbf{Compiler} translates this into \textbf{assembly language} statement: \texttt{add A, B}.
+\item Finally, \textbf{Assembler} translates this statement into machine language instructions that processors can execute: \texttt{1000110010100000}.
+\end{itemize}
+\subsubsection{Instruction Execution Cycle}
+CPU follows the following instruction execution cycle: \textbf{fetch}, \textbf{decode}, \textbf{execute}.
+\begin{figure}[h]
+\begin{minipage}{0.75\textwidth}
+\begin{itemize}
+  \item Fetch: fetch next instruction, using Program Counter, from memory to IR.
+  \item Decode: decode the instruction
+  \item Execute: execute instruction
+\end{itemize}\end{minipage}\hfill\begin{minipage}{0.24\textwidth}\includegraphics[width = 0.7\textwidth]{10_1.png}\end{minipage}
+\end{figure}
+\subsubsection{Instruction Set Architecture(ISA)}
+\begin{definition}[Instruction Set Architecture]
+\hfill\\\normalfont \textbf{Instruction Set Architecture} is an abstraction on the interface between the \textit{hardware} and the \textit{low-level software}.
+\end{definition}
+Practically, 
+\begin{itemize}
+  \item Low-level software will be translated to the instruction set;
+  \item Hardware is responsible for implementing the instruction set.
+\end{itemize}
+Instruction Set Architecture is determined by
+\begin{itemize}
+  \item Organisation of programmable stroage
+  \item Data types and data structures; encoding and representations
+  \item Instruction formats
+  \item Instruction(opcode) set
+  \item Modes of addressing and accessing data items and instructions
+  \item Exceptional conditions
+\end{itemize}
+However, regardless of ISA, the instruction execution cycle "fetch, decode, execute" is always adhered.
+\begin{definition}[Instruction Set]
+\hfill\\\normalfont \textbf{Instruction set} is the language of, and specified to the machine.\end{definition}
+Instruction set is more premitive than high-level languages and has more restrictive instruction.\\From now on, \textbf{MIPS instruction set} is th focus.
+\subsubsection{Assembly Language}
+\begin{definition}[Machine Code]\hfill\\\normalfont \textbf{Machine code} is instruction represented in binary.\end{definition}
+\begin{definition}[Assembly Language]\hfill\\\normalfont \textbf{Assembly language} is the symbolic version of machine code, which can be translated to the latter by \textit{assembler}.
+\end{definition}
+Another advantage of assembly language over machine code is that assembly language can provide \textbf{pseudo-instructions}. \footnote{When considering performance, only \textit{real} instructions are counted.}
+\subsubsection{CISC vs RISC}
+CISC stands for \textbf{complex instruction set computer}, e.g. x86.
+\begin{itemize}
+  \item Single Instruction performs complex operation
+  \item \textbf{Advantage}: smaller program size which saves memory
+  \item \textbf{Disadvantage}: complex implementation, no room for hardware optimisation
+\end{itemize}
+RISC, in contrast, stands for \textbf{reduced instruction set computer}, e.g., MIPS.
+\begin{itemize}
+  \item Keep the instruction set small and simple
+  \item \textbf{Advantage}: easier to build/optimise hardware
+  \item \textbf{Disadvantage}: burden on software to combine simpler operations to implement high-level language statements.
+\end{itemize}
+\subsection{Data Storage}
+\subsubsection{Memory Organisation}
+\begin{itemize}
+\item The main memory can be viewed as a large, single-dimension array of memory locations.
+\item Each location of the memory has an \textbf{address}, which is an \textbf{index} into the array.
+\item The number of bits in every location/address is specified by \textbf{data bus}.
+\item The length of memory is specified by the number of bits of \textbf{address bus}. A $n$-bit address bus supports $2^n$ addresses.
+\item There are two ways of addressing, namely byte addressing and word addressing.
+\end{itemize}
+\begin{definition}[Byte addressing]
+\hfill\\\normalfont \textbf{Byte addressing} means the index points to \textit{one} byte of memory.
+\end{definition}
+In contrast, word addressing utilises the concepts of \textbf{word}.
+\begin{definition}[Word, word addressing]
+\hfill\\\normalfont \textbf{word} is a unit of transfer between processor and memory.\\Word addressing is implemented by addressing memory with byte addresses in the multiple of the size of the word.\end{definition}
+Suppose the memory has a 8-bit data bus and $n$-bit address bus, and uses 4-byte word addressing. There will be $2^{n-2}$ words addressable in total, with byte address $0,4,8,\ldots$.\\
+\begin{theorem}\normalfont Words are aligned in memory, in a sense the last $\log_2 m$ bits of the memory address is the same for $m$-byte word addressing with 8-bit data bus.\end{theorem}
+\subsubsection{Registers}
+\begin{definition}[Registers]\hfill\\\normalfont \textbf{Registers} are fast memories \textbf{in the processor}.
+\end{definition}
+\begin{itemize}
+  \item Data are transferred from memory to registers for \textit{faster} processing.
+  \item Compiler will associate variables in program with registers.
+  \item Registers have \textit{no} type, unlike variables.
+  \item Modern architectures predominantly use the \textbf{load-store} register architecture.
+  \item Register is limited in numbers.
+\end{itemize}
+In MIPS assembly language, there are 32 registers, referred to by a number ($\$ 0\sim \$ 31$) or a name(e.g. \$a0).\footnote{\$at(register 1) is reserved for the assembler; \$k0-\$k1 are reserved for the operation system.}
+\clearpage
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|p{7cm}|}
+\hline
+Name&Register Number&Usage\\\hline
+\$zero&0&Constant value 0\\\hline
+\$v0-\$v1&2-3&Values for results and expression evaluation\\\hline
+\$a0-\$a3&4-7&Arguments\\\hline
+\$t0-\$t7&8-15&Temporaries\\\hline
+\$s0-\$s7&16-23&Program Variables\\\hline
+\$t8-\$t9&24-25&More temporaries\\\hline
+\$gp&28&Global pointer\\\hline
+\$sp&29&Stack pointer\\\hline
+\$fp&30&Frame pointer\\\hline
+\$ra&31&Return address\\\hline
+\end{tabular}
+\caption{MIPS registers}
+\end{table}
+Different instruction set architecture may use different number of registers in the same operations.
+\subsection{Memory Addressing Mode}
+\subsubsection{Memory Locations and Addresses}
+As mentioned above,
+\begin{itemize}
+  \item Memory is viewed as a large one-dimensional array of bits.
+  \item Group of $n$ bits to store or retrieve in a single operation to/from the memory is a \textbf{word}.
+  \item A word is usually a multiple of bytes and typically 2,4 or 8 bytes.
+  \item Memory is addressed to access a \textbf{single word} or a byte using a distinct \textbf{address}.
+  \item Given $k$-bit address, the address space is of size $2^k$,
+\end{itemize}
+In word addressing, there are two conventions in storing data, namely \textbf{big=endian} and \textbf{little-endian}.
+\begin{itemize}
+  \item \textbf{Big-endian}: most significant byte stored in lowest address.
+  \item \textbf{Small-endian}: least significant byte stored in lowest address.
+\end{itemize}
+In word addressing, a word is \textbf{aligned} in memory if it begins at a byte address that is a multiple of the number of bytes in a word.
+\subsubsection{Memory operations}
+There are two major memory operations, namely \textbf{load} and \textbf{write}.
+\begin{itemize}
+  \item \textbf{Load(Read)}: Transfers the contents of a specific memory location to the processor.
+  \begin{enumerate}\item The precessor sends address to the memory; \item Memory reads data at that address; \item Memory send data to the processor\end{enumerate}
+  \item \textbf{Store(Write)}: Data from the processor is written at a specified memory location.\\Process sends address and data to the memory.
+\end{itemize} 
+The read/write from/to memory is controlled by \textbf{Control lines}, interfaced between processor and memory.
+\subsubsection{Addressing Modes}
+There are multiple addressing modes, 4 out of which are used more often.
+\begin{definition}[Register(direct) Mode]
+\hfill\\\normalfont Register Mode has the following machine code format: \[\texttt{op rs rt rd}\] where \texttt{op} stands for \textbf{opcode}, \texttt{rs, rt, rd} stands for \textbf{source}, \textbf{target} and \textbf{destination registers} respectively.\\One register mode example code is \[\texttt{add \$rd, \$rs, \$rt}\] The above command \texttt{add} adds numbers in \texttt{\$rs} and \texttt{\$rt} and store the result in \texttt{\$rd}.
+\end{definition}
+\begin{definition}[Immediate Mode]
+\hfill\\\normalfont Immediate mode has the following machine code format: \[\texttt{op rs rt immed}\] where \texttt{immed} is a constant.\\One immediate mode example code is\[\texttt{addi \$rt, \$rs, immed}\] The above command \texttt{addi} adds number in \texttt{\$rs} with \texttt{immed} and store the result in \texttt{\$rt}.
+\end{definition}
+\begin{definition}[Displacement Mode]
+\hfill\\\normalfont Displacement mode has the following machine code format \[\texttt{op rs rt immed}\] One displacement mode example code is \[\texttt{lw \$rt immed(\$rs)}\]
+The above command \texttt{lw} loads a word from the address obtained by the sum of address in \texttt{\$rs} and \texttt{immed}, to \texttt{\$rt}.
+\end{definition}
+\begin{definition}[PC-relative mode]
+\hfill\\\normalfont Program-counter(PC) relative mode has the following machine code format \[\texttt{op rs rt immed}\] One PC-relative mode example code is \[\texttt{beq \$rs \$rt, immed}\] The above command $\texttt{beq}$ branches to the memory address which is \texttt{immed} amount away from the memory address in Program Counter, if the value in \texttt{\$rs} equals value in \texttt{\$rt}.
+\end{definition}
 \end{document}

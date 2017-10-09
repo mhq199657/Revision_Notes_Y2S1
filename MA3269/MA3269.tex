@@ -8,7 +8,7 @@
 \usepackage{amsmath}              
 \usepackage{amsfonts}              
 \usepackage{framed}               
-\usepackage{amssymb}
+\usepackage{amssymb} 
 \usepackage{array}
 \usepackage{amsthm}
 \usepackage[nottoc]{tocbibind}
@@ -364,7 +364,7 @@ To see this, differentiate the pricing formula, we will have
 \end{definition}
 In general, for a cash flow $\cf{C}=\{(c_i, t_i)\mid i = 1, 2,\ldots, n\}$ at an effective annual rate of $r$, the relation 
 \[
-\frac{\diff P}{\diff r} = -D_\text{M}
+\frac{\diff P}{\diff r} = -D_\text{M}P
 \]
 still holds.
 \begin{theorem}[Linear Approximation of Price Change]
@@ -665,4 +665,58 @@ or more naturally,
 \mu_p = \pm\frac{1}{\sqrt{A}}\sigma_p -\frac{B}{2A}
 \]
 When $\rho_{12}=1,-1$, this hyperbola degenerate into a pair of lines.
+\subsection{Feasible Sets}
+\subsubsection{Feasible Sets for two assets}
+\begin{definition}[Feasible Sets for Two Assets]
+\hfill\\\normalfont Given any two risky assets 1 and 2, it can be shown that the feasible set
+\begin{enumerate}
+  \item is a \textbf{straight line} joining the $(\sigma_1, \mu_1)$ and $(\sigma_2,\mu_2)$ when $\rho_{12}=1$.(Perfect positive correlation)
+  \item is a \textbf{V-shaped graph} comprising two straight lines, each joining the $(\sigma,\mu)$ point of one asset to a point with \textbf{zero portfolio variance}, when $\rho_{12}=-1$.(Perfect negative correlation)
+  \item is a curve passing through the $(\rho,\mu)$ points of the two assets when $|\rho_{12}|<1$, where $\rho_{12}$ denotes the correlation of the rates of return.
+\end{enumerate}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{4_1.png}
+\caption{$0\leq \alpha\leq 1$, when short selling is not allowed.}
+\end{figure}
+The feasible set will be extended by extending the corresponding line segments beyond the end points if short selling \textit{is} allowed.
+\end{definition}
+\subsubsection{Feasible Sets of Portfolio of Three or More Assets}
+We construct the feasible sets intuitively by considering only the two-asset combination first, which gives rises to a finite set of hyperbolas and line segments. Next, we consider the combination of any two assets represented as two distinct points of these curves, which give rises to infinite number of hyperbolas and line segments. All the points on this infinite set will be inside the feasible set.
+
+We will show that the feasible set of a portfolio with $n(>2)$ assets has the following property.
+\begin{theorem}[Properties of Feasible Set]
+\hfill\\\normalfont \begin{enumerate}
+\item For any fixed $\mu\in\mathbb{R}$, $\exists \sigma>0$ such that $(\sigma,\mu)\in F$.
+\item For each $(\sigma,\mu)\in F$, $(\sigma^\prime, \mu)\in F$ for all $\sigma^\prime>\sigma$.
+\item For each pair of points $(\sigma, \mu)$ and $(\sigma^\prime, \mu^\prime)$ in the feasible set $F$, and for any $\lambda\in[0,1]$, the point $\lambda(\sigma,\mu)+(1-\lambda)(\sigma^\prime,\mu^\prime)$ lies in the set $F$. \\Equivalently, $F$ is a \textbf{convex set}.
+\item For any fixed $\mu\in \mathbb{R}$, there exists $\sigma^\ast>0$ such that
+\begin{enumerate}
+\item $(\sigma^\ast,\mu)\in F$
+\item if $(\sigma,\mu)\in F$, then $\sigma^\ast\leq \sigma$.
+\end{enumerate}
+We call this point $(\sigma^\ast, \mu)$ the \textbf{minimum-variance point} with mean $\mu$.
+\end{enumerate}
+\end{theorem}
+\begin{definition}[Minimum-Variance Frontier]
+\hfill\\\normalfont The theorem above suggests there is a minimum-variance point for any porfolio mean. The set of all minimum-variance points is called the \textbf{minimum-variance frontier}.
+\end{definition}
+It will be shown later that this minimum variance frontier is a \textbf{hyperbolic} curve.
+\begin{definition}[Global Minimum Variance Point]
+\hfill\\\normalfont The extreme left point on this frontier is called the \textbf{global minimum variance point}.
+\end{definition}
+\begin{definition}[Efficient Frontier]
+\hfill\\\normalfont The minimum variance frontier \textit{above} the global minimum variance point is called the \textbf{efficient frontier}.
+\end{definition}
+\clearpage 
+\section{Portfolio Theory \& Capital Asset Pricing Model}
+\subsection{Markowitz's Portfolio Theory}
+Given $n$ risky assets with mean vector $\mathbf{\mu}=\begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ and covariance matrix $\mathbf{C}=(\rho_{ij})_{n\times n}$, we seek a portfolio $\mathbf{w}$ with the smallest portfolio risk.\\Let $\mu_p =\mathbf{w}^\text{T}\mathbf{\mu}$ denote the portfolio mean and $\sigma_p^2 = \mathbf{w}^\text{T}\mathbf{Cw}$ denote the portfolio variance.
+
+We have two further assumptions:
+\begin{enumerate}
+\item[Assumption 1] $\mathbf{\mu} = \begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ is \textit{not} a scalar multiple of $\mathbf{1}$.\footnote{If so, we have $\mu_p = \mathbf{w}^\text{T}(k\mathbf{1})=k$ a constant, which is degenerate.}
+\item[Assumption 2] $\mathbf{C} = (\sigma_{ij})_{n\times n}$ is \textit{positive definite}. Equivalently, $\forall \mathbf{x}\neq \mathbf{0}, \mathbf{x}^\text{T}\mathbf{Cx}>0$.\footnote{Note $C$ as the covariance matrix is positive semidefinite. Should $\exists \mathbf{x}\neq \mathbf{0}$, such that $\mathbf{x}^\text{T}\mathbf{Cx}=0$, we can normalise $\mathbf{x}$ using 1-norm, and the left hand side become some constant times some arbitrary porfolio variance, which equals 0. This suggests the portfolio variance induced by $\mathbf{C}$ is 0 for some portfolio, which is degenerate. Therefore, we exclude the degenerate case from consideration.}
+\end{enumerate}
+\subsubsection{Minimisation of Portfolio Risk}
 \end{document}
