@@ -1232,4 +1232,123 @@ if $n$ is \textbf{even} and $f\in C^{n+2}[a,b]$; and
 \]
 if $n$ is \textbf{odd} and $f\in C^{n+1}[a,b]$.\\
 Therefore, when $n$ is an \textbf{even} integer, the degree of precision is $n+1$; when $n$ is \text{odd}, the degree of precision is only $n$.
+\end{theorem}
+\subsection{Composite Numerical Integration}
+Composite numerical integration is performed in a piecewise approach.
+\subsubsection{Composite Trapezoidal Rule}
+Let
+\[
+h=\frac{b-a}{n},\;\;n\geq 1
+\]
+and
+\[
+x_i = a+ih,\;\; i=0,1,\ldots, n
+\]
+Then composite trapezoidal rule is stated as following
+\begin{align*}
+I(f)&=\int_a^b f(x)\diff x = \sum_{i=1}^n\int_{x_i-1}^{x_{i}}f(x)\diff x\\
+&=\sum_{i=1}^n \left\{\frac{h}{2}[f(x_{i-1}+f(x_i)]-\frac{h^3}{12}f^{\prime\prime}(\xi_i)\right\}\\
+&:=T_n(f)+E_{T_n}(f)
+\end{align*}
+for some $\xi_i\in[a,b]$. Denoting $f_i:=f(x_i)$, we have
+\[
+T_n(f=\frac{h}{2}[(f_0+f_1)+(f_1+f_2)+\cdots+(f_{n-1}+f_n)]=\frac{h}{2}[f_0+2\sum_{i=1}^{n-1}f_i+f_n]
+\]
+and
+\begin{align*}
+E_{t_n}(f)=I(f)-T_n(f)&=\sum_{i=1}^n-\frac{h^3}{12}f^{\prime\prime}(\xi_i)\\
+&=-\frac{nh^3}{12}\left[\frac{1}{n}\sum_{i=1}^n f''(\xi_i)\right]\\
+&=-\frac{b-a}{12}h^2\left[\frac{1}{n}\sum_{i=1}^n f''(\xi_i)\right]\\
+&=-\frac{b-a}{12}h^2f''(\eta)\;\;\;\text{by Intermediate Value Theorem}
+\end{align*}
+From the error formula $E_{T_n}$, the composite trapezoidal rule has degree of precision 1.
+\subsubsection{Composite Simpson's Rule}
+For $n\geq 2$ and $n$ even, define $h=\frac{b-a}{n}$ and $x_i=a+ih, f_i=f(x_i)$ where $i=0,1,\ldots, n$. \\The composite Simpson's rule is stated as following
+\begin{align*}
+I(f)&=\int_{a}^bf(x)\diff x = \sum_{i=1}^\frac{n}{2}\int_{x_{2i-2}}^{x_{2i}}f(x)\diff x\\
+&=\sum_{i=1}^\frac{n}{2}\left[\frac{h}{3}(f_{2i-2}+4f_{2i-1}+f_{2i})-\frac{h^5}{90}f^{(4)}(\xi_i)\right]
+\end{align*}
+where $\xi_i\in[x_{2i-2},x_{2i}]$.\\
+It can be shown that the expression for composite Simpson's rule, $I_{S_n}(f)$, is
+\[
+I_{S_n}(f)=\frac{h}{3}(f_0+4f_1+2f_2+4f_3+2f_4+\cdots+2f_{n-2}+4f_{n-1}+f_n)
+\]
+and the error $E_{S_n}(f)$ is
+\begin{align*}
+E_{s_n}(f)&=I(f)-I_{S_n}(f)\\
+&=\sum_{i=1}^\frac{n}{2}\left[-\frac{h^5}{90}f^{(4)}(\xi_i)\right]\\
+&=-\frac{h^5}{90}\sum_{i=1}^\frac{n}{2}f^{(4)}(\xi_i)\\
+&=-\frac{h^5}{90}\frac{n}{2}f^{(4)}(\eta)\;\;\;\text{by Intermediate Value Theorem}\\
+&=-\frac{h^4(b-a)}{180}f^{(4)}(\eta)
+\end{align*}
+for some $\eta\in(a,b)$.
+\subsection{Romberg Integration}
+The Romberg Integration is carried out in a recursive manner. The base case $R_{k,1}$ is calculated first.\\
+Let
+\[
+h_k=\frac{b-a}{2^{k-1}}\;\;\;k=1,2,\ldots
+\]
+which corresponds to $n_k=2^{k-1}$ subintervals.\\
+We denote the Composite Trapezoida; rule with $h_k$ above by $R_{k,1}$, i.e.,
+\[
+R_{k,1}=\frac{h_k}{2}\sum_{i=1}^{2^{k-1}}[f(a+(i-1)h_k)+f(a+ih_k)]
+\]
+It turns out that we can reduce calculation by using $R_{k-1,1}$ in $R_{k}$:
+\[
+R_{k,1}=\frac{1}{2}[R_{k-1,1}+h_{k-1}\sum_{i=1}^{2^{k-2}}f(a+(2i-1)h_k)]
+\]
+It can be shown that
+\[
+\int_a^bf(x)\diff x -R_{k,1}=\sum_{i=1}^\infty K_ih_k^{2i}=K_1h_k^2+\sum_{i=2}^\infty K_ih_k^{2i}
+\]
+where $K_i (i=1,2,\ldots)$ are \textbf{constants} \textit{independent} of $h_k$ and they depend only on $f^{(2i-1)}(a)$ and $f^{(2i-1)}(b)$.
+
+With this result, we can accelerate the covergence of the Composite Trapezoidal rule $R_{k,1}$, by eliminating the terms involving $h_k^2$, using expression $R_{k,1}$ and $R_{k+1,1}$. It can be shown that
+\[
+R_{k+1,2}=\frac{4R_{k+1,1}-R_{k,1}}{3}
+\]
+and 
+\[
+\int_a^bf(x)\diff x = R_{k+1,2}+O(h_k^4)
+\]
+whose degree of precision improves.\\
+In general, we have
+\[
+R_{k,j}=\frac{4^{j-1}R_{k,j-1}-R_{k-1,j-1}}{4^{j-1}-1}
+\]
+and
+\[
+\int_a^bf(x)\diff x = R_{k,j}+O(h_k^{2j})
+\]
+In general, if we want to calculate $R_{n,n}$, we follow the following table
+\[
+\begin{bmatrix}
+R_{1,1}&&&\\
+R_{2,1}&R_{2,2}&&\\
+\vdots&\vdots&\ddots&\\
+R_{n,1}&R_{n,2}&\cdots&R_{n,n}
+\end{bmatrix}
+\]
+and compute column by column.
+\subsection{Adaptive Quadrature Methods}
+Adaptive Quadrature is based on Simpson's rule. The objective is to bound the error of approximation to $\int_a^bf(x)\diff x$ by a specified error $\varepsilon>0$.\\
+The first step is to apply Simpson's rule with step size $h=\frac{b-a}{2}$, producing
+\[
+\int_a^bf(x)\diff x = S(a,b)-\frac{h^5}{90}f^{(4)}(\mu)\;\;\;\text{for some }\mu\in(a,b)
+\]
+where $S(a,b)= \frac{h}{3}[f(a)+4f(a+h)+f(b)]$.
+The next step is to apply composite Simpson's rule with $n=4$, and step size $\frac{h}{2}=\frac{b-a}{4}$,giving
+\[
+\int_a^bf(x)\diff x = S(a,\frac{a+b}{2})+S(\frac{a+b}{2},b)-\frac{1}{16}\frac{h^5}{90}f^{(4)}(\mu^\prime)
+\]
+By assumption $\mu=\mu^\prime$, we have
+\[
+\frac{h^5}{90}f^{(4)}(\mu)=\frac{16}{15}[S(a,b)-S(a,\frac{a+b}{2})-S(\frac{a+b}{2},b)]
+\]
+and this estimation of error gives
+\[
+\left|\int_a^bf(x)\diff x - S(a,\frac{a+b}{2})-S(\frac{a+b}{2},b)\right|\approx \frac{1}{15}|S(a,b)- S(a,\frac{a+b}{2})-S(\frac{a+b}{2},b)|
+\]
+Therefore, we check whether $\text{RHS}<\varepsilon$. If yes, stop.\\
+If not, distribute the error into two subintervals, and try bound the error, in this case $\frac{1}{2}\varepsilon$ using the same technique. Repeat this step until the error is contained.
 \end{document}

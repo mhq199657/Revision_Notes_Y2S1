@@ -1891,4 +1891,62 @@ The above command \texttt{lw} loads a word from the address obtained by the sum 
 \begin{definition}[PC-relative mode]
 \hfill\\\normalfont Program-counter(PC) relative mode has the following machine code format \[\texttt{op rs rt immed}\] One PC-relative mode example code is \[\texttt{beq \$rs \$rt, immed}\] The above command $\texttt{beq}$ branches to the memory address which is \texttt{immed} amount away from the memory address in Program Counter, if the value in \texttt{\$rs} equals value in \texttt{\$rt}.
 \end{definition}
+\subsection{Operations in the Instruction Set}
+There are many \textbf{standard operations} for each instruction set, inlcuding 
+\begin{itemize}
+  \item Data movement
+  \begin{itemize}
+    \item load (from memory)
+    \item store (to memory)
+    \item memory-to-memory move
+    \item register-to-register move
+    \item input (from I/O device)
+    \item output (to I/O device)
+    \item push, pop (to/from stack)
+  \end{itemize}
+  \item Arithmetic: (integer or floating point) add, substract, multiply divide
+  \item Shift: shift (left/right), rotate (left/right)
+  \item Logical: not, and, or, set, clear
+  \item Control flow: Jump(unconditional), Branch(conditional)
+  \item Subroutine Linkage: call, return
+  \item Interrupt: trap, return
+  \item Synchronisation: test, set
+  \item String: search, move, compare
+  \item Graphics: pixel and vertex operations
+\end{itemize}
+In these operations, load, conditional branch, compare and store are the four most executed instructions. By Amdahl's law, these instructions should be made fast.\\There are two addressing modes for control-flow instructions:
+\begin{enumerate}
+  \item \textbf{PC-relative}: destination address = displacement + value in Program Counter\\A consequence is that code can run independently of where in memory it is loaded, so it has position indepedence.
+  \item \textbf{Register Indirect Jump}: A register is specified, which will contain the target address\\Note: value in the specified register is usually not known at compile time, but is computed at run time
+\end{enumerate}
+\subsection{Instruction Formats}
+\subsubsection{Instruction Length}
+The instuction can have either \textit{variable} or \textit{fixed} length. \\MIPS adopts \textbf{fixed-length} instructions of length 4 bytes.
+\subsubsection{Instruction Field}
+An instruction consists of \textbf{opcode} and a certain number (possibly zero) of \textbf{operands}. Each instruction has a \textit{unique} opcode.\\MIPS allow for three register operands. Since there are $2^5$ registers, each register address requires $5$ bits.\\For every direct \textbf{memory} operand, \textit{at least} one operand will be taken away.
+\subsubsection{Type and Size of Operands}
+The type of operand is designated by the \textbf{opcode}.\\32-bit instruction set architecture should support
+\begin{itemize}
+\item 8, 16, 32-bit integer operations
+\item 32, 64-bit floating point operations
+\end{itemize} 
+\subsection{Encoding the Instruction Set}
+The instruction encoding has three choices: \textit{variable}, \textit{fixed} and \textit{hybrid}.\\MIPS adopts \textbf{fixed-length} encoding.
+\subsubsection{Encoding for Fixed-length instructions}
+To maximise the possibilities of instruction bits, \textbf{expanding opcode scheme} is adopted, where the opcode has variable lengths for different instructions. Under this scheme, opcode can occupy bits unused by operands, so that a larger set of instructions can be supported.
+
+One constraint of this scheme is that: two opcode of different length should not be identical for the length of bits of the shorter opcode. This constrait should be adhered in design of encoding scheme.
+\subsection{Compiler's View}
+Considerations of compilers include
+\begin{itemize}
+  \item Ease of Compilation
+  \item Orthogonality: no special registers, few special cases, all operand modes available with any data type or instruction type
+  \item Completeness: support for a wide range of operations and target applications
+  \item Regularity: no overloading for the meanings of instruction fields
+  \item Streamlined: resource needs to be easily determined
+  \item Provide at least 16 general-purpose registers plus seperate floating point registers.
+  \item Be sure all addressing modes apply to all data transfer instructions
+  \item Aim for a minimalist instruction set
+\end{itemize}
+\clearpage
 \end{document}
