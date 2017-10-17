@@ -1118,7 +1118,7 @@ In this case we have a special formula for surface integral.
 \begin{theorem}
 \hfill\\\normalfont 
 \[
-\iint_Sf(x,y,z)\diff S = \iint_Df(x,y,g(x,y))\left(\left(\frac{\partial g}{\partial x}\right)^2+\left(\frac{\partial g}{\partial y}\right)^2+1\right)\diff A
+\iint_Sf(x,y,z)\diff S = \iint_Df(x,y,g(x,y))\sqrt{\left(\left(\frac{\partial g}{\partial x}\right)^2+\left(\frac{\partial g}{\partial y}\right)^2+1\right)}\diff A
 \]
 \end{theorem}
 On a irrelevant note, surface area of any parametricx surface $D$ traced by $\mathbf{r}(u,v)$ can be evaluated as
@@ -1126,4 +1126,67 @@ On a irrelevant note, surface area of any parametricx surface $D$ traced by $\ma
 \[
 A(S)=\iint_S 1\diff S = \iint_D\norm{\mathbf{r}_u\times\mathbf{r}_v}\diff A
 \]\end{theorem}
+\clearpage
+\section{Surface Integral of Vector Field}
+\subsection{Surface with Orientation}
+\begin{definition}[Oriented Surface]\hfill\\\normalfont A surface $S$ is \textbf{orientable} (or \textbf{two sided}) if it is possible to define a unit normal vector $\mathbf{n}$ at each point $(x,y,z)$ (excluding boundary) of the surface such that $\mathbf{n}$ is a continuous function of $(x,y,z)$.
+\end{definition}
+There are two possible orientations for any orientable surfaces, as $S$ will have two identifiable sides:
+\begin{itemize}
+  \item \textbf{Open surface}: a top and a bottom
+  \item \textbf{Closed surface}: an inside and an outside
+\end{itemize}
+\begin{theorem}[Unit normal vector {$\mathbf{n}$} of {$\mathbf{r}(u,v)$}]
+\hfill\\\normalfont One unit normal vector, which specifies a particular orientation of the parametrized surface $\mathbf{r}(u,v)$ is given by
+\[
+\mathbf{n}=\frac{\mathbf{r}_u\times \mathbf{r}_v}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}
+\]
+and the opposite orientation is given by
+\[
+-\mathbf{n}=\frac{\mathbf{r}_v\times\mathbf{r}_u}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}
+\]
+\end{theorem}
+\begin{theorem}[Unit normal vector {$\mathbf{n}$} of {$z=g(x,y)$}]
+\hfill\\\normalfont When $S$ is given by $z=g(x,y)$, the \textbf{upward} orientation of the surface is given by
+\[
+\mathbf{n}=\frac{\langle-\frac{\partial g}{\partial x},-\frac{\partial g}{\partial y}, 1 \rangle}{\sqrt{1+\left(\frac{\partial g}{\partial x}\right)^2+\left(\frac{\partial g}{\partial y}\right)^2}}
+\]
+and the \textbf{downward} orientation is given by 
+\[
+-\mathbf{n}=\frac{\langle\frac{\partial g}{\partial x},\frac{\partial g}{\partial y}, -1 \rangle}{\sqrt{1+\left(\frac{\partial g}{\partial x}\right)^2+\left(\frac{\partial g}{\partial y}\right)^2}}
+\]
+\end{theorem}
+\begin{definition}[Positive Orientation for Closed Surfaces]\hfill\\\normalfont For a \textbf{closed} surface that is the boundary of a solid region $E$, the convention is that:\\The \textbf{positive orientation} is the one for which the normal vectors point \textbf{outward} from $E$. \textbf{Inward pointing} normals give the \textbf{negative orientation}.
+\end{definition}
+\subsection{Surface Integral of Vector Field}
+\begin{definition}[Surface Integral of Vector Field]
+\hfill\\\normalfont If $\mathbf{F}$ is a continuous vector field defined on an oriented surface $S$ with a unit normal vector $\mathbf{n}$, then the \textbf{surface integral} of $\mathbf{F}$ over $S$ is
+\[
+\iint_S\mathbf{F}\cdot\diff\mathbf{S}:=\iint_S\mathbf{F}\cdot\mathbf{n}\diff S
+\]
+The integral is also called the \textbf{flux} of $\mathbf{F}$ across $S$.
+\end{definition}
+\begin{theorem}[Computation of Surface Integral over Vector Field]\hfill\\\normalfont
+To compute the integral, we first parametrize surface $S$ by $\mathbf{r}(u,v)$. Then either $\frac{\mathbf{r}_u\times \mathbf{r}_v}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}$ or $\frac{\mathbf{r}_v\times\mathbf{r}_u}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}$ will be chosen, depending on the given $\mathbf{n}$. \\Suppose $\mathbf{n}=\frac{\mathbf{r}_u\times \mathbf{r}_v}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}$, then
+\begin{align*}
+\iint_S\mathbf{F}\cdot\diff \mathbf{S}&=\iint_S\mathbf{F}\cdot\frac{\mathbf{r}_u\times \mathbf{r}_v}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}\diff S\\
+&=\iint_D \mathbf{F}\cdot \frac{\mathbf{r}_u\times \mathbf{r}_v}{\norm{\mathbf{r}_u\times \mathbf{r}_v}}\norm{\mathbf{r}_u\times \mathbf{r}_v}\diff A\\
+&=\iint_D\mathbf{F}\cdot(\mathbf{r}_u\times\mathbf{r}_v)\diff A
+\end{align*}
+where $\mathbf{r}_u\times\mathbf{r}_v$ has the same direction of $\mathbf{n}$.
+\end{theorem}
+\begin{theorem}\hfill\\\normalfont
+Let $\mathbf{F}=\langle P(x,y,z),Q(x,y,z),R(x,y,z) \rangle$. Suppose $S$ is given by
+\[
+\mathbf{r}(x,y)=\langle x,y,g(x,y)\rangle\;\;\;(x,y)\in D
+\]
+Then the flux across $S$ in the \textbf{upward} orientation is given by
+\[
+\iint_S\mathbf{F}\cdot\diff\mathbf{S}=\iint_D\langle P,Q,R\rangle \cdot\langle-\frac{\partial g}{\partial x},-\frac{\partial g}{\partial y}, 1 \rangle\diff A
+\]
+The flux across $S$ in the \textbf{negative} orientation is given by
+\[
+\iint_S\mathbf{F}\cdot\diff\mathbf{S}=\iint_D\langle P,Q,R\rangle \cdot\langle\frac{\partial g}{\partial x},\frac{\partial g}{\partial y}, -1 \rangle\diff A
+\]
+\end{theorem}
 \end{document}

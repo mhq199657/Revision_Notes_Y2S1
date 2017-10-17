@@ -1351,4 +1351,33 @@ and this estimation of error gives
 \]
 Therefore, we check whether $\text{RHS}<\varepsilon$. If yes, stop.\\
 If not, distribute the error into two subintervals, and try bound the error, in this case $\frac{1}{2}\varepsilon$ using the same technique. Repeat this step until the error is contained.
+\subsection{Gaussian Quadrature}
+Gaussian quadrature is of the form of $\sum_{i=1}^n w_if(x_i)$, where $x_i, i=1,2,\ldots, n$ are chosen from interval $[a,b]$ and $w_i, i=1,\ldots, n$ are chosen to minimise the expected error by maximising the degree of precision.\\
+To obtain Gaussian quadrature of degree $n$ on interval $[-1,1]$ , we solve the equation
+\[
+E_n(x^i)=I(x^i)-I_n(x^i),\;\;\; i = 0,1,\ldots, 2n-1
+\]
+\textbf{Case 1}: $n=1$.\\
+Then $I_1(f) = 2f(0)$.\\
+\textbf{Case 2}: $n=2$.\\
+Then $I_2(f) = f(\frac{-1}{\sqrt{3}})+f(\frac{1}{\sqrt{3}})$\\
+\textbf{Case 3}: $n=3$.\\
+Then $I_3(f) = \frac{5}{9}f(-\sqrt{\frac{3}{5}})+\frac{8}{9}f(0)+\frac{5}{9}f(\sqrt{\frac{3}{5}})$.\\
+\textbf{Case $n$}:\\
+Solve
+\[
+\int_{-1}^1x^j\diff x = \sum_{i=1}^n w_ix_i^j\;\;\;j=0,1,\ldots, 2n-1
+\]
+for $w_i, x_i, i = 1,2,\ldots, n$.
+
+For general interval $[a,b]$, introduce linear change of variable
+\[
+x=\frac{(b+a)+t(b-a)}{2}\;\;\;-1\leq t\leq 1
+\]
+Thus,
+\[
+I(f) =\frac{b-a}{2}\int_{-1}^1f\left(\frac{(b+a)+t(b-a)}{2}\right)\diff t = \frac{b-a}{2}\int_{-1}^1g(t)\diff t
+\]
+where $g(t)=f\left(\frac{(b+a)+t(b-a)}{2}\right)$.
+\clearpage
 \end{document}

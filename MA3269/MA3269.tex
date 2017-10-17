@@ -711,12 +711,117 @@ It will be shown later that this minimum variance frontier is a \textbf{hyperbol
 \clearpage 
 \section{Portfolio Theory \& Capital Asset Pricing Model}
 \subsection{Markowitz's Portfolio Theory}
-Given $n$ risky assets with mean vector $\mathbf{\mu}=\begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ and covariance matrix $\mathbf{C}=(\rho_{ij})_{n\times n}$, we seek a portfolio $\mathbf{w}$ with the smallest portfolio risk.\\Let $\mu_p =\mathbf{w}^\text{T}\mathbf{\mu}$ denote the portfolio mean and $\sigma_p^2 = \mathbf{w}^\text{T}\mathbf{Cw}$ denote the portfolio variance.
+Given $n$ risky assets with mean vector $\mathbf{\mu}=\begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ and covariance matrix $\mathbf{C}=(\rho_{ij})_{n\times n}$, we seek a portfolio $\mathbf{w}$ with the smallest portfolio risk.\\Let $\mu_p =\mathbf{w}^\text{T}\bm{\mu}$ denote the portfolio mean and $\sigma_p^2 = \mathbf{w}^\text{T}\mathbf{Cw}$ denote the portfolio variance.
 
 We have two further assumptions:
 \begin{enumerate}
-\item[Assumption 1] $\mathbf{\mu} = \begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ is \textit{not} a scalar multiple of $\mathbf{1}$.\footnote{If so, we have $\mu_p = \mathbf{w}^\text{T}(k\mathbf{1})=k$ a constant, which is degenerate.}
+\item[Assumption 1] $\bm{\mu} = \begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ is \textit{not} a scalar multiple of $\mathbf{1}$.\footnote{If so, we have $\mu_p = \mathbf{w}^\text{T}(k\mathbf{1})=k$ a constant, which is degenerate.}
 \item[Assumption 2] $\mathbf{C} = (\sigma_{ij})_{n\times n}$ is \textit{positive definite}. Equivalently, $\forall \mathbf{x}\neq \mathbf{0}, \mathbf{x}^\text{T}\mathbf{Cx}>0$.\footnote{Note $C$ as the covariance matrix is positive semidefinite. Should $\exists \mathbf{x}\neq \mathbf{0}$, such that $\mathbf{x}^\text{T}\mathbf{Cx}=0$, we can normalise $\mathbf{x}$ using 1-norm, and the left hand side become some constant times some arbitrary porfolio variance, which equals 0. This suggests the portfolio variance induced by $\mathbf{C}$ is 0 for some portfolio, which is degenerate. Therefore, we exclude the degenerate case from consideration.}
 \end{enumerate}
 \subsubsection{Minimisation of Portfolio Risk}
+The first problem is to minimise the portfolio risk $\sigma_p^2$ given a portfolio mean $\mu_p=\mu$.\\It can be shown that the partial derivative of $\sigma_p^2 = \sum_{j=1}^n\sum_{i=1}^n w_iw_j\sigma_{ij}=\mathbf{w}^\text{T}\mathbf{Cw}$, with respect to $w_k$ is
+\[
+\frac{\partial}{\partial w_k}(\sigma_p^2)=2\sum_{j=1}^n\sigma_{kj}w_j
+\]
+for $k=1,\ldots, n$.
+Therefore, in matrix notation, we have
+\[
+\frac{\partial}{\partial \mathbf{w}}(\mathbf{w}^\text{T}\mathbf{Cw})=2\mathbf{Cw}
+\]
+This result will be used in Lagrange multiplier, together with constraint $\sum_{i=1}^nw_i=1$ and $\sum_{i=1}^n\mu_iw_i=\mu$.\\
+Lagrangian function $L$ is
+\[
+L=\frac{1}{2}\sigma_p^2-\lambda_1\left(\sum_{i=1}^nw_i-1\right)-\lambda_2\left(\sum_{i=1}^nw_i\mu_i-\mu\right)
+\]
+So the equations to solve are
+\[
+\frac{\partial L}{\partial w_i} = \sum_{j=1}^n \sigma_{ij}w_j-\lambda_1-\lambda_2\mu_i=0\;\;\;\text{for }i=1,2,\ldots, n
+\]
+with two constraints
+\begin{align*}
+\sum_{i=1}^nw_i-1&=0\\
+\sum_{i=1}^n\mu_iw_i-\mu&=0
+\end{align*}
+In matrix notation,
+\[
+\begin{cases}
+\mathbf{Cw}&=\lambda_1\mathbf{1}+\lambda_2\mathbf{\mu}\\
+\mathbf{1}^\text{T}\mathbf{w}&=1\\
+\bm{\mu}^\text{T}\mathbf{w}&=\mu
+\end{cases}
+\]
+Solving $\mathbf{w}$, we have
+\[
+\mathbf{w}=\lambda_1\mathbf{C}^{-1}\mathbf{1}+\lambda_2\mathbf{C}^-1\bm{\mu}
+\]
+Substituting back to the rest two equations, we have
+\[
+\begin{pmatrix}a&b\\b&c\end{pmatrix}\begin{pmatrix}\lambda_1\\\lambda_2\end{pmatrix}=\begin{pmatrix}1\\\mu\end{pmatrix}
+\]
+where
+\begin{align*}
+a&=\mathbf{1}^\text{T}\mathbf{C}^{-1}\mathbf{1}\\
+b&=\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}\\
+c&=\bm{\mu}^T\mathbf{C}^{-1}\bm{\mu}
+\end{align*}
+It can be easily seen, from Cauchy-Schwartz Inequality on Inner product, $\begin{pmatrix}a&b\\b&c\end{pmatrix}$ is invertible. Hence, solving the above matrix equation,
+\[
+\begin{cases}
+\lambda_1=\frac{c-b\mu}{ac-b^2}\\
+\lambda_2=\frac{a\mu-b}{ac-b^2}
+\end{cases}
+\]
+Therefore, by substituting back $\lambda_1$ and $\lambda_2$ into equation of $\mathbf{w}$, we have the optimal weight vector $\mathbf{w}=\mathbf{w}_\mu^\ast$
+\[
+\mathbf{w}_\mu^\ast = \left(\frac{c-b\mu}{ac-b^2}\right)\mathbf{C}^{-1}\mathbf{1}+\left(\frac{a\mu-b}{ac-b^2}\right)\mathbf{C}^{-1}\bm{\mu}
+\]
+And variance of this optimal portfolio\footnote{$\sigma_\mu^2=\mathbf{w}^\text{T}\mathbf{Cw} = {\mathbf{w}_\mu^\ast}^\text{T}(\lambda_1\mathbf{1}+\lambda_2\bm{\mu})=\lambda_1+\lambda_2\mu$} is
+\[
+\sigma_\mu^2 = \frac{a\mu^2-2b\mu+c}{ac-b^2}
+\]
+The above equation gives the minimum-variance frontier.\\By rearranging the above equation in the form
+\[
+a\sigma^2-\frac{a^2}{\Delta}(\mu-\frac{b}{a})^2=1
+\]
+where $\Delta = ac-b^2=\det\begin{pmatrix}a&b\\b&c\end{pmatrix}$, we see the frontier is indeed a \textbf{hyperbola}.\\From the parabola equation, we deduce the GMVP mean and variance as
+\begin{align*}
+\sigma_\text{GMVP}&=\sqrt{\frac{1}{a}}\\
+\mu_\text{GMVP}&=\frac{b}{a}
+\end{align*}
+and the portfolio weight vector of GVMP as
+\[
+\mathbf{w}_\text{GMVP}=\frac{\mathbf{C}^{-1}\mathbf{1}}{\mathbf{1}^\text{T}\mathbf{C}^{-1}\mathbf{1}}
+\]
+An important consequence about the test of efficient frontier is that, a portfolio $(\sigma_p, \mu_p)$ lying \textit{on} the frontier is efficient \textit{if and only if} $\mu_p>\frac{b}{a}=\mu_\text{GMVP}$.
+\subsection{Two Fund Theorem}
+The vector vector for portfolios on the minimum-variance frontier is
+\[
+\mathbf{w}_\mu^\ast=\left(\frac{c-b\mu_p}{ac-b^2}\right)\mathbf{C}^{-1}\mathbf{1}+\left(\frac{a\mu_p-b}{ac-b^2}\right)\mathbf{C}^{-1}\bm{\mu}
+\]
+The two vectors, after being normalised, leads to
+\[
+\mathbf{w}_\mu^\ast = \alpha\left(\frac{\mathbf{C}^{-1}\mathbf{1}}{\mathbf{1}^\text{T}\mathbf{C}^{-1}\mathbf{1}}\right)+(1-\alpha)\left(\frac{\mathbf{C}^{-1}\bm{\mu}}{\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}}\right)
+\]
+where $\alpha=a\left(\frac{c-b\mu_p}{ac-b^2}\right)$.\\
+Note that the first normalised vector is the weight vector of the GMVP.
+\begin{definition}[Fund 1, Fund 2]
+\hfill\\\normalfont We denote the two normalised, therefore weight vector by \textbf{fund 1} and \textbf{fund 2}.
+\begin{align*}
+\mathbf{w}_\text{Fund 1}&=\frac{\mathbf{C}^{-1}\mathbf{1}}{\mathbf{1}^\text{T}\mathbf{C}^{-1}\mathbf{1}}\\
+\mathbf{w}_\text{Fund 2}&=\frac{\mathbf{C}^{-1}\bm{\mu}}{\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}}
+\end{align*}
+\end{definition}
+\begin{theorem}\normalfont The set of minimum-variance portfolio is \textbf{spanned}/\textbf{generated} by the two minimum-variance portfolios, $\mathbf{w}_\text{Fund 1}$ and $\mathbf{w}_\text{Fund 2}$.\end{theorem}
+In fact, this theorem can be generalised.
+\begin{theorem}[Two Fund Theorem]\hfill\\\normalfont Let $\mathbf{w}_1$ and $\mathbf{w}_2$ be the weight vectors of any two \textit{distinct} portfolios \textbf{on the minimum-variance frontier}. \\The minimum-variance set of portfolios is the set
+\[
+\{\alpha\mathbf{w}_1+(1-\alpha)\mathbf{w}_2:\alpha\in\mathbb{R}\}
+\]
+\end{theorem}
+\begin{theorem}[Two Corollaries]\hfill\\\normalfont
+\begin{enumerate}
+  \item Let $\mathbf{w}_1$ and $\mathbf{w}_2$ be two distinct efficient porfolios. Then any \textbf{convex sum}, $\alpha\mathbf{w}_1+(1-\alpha)\mathbf{w}_2, \alpha\in[0,1]$ of $\mathbf{w}_1$ and $\mathbf{w}_2$ is an \textbf{efficient} portfolio.
+  \item If $b=\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}>0$, then Fund 2 is \textbf{efficient}. In this case, any portfolio of the form $\alpha\mathbf{w}_\text{Fund 1}+(1-\alpha)\mathbf{w}_\text{Fund 2}$, with the \textbf{restriction} $\alpha<1$, is also an efficient portfolio. 
+\end{enumerate}
+\end{theorem}
 \end{document}

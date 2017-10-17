@@ -568,4 +568,192 @@ w(A^\prime)\not\equiv 0\;\;\; \mod 37
 \begin{theorem}\normalfont In weighted sum encoding modulo 37, if a single error occurs, then it can be detected.
 \end{theorem}
 \begin{theorem}\normalfont Weighted sum modulo 37 can detect a transposition error.\end{theorem}
+\subsection{ISBN}
+ISBN is also a encoding scheme with 10 digits which detects the error with module 11, and check digit at last.
+\begin{theorem} \normalfont ISBN can detect a single error and a transposition error.\end{theorem}
+\subsection{Hamming (7,4) Codes}
+Error recovery can be achieved with 
+\begin{itemize}
+  \item Hamming (7,4) Codeword
+  \item Hamming (8,4) Codeword
+\end{itemize}
+\begin{definition}[Hamming (7,4) Code]
+\hfill\\\normalfont Hamming (7,4) Code 
+\begin{itemize}
+  \item encodes 4 bits (0 or 1) of data into 7 bits by adding 3 \textbf{parity bits}
+  \item can \textbf{detect} and \textbf{correct} any single-bit error
+  \item can \textbf{detect} but \textit{not} correct a 2-bit error
+\end{itemize}
+Construction of Hamming Code:\\
+\textbf{Input}: 4-bit message $w=s_1s_2s_3s_4$.\\
+\textbf{Output}: 7-bit code $h=s_1s_2s_3s_4s_5s_6s_7$, where $s_5,s_6,s_7$ are parity bits defined as follows:
+\begin{align*}
+s_1+s_3+s_4+s_5&\equiv 0\;\;\;\mod 2\\
+s_1+s_2+s_4+s_6&\equiv 0\;\;\;\mod 2\\
+s_1+s_2+s_3+s_7&\equiv 0\;\;\;\mod 2
+\end{align*}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{4_1.png}
+\end{figure}
+The parity bits are defined in such a way that the total number of 1's in \textbf{each} of the circles $A,B,C$ must be \textbf{even}.
+\end{definition}
+\begin{theorem}\normalfont Hamming (7,4) Code can correct a 1-bit error.
+\end{theorem}\clearpage
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Error bit&Parity Check\\\hline
+$s_1$&\textbf{All} circles $A,B,C$ \textbf{fail} the parity check\\\hline
+$s_2$&\textbf{Only} $B$ and $C$ \textbf{fail} the parity check\\\hline
+$s_3$&\textbf{Only} $A$ and $C$ \textbf{fail} the parity check\\\hline
+$s_4$&\textbf{Only} $A$ and $B$ \textbf{fail} the parity check\\\hline
+$s_5$&\textbf{Only} $A$ \textbf{fails} the parity check\\\hline
+$s_6$&\textbf{Only} $B$ \textbf{fails} the parity check\\\hline
+$s_7$&\textbf{Only} $C$ \textbf{fails} the parity check\\\hline
+no error&\textbf{All} $A, B, C$ \textbf{pass} the parity check\\\hline
+\end{tabular}
+\end{table}
+\begin{theorem}\normalfont For Hamming (7,4) Code, the categories of possible senarios can be classified as follows if there were actually two errors:
+\begin{enumerate}
+  \item Error in $s_1$ and one of $s_2, s_3,s_4$
+  \item Error in $s_1$ and one of $s_5,s_6,s_7$
+  \item Error in 2 of $s_2,s_3,s_4$
+  \item Error in 2 of $s_5,s_6,s_7$
+  \item One error in $s_2,s_3,s_4$ and one error in $s_5,s_6,s_7$.\\There are two typical sub-cases:
+  \begin{enumerate}
+    \item $s_2,s_5$
+    \item $s_2,s_6$
+  \end{enumerate}
+\end{enumerate}
+In each of these, at least one circle fails.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{4_2.png}
+\end{figure}
+\end{theorem}
+Do note that Hamming (7,4) code \textit{cannot} rectify two error bits.
+\begin{definition}[Erasure error]
+\hfill\\\normalfont Erasure error occurs when there is \textit{no} error in the transmitted word, except that some bits were unrecognisable.
+\end{definition}
+\begin{theorem}\normalfont Erasure error involving at most 2 bits under Hamming (7,4) Code can \textit{always} be corrected.
+\end{theorem}
+\subsection{Hamming (8,4) Codes}
+\begin{definition}[Hamming (8,4) Code]
+\hfill\\\normalfont THe Hamming (8,4) codeword is formed by
+\begin{enumerate}
+  \item First, take a Hamming (7,4) codeword $s_1s_2s_3s_4s_5s_6s_7$.
+  \item Next, add the extra bit $s_8$ so that the total number of $1$'s in the 8-bit word $s_1\ldots s_8$ is even, i.e.
+  \[
+s_1+\cdots+s_8\equiv 0\;\;\;\mod 2
+  \]
+\end{enumerate}
+The above requirement is known as the \textbf{overall parity check}.
+\end{definition}
+\begin{theorem}\normalfont If the overall parity check fails, then there is an \textbf{odd} number of errors. If the overall parity check passes, then there is an \textbf{even} number of errors.
+\end{theorem}
+\begin{theorem}\hfill\\\normalfont The overall parity check can detect an odd number of errors. \\Suppose it is known that the number of errors is at most 2.\\If the overall parity check fails, then there is exactly one error and it can be corrected.\\If the overall parity passes and the parity check fails for at least one of the circles, then there are two errors, but it \textit{cannot} be corrected.\\If all parity checks pass, then there is no error.
+\end{theorem}
+\clearpage
+\section{Enciphering}
+\subsection{Early Cryptosystems}
+\subsubsection{Transposition and Substitution Systems}
+\begin{definition}[Polybius Square]
+\hfill\\\normalfont Letters of message are written in $5\times 5$ squares and transposed in a prearranged order.
+\end{definition}
+\begin{definition}[Caesar's Code]
+\hfill\\\normalfont Each letter of the message is replaced by the latter which occupies three positions after the original letter in the natural sequence of the latin alphabet.
+\end{definition}
+The earliest ciphers are essentially of two types:
+\begin{itemize}
+  \item \textbf{Transposition System}: This merely rearranges the position of the letters or symbols of the original message according to a prearranged procedure.
+  \item \textbf{Substitution System}: This replaces each letter or symbol of the original message by a different letter or symbol according to some rule.
+\end{itemize}
+\begin{definition}[Generalised Rail Fence Transposition]
+\hfill\\\normalfont Generalised Rail Fence Transposition is formed by the following procedure:\\Suppose we form $n$ lines. The $k$-th line $L_k$ consists of all those letters in positions $k, n+k, 2n+k,\ldots$. \\Then juxtapose these $n$ lines of letters into one single line of letters.
+\end{definition}
+\subsubsection{Shift transformation}
+\begin{definition}[Shift Transformation]
+\hfill\\\normalfont Shift transformation moves each letter cyclically a fixed number, say $k$, of places forward.\\If we denote $A$ as $0$, till $Z$ as $25$, then shifting $k$ places forward follows the procedure below:
+\begin{itemize}
+  \item \textbf{Input}: an integer $x$ between $0$ and $25$ inclusive
+  \item \textbf{Output}: integer $y$, between $0$ and $25$, satisfying the congruence
+  \[
+y\equiv x+k \;\;\;\mod 26
+  \]
+\end{itemize}
+\end{definition}
+\subsection{Vignere Cipher}
+\begin{definition}{Vignere Cipher}\hfill\\\normalfont The Vignere Cipher utilises a $26\times 26$ \textbf{Vignere square} and a \textbf{keyword}. \\
+\begin{figure}
+\centering
+\includegraphics[width = 0.5\textwidth]{5_1.png}
+\caption{Vignere Cipher}
+\end{figure}
+Procedure to encode are as following:\\
+\begin{itemize}
+  \item Write the keyword repeatedly in a row above the row of the message - one letter of the keyword above one letter of the message. 
+  \item For each character in the original message, use itself and the letter of the keyword above to uniquely determines the encoded character.
+\end{itemize}
+\end{definition}
+\subsection{Affine Cryptosystems}
+\begin{definition}[Multiplicative Inverse]
+\hfill\\\normalfont If $n$ is a positive integer greater than $1$ and $a$ is any integer, then $a$ is said to have a \textbf{multiplicative inverse modulo} $n$ if there is an integer $b$ such that
+\[
+ab\equiv 1\;\;\;\mod n
+\]
+\end{definition}
+\textbf{Remark}: If $ab\equiv 1\;\mod n$, then $a$ and $b$ form an inversive pair.\\
+If $b$ is an inverse, then so is $b+kn$ for any integer $k$.
+\begin{definition}[Affine Cryptosystem]
+\hfill\\\normalfont An \textbf{affine cryptosystem} is a cryptosystem in which the enciphering transformation is of the form
+\[
+y=f(x)\equiv ax+b\;\;\;\mod n
+\]
+where 
+\begin{itemize}
+  \item $n$ is the total number of letters and symbols that may be used in the plaintext. Usually $n=26$.
+  \item $a$ and $b$ are integers.
+  \item the pair $(a,b)$ is called the \textbf{key} of the affine cryptosystem.
+\end{itemize}
+\end{definition}
+Specifically, for affine cryptosystems on  a 26-letter alphabet, the following conditions are imposed on the choice of key $(a,b)$:
+\begin{itemize}
+  \item $0\leq a,b\leq 25$
+  \item $a$ is odd and $a\neq 13$.
+\end{itemize}
+\begin{theorem}[Deciphering transformation of an affine cryptosystem on 26 letters]
+\hfill\\\normalfont Suppose the enciphering transformation is given by the definition above, then the deciphering transformation is given by
+\[
+x=f^{-1}(y)\equiv a^\prime y-a^\prime b\;\;\;\mod 26
+\]
+where $a^\prime$ is the inverse of $a$ modulo $26$.
+\end{theorem}
+\subsection{Greatest Common Divisior \& Euclidean Algorithm}
+\begin{definition}[Greatest Common Divisor]
+\hfill\\\normalfont Let $a$ and $b$ be integers, not both zero. An integer that divides both $a$ and $b$ is a common divisor of $a$ and $b$.\\\textbf{Greatest Common Divisor} of $a$ and $b$, denoted by $\gcd(a,b)$, is the largest common divisor of both $a$ and $b$.
+\end{definition}
+\begin{theorem}\normalfont Let $a,b,q,r$ be integers such that $a=bq+r$. Then
+\[
+\gcd(a,b)=\gcd(b,r);
+\]
+\end{theorem}
+\begin{theorem}[Euclidean Algorithm]
+\hfill\\\normalfont Given two integers $n$ and $a$, where $0<a<n$, we divide $n$ by $a:=r_0$ and make a series of such divisions of $\frac{r_i}{r_{i+1}}, i=0,1,\ldots$ which eventually terminate with a zero remainder. The $r_i$'s are the remainders. Then we have
+\[
+\gcd(n,a)=\gcd(a,r_1)=\gcd(r_1,r_2)\cdots=\gcd(r_j, 0)=r_j
+\]
+\end{theorem}
+\textbf{Remark}: The greatest common divisor can be written in the form of $ax+ny$, where $x,y$ are integers determinable from backtracking the Euclidean Algorithm.
+\begin{theorem}\normalfont Suppose $a$ has an inverse $b$ modulo $n$. Then $\gcd(a,n)=1$.
+\end{theorem}
+\begin{theorem}\normalfont Suppose $a,n$ are positive integers. If $\gcd(a,n)=1$, then $a$ has an inverse modulo $n$.
+\end{theorem}
+\begin{theorem}\normalfont Suppose $a,n$ are positive integers. Then $a$ has an inverse modulo $n$ if and only if $\gcd(a,n)=1$.\end{theorem}
+\begin{theorem}[Fermat's Little Theorem]\hfill\\\normalfont Let $p$ be a prime number and $a$ be an integer which is not a multiple of $p$. Then
+\[
+a^{p-1}\equiv 1\;\;\;\mod p
+\]
+\end{theorem}
 \end{document}

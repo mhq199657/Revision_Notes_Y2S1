@@ -1949,4 +1949,164 @@ Considerations of compilers include
   \item Aim for a minimalist instruction set
 \end{itemize}
 \clearpage
+\section{MIPS Assembly Language}
+In MIPS assembly language, each instruction executes a simple command.\\Note that each line of assembly code contains \textit{at most one} instruction.\\\# is used for comments. 
+\subsection{Arithmetic Operations}
+\subsubsection{Addition}
+Addition is specified by opcode \texttt{add}. It has the following syntax:
+\[
+\texttt{add \$rd,\$rs,\$rt}
+\]
+where the operation \texttt{\$rd = \$rs + \$rt} is performed.\\
+By convention, program variables are stored in \texttt{\$s?} registers(register number 16-23) while temporaries are stored in \texttt{\$t?} registers(register number 8-15.
+\subsubsection{Subtraction}
+Subtraction is specified by opcode \texttt{sub}. It has the following syntax:
+\[
+\texttt{sub \$rd,\$rs,\$rt}
+\]
+where the opration \texttt{\$rd = \$rs - \$rt} is performed.\\
+Note that the position of \texttt{\$rs} and \texttt{\$rt} registers are important since subtraction is not commutative.
+\subsubsection{Complex Arithmetic Operations}
+Complex arithmetic operations are broken down into single instructions, by utilising the temporary registers to hold the intermediate result.
+\subsubsection{Constant/Immediate Operands}
+\textbf{Immediates} are numerical \textit{constants}.\\Examples of instructions involving immediate operands are \texttt{addi} and \texttt{subi}.
+Addition with immediate is specified by opcode \texttt{addi}. It has the following syntax:
+\[
+\texttt{addi \$rt,\$rs,immed}
+\]
+where the operation \texttt{\$rt = \$rs + immed} is performed.\\
+Similarly, subtraction with immediate is specified by opcode \texttt{subi}. It has the following syntax:
+\[
+\texttt{subi \$rt,\$rs,immed}
+\]
+where the operation \texttt{\$rt = \$rs - immed} is performed.
+\subsubsection{Register Zero {\texttt{\$zero}}}
+Register zero \texttt{\$0} or \texttt{\$zero} \textit{always} has the value 0.\\When setting one variable value to another variable, say \texttt{f=g}, it is equivalent to \texttt{f = g + 0}, which can be done using \texttt{add \$rt \$rs \$zero}.\\
+Note that any instructions attempting to set \texttt{\$zero} to any value will \textit{not} do anything.
+\subsection{Logical Operations}
+Unlike arithmetic instructions, which view content of registers as single quantity signed or unsigned integer, \textbf{logical operations} view register as 32 \textbf{raw bits}.\\Logical instructions are to operate on individual bytes or bits within a word.
+\subsubsection{Shift Operation}
+Shift left operation is specified by opcode \texttt{sll}; shift right operation is specified by opcode \texttt{srl}.\\
+It has the following syntax:
+\begin{align*}
+&\texttt{sll \$rt,\$rs,immed}\\
+&\texttt{srl \$rt,\$rs,immed}
+\end{align*}
+\textbf{Behaviour}: Move all the bits in a word to the left/right by a number of bits specified by \texttt{immed}; fill the emptied bits with zero.\\
+Note that, shifting left by $n$ bits is equivalent to multiplying by $2^n$; shifting right by $n$ bits is equivalent to dividing by $2^n$.
+\subsubsection{Bitwise AND instruction}
+Bitwise AND operation is specified by opcode \texttt{and}. It has the following syntax:
+\[
+\texttt{and \$rd,\$rs,\$rt}
+\]
+\textbf{Behaviour}: For each bit in \texttt{\$rd}, it will be $1$ only if both the bits of the same position in \texttt{\$rs} and \texttt{\$rt} are 1.\\
+Similarly, we have the \texttt{andi} instruction, which has the following syntax:
+\[
+\texttt{andi \$rt,\$rs,immed}
+\]
+\texttt{andi} can be used to create a \textbf{mask}. It can force $0$ in the specified position by putting $0$ at these position in \texttt{immed}, and retain other bits by putting $1$.
+\subsubsection{Bitwise OR instruction}
+Bitwise OR instruction is specified by opcode \texttt{or}. It has the following syntax:
+\[
+\texttt{or \$rd,\$rs,\$rt}
+\]
+\textbf{Behaviour}: For each bit in \texttt{\$rd}, it will be $1$ if either bit of the same position in \texttt{\$rs} and \texttt{\$rt} is one.\\
+Similarly, we haev the \texttt{ori} instruction, which has the following syntax:
+\[
+\texttt{ori \$rt,\$rs,immed}
+\]
+\texttt{ori} can be used to force some bits into 1s, by putting $1$ at these position in \texttt{immed}, and retain other bits by putting $0$.
+\subsubsection{Bitwise NOR instruction}
+Bitwise NOR instruction is specified by opcode \texttt{nor}. It has the followin syntax:
+\[
+\texttt{nor \$rd,\$rs,\$rt}
+\]
+It is extensively used to toggles the bits of an operand(equivalently, NOT operation), by using the following command
+\[
+\texttt{nor \$rd,\$rs, \$zero}
+\]
+\subsection{Branching Operations}
+As instructions are stoed in memory, they also have addresses. Furthermore, instruction addresses are word-aligned due to their 4-byte length. \\\textbf{Program Counter}, as a register, holds the address of instrution \textbf{currently} being executed.\\
+\subsubsection{Branch \texttt{if} Equal, Branch \texttt{if} Not Equal}
+Branch if equal and branch if not equal is specified by opcode \texttt{beq} and \texttt{bne} respectively. They have the following syntax
+\begin{align*}
+&\texttt{beq \$rs \$rt immed}\\
+&\texttt{bne \$rs \$rt immed}
+\end{align*}
+\textbf{Behaviour}:\\
+\begin{itemize}
+  \item \texttt{beq} checks whether values in \texttt{\$rs} and \texttt{\$rt} are equal;\\
+  \texttt{bne} checks whether values in \texttt{\$rs} and \texttt{\$rt} are not equal.
+  \item If the above check returns \texttt{true}, \textbf{branch} to the memory address\footnote{The multiplier 4 is due to the convention that \texttt{immed} specifies how many \textit{words} away it branches to.}
+  \[
+\text{PC}\leftarrow \text{PC}+4+4\times\texttt{immed}
+  \]
+\end{itemize}
+Therefore, \texttt{beq} and \texttt{bne} are \textbf{conditional} branches.\\
+Since \texttt{immed} is only 16-bit long, it can branch to $\pm 2^{15}$ words(aligned memory addresses) from the PC(equivalently, $2^{17}$ bytes).
+\subsubsection{Jump}
+Jump, \texttt{j}, in contrast against \texttt{beq}, is an \textbf{unconditional} branch.\\
+It has the following syntax:
+\[
+\texttt{j target\_address}
+\]
+\textbf{Behaviour}: We form the addressed to be jumped to as follows:
+\begin{itemize}
+  \item Fill the 2 LSBs, bit 0 and 1, \texttt{00}.%\footnote{Similarly, it is also due to the fact that \texttt{target\_address} specifies the \textbf{word} address.}
+  \item Extract \texttt{target address} and fill the next 26 LSBs, bit 2 to bit 27.
+  \item Fill the rest 4 MSBs, bit 28 to bit 31, same as the 4 MSBs in the Program Counter.
+\end{itemize}
+After this address is obtained, set the Program Counter value to this new address.\\
+Note that \texttt{j} can only branch in the domain of 256MB, further jump requires instruction \texttt{jr}.
+\subsection{MIPS Instruction Classification}
+Instructions are classified according to numbers and types of operands. \\There are three types of instructions for MIPS:
+\begin{itemize}
+  \item Register format(R-format)\\It requires 2 source registers and 1 destination register.
+  \item Immediate format(I-format)\\It requires 1 source register, 1 destination register and 1 immediate.
+  \item Jump format(J-format)\\It requires 1 immediate only.
+\end{itemize}
+\subsubsection{R-Format}
+\begin{definition}[Register Format Instruction]\hfill\\\normalfont
+Register format has the following instruction format:
+\[
+\underbrace{\texttt{opcode}}_{\text{6 bits}}\;\;\;\underbrace{\texttt{rs}}_{\text{5 bits}}\;\;\;\underbrace{\texttt{rt}}_{\text{5 bits}}\;\;\;\underbrace{\texttt{rd}}_{\text{5 bits}}\;\;\;\underbrace{\texttt{shamt}}_{\text{5 bits}}\;\;\;\underbrace{\texttt{funct}}_{\text{6 bits}}
+\]
+Here, a field is viewed as 5-/6-bit unsigned integer.
+\end{definition}
+\begin{itemize}
+  \item \texttt{opcode} partially specifies what instruction it is, and is consistent across all instructions\\\texttt{opcode} is fixed \texttt{000000} for \textbf{all} R-Format instructions.
+  \item \texttt{funct} is used together with \texttt{opcode} to exactly specify the instruction
+  \item \texttt{rs} specifies \textbf{source register}
+  \item \texttt{rt} specifies \textbf{target register}
+  \item \texttt{rd} specifies \textbf{destination register}
+  \item \texttt{shamt} specifies the amount a shift instruction will shift by.\\
+  \texttt{shamt} is fixed \texttt{00000} for all instructions except shift instructions.
+\end{itemize}
+\subsubsection{I-Format}
+\begin{definition}[Immediate Format Instruction]\hfill\\\normalfont
+\[
+\underbrace{\texttt{opcode}}_{\text{6 bits}}\underbrace{\texttt{rs}}_{\text{5 bits}}\underbrace{\texttt{rt}}_{\text{5 bits}}\underbrace{\texttt{immediate}}_{\text{16 bits}}
+\]
+\end{definition}
+\begin{itemize}
+  \item \textbf{opcode} \textbf{uniquely} specifies an instruction
+  \item \textbf{immediate} is treated as a \textbf{signed} integer of 2s complement, or a bit string(for logical instructions).\\It can be used to represent $2^{16}$ different values.
+\end{itemize}
+\subsubsection{J-Format}
+\begin{definition}[Jump Format Instruction]\hfill\\\normalfont
+Jump format has the following instruction format:
+\[
+\underbrace{\texttt{opcode}}_{\text{6 bits}}\underbrace{\texttt{target\_address}}_{\text{26 bits}}
+\]
+Here, the \texttt{target\_address} is viewed as a binary sequence.
+\end{definition}
+\subsection{Addressing Modes}
+Addressing modes of an instruction is determined by the type of instruction. Following are different addressing modes:
+\begin{itemize}
+  \item \textbf{Register Addressing}: operand is a register, e.g., \texttt{add}
+  \item \textbf{Immediate Addressing}: operand is a constant within the instruction itself, e.g., \texttt{addi}
+  \item \textbf{Base Addressing/Displacement Addressing}: operand is at the memory location whose address is the sum of a register and a constant in the instruction, e.g., \texttt{lw}
+  \item \textbf{PC relative addressing}: operand is at the memory location whose address is the sum of PC and constant in the instruction
+  \item \textbf{Pseudo-direct addressing}: operand is at the memory location whose address is the contacenation of upper 4-bits of PC, 26-bit of instruction and 2-bit placeholder \texttt{00}, e.g., \texttt{j}.
+\end{itemize}
 \end{document}
