@@ -16,6 +16,7 @@
 \usepackage{bm}
 \usepackage{enumitem}
 \usepackage{tikz}
+\usepackage{pdfpages}
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 
@@ -1839,11 +1840,13 @@ In MIPS assembly language, there are 32 registers, referred to by a number ($\$ 
 \hline
 Name&Register Number&Usage\\\hline
 \$zero&0&Constant value 0\\\hline
+\$at&1&Assembler temporary\\\hline
 \$v0-\$v1&2-3&Values for results and expression evaluation\\\hline
 \$a0-\$a3&4-7&Arguments\\\hline
 \$t0-\$t7&8-15&Temporaries\\\hline
 \$s0-\$s7&16-23&Program Variables\\\hline
 \$t8-\$t9&24-25&More temporaries\\\hline
+\$k0-\$k1&26-27&Kernel\\\hline
 \$gp&28&Global pointer\\\hline
 \$sp&29&Stack pointer\\\hline
 \$fp&30&Frame pointer\\\hline
@@ -2058,6 +2061,47 @@ It has the following syntax:
 \end{itemize}
 After this address is obtained, set the Program Counter value to this new address.\\
 Note that \texttt{j} can only branch in the domain of 256MB, further jump requires instruction \texttt{jr}.
+\subsection{Memory Access Instructions}
+\subsubsection{Load/Store word}
+Load word and store word instructions are specified by opcode \texttt{lw} and \texttt{sw} respectively. They have the following syntax
+\begin{align*}
+&\texttt{lw \$rt immed(\$rs)}\\
+&\texttt{sw \$rt immed(\$rs)}
+\end{align*}
+\textbf{Behaviour}: We perform the load/store word as follows:
+\begin{itemize}
+  \item In \texttt{\$rs} stores a memory address. \texttt{immed} specifies the offset (in \textbf{bytes})\footnote{\texttt{immed} is always in the multiple of 4, to preserve word alignment}.
+  \item The address of the word to be loaded is calculated: \texttt{addr}=\texttt{immed}+\texttt{\$rs}.
+  \item \texttt{lw} stores the word at the address \texttt{addr} to \texttt{\$rt}.\\\texttt{sw} stores the word in \texttt{\$rt} in memory address \texttt{addr}.
+\end{itemize}
+\subsubsection{Load/Store byte}
+Load byte and store byte instructions are specified by opcode \texttt{lb} and \texttt{sb} respectively. They have the following syntax
+\begin{align*}
+&\texttt{lb \$rt immed(\$rs)}\\
+&\texttt{sb \$rt immed(\$rs)}
+\end{align*}
+\textbf{Behaviour}: Similar to \texttt{lw}/\texttt{sw}, but only one byte is loaded/stored.\\
+Specifically, the first byte of word at \texttt{addr} will be loaded to the first byte of \texttt{\$rt}.
+\subsubsection{Load Upper Immediate}
+Load upper immediate is specified by opcode \texttt{lui}. They have the following syntax
+\[
+\texttt{lui \$rt immed}
+\]
+\textbf{Behaviour}: The 16-bit integer specified by \texttt{immed} is contacenated with 16-bit 0's, and the result is loaded into register \texttt{\$rt}.
+\subsubsection{Load Address}
+Load address instruction is specified by opcode \texttt{la}. It has the following syntax
+\[
+\texttt{la \$rd, exp}
+\]
+\textbf{Behaviour}: Suppose the data has the tag \texttt{exp}. Then \texttt{la} will load the \textbf{address} of data tagged \texttt{exp} into the register \texttt{\$rd}.
+\subsubsection{Other Load/Store Word Instructions}
+Note that MIPS disallows loading/storing a word that crosses the word boundary. Load/store word unaligned are \textit{pseudo}-instructions.\\
+Load word unaligned and store word unaligned are specified by the opcode \texttt{ulw} and \texttt{usw}.\\
+Other instructions include
+\begin{itemize}
+  \item \texttt{lh} and \texttt{sh}: load halfword and store halfword
+  \item \texttt{lwl}, \texttt{lwr}, \texttt{swl}, \texttt{swr}: load word left, load word right, store word left, store word right.
+\end{itemize}
 \subsection{MIPS Instruction Classification}
 Instructions are classified according to numbers and types of operands. \\There are three types of instructions for MIPS:
 \begin{itemize}
@@ -2109,4 +2153,56 @@ Addressing modes of an instruction is determined by the type of instruction. Fol
   \item \textbf{PC relative addressing}: operand is at the memory location whose address is the sum of PC and constant in the instruction
   \item \textbf{Pseudo-direct addressing}: operand is at the memory location whose address is the contacenation of upper 4-bits of PC, 26-bit of instruction and 2-bit placeholder \texttt{00}, e.g., \texttt{j}.
 \end{itemize}
+\clearpage
+\section{Programming in MIPS Assembly Code}
+Programming in MIPS concerns both data and operations.\\Data has the following conventions:
+\begin{itemize}
+  \item MIPS memory is an array of $2^32$ bytes.
+  \item Each byte has a 32 bit address.
+  \item \textbf{Important}:User programs and data are restricted to the first $2^31$ bytes, i.e., $0x00000000\sim 0x7FFFFFFF$.
+  \item Second half of the memory is used by operating system.
+\end{itemize}
+whereas operations may concern about load, store and arithmetic-logic operations.
+\subsection{Registers}
+It is noted that the registers of MIPS consists of
+\begin{itemize}
+\item \textbf{general purpose registers}, each of 32 bits long, which may contain integers or addresses; and
+\item \textbf{floating point registers}
+\end{itemize}
+Registers interact with ALU.\\
+Register has a usage convention, which is listed in the previous chapter's table.
+\subsection{Memory Layout}
+There are three memory segments, namely
+\begin{itemize}
+\item \textbf{Text segment}: holds the machine code of the user program (the \textit{text})
+\item \textbf{Data segment}: data that the program operates on. 
+\begin{itemize}
+  \item \textit{Static}: size in bytes does not change during execution
+  \item \textit{Dynamic}: This is data that is allocated and deallocated as the program executes.
+\end{itemize}
+\item \textbf{Stack segment}: stack is on the \textit{top} of user address.\\Local variables and parameters are pushed and popped on the stack as procedures are activated and deactivated.
+\end{itemize}
+A sample illustration could be:
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{12_1.jpg}
+\end{figure}
+Arrays are a continuous span of aligned words, so the next word will have a offset of \texttt{immed}=\texttt{4} from the current word. 
+\subsection{Constants}
+Small constants, which is less than $2^16-1$, can be contained in the \texttt{immed} field. Therefore, immediate format instructions can be used to manipulate these constants.\\
+Large constants require loading into the registers before usage. To load these constants, logical instructions \texttt{or}, \texttt{ori}, \texttt{and}, \texttt{andi}, can be used.\\Specifically, two instructions load upper immediate \texttt{lui} and \texttt{ori} can be used. Suppose an 32-bit integer is required loading into \texttt{\$t0}, then
+\begin{itemize}
+  \item \texttt{lui \$t0} $a_{31}\cdots a_{16}$.
+  \item \texttt{ori \$t0 \$t0} $a_{15}\cdots a_0$.
+\end{itemize}
+Alternatively, suppose an 32-bit integer has the tag \textbf{exp}, then
+\begin{itemize}
+  \item \texttt{la \$t0 exp}
+  \item \texttt{lw \$s0 0(\$t0)}
+\end{itemize}
+\subsection{Decision Making} 
+If loop will utilise \texttt{beq}, \texttt{bne} and \texttt{j}, and tags to specify the jump.
+\clearpage
+\includepdf[pages = -]{1.pdf}
 \end{document}

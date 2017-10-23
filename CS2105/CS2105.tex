@@ -988,4 +988,111 @@ Command \texttt{ping} sees if a remote host will respond to us -- check for conn
 
 Command \texttt{traceroute} sends a series of small packets across a network and attempts to display the route (or path) that the messages would take to get to a remote host.
 \clearpage
+\section{Network Security}
+Network security concerns about the following aspects:
+\begin{itemize}
+\item Message confidentiality
+\item Message integrity
+\item Message authenticity
+\item Service availability
+\end{itemize}
+Let us denote the two parties of communication as Alice and Bob, and the intruder as Trudy.
+\subsection{Principles of Cryptography}
+Cryptography is aimed to make it difficult for an unauthorised third party to understand private communications.\\
+Cryptography involves both \textbf{algorithms}, which is known public, and \textbf{keys}, which are dependent on the type of algorithms used, and is kept secret.\\
+Suppose Alice has an encryption key $K_A$ and Bob has a corresponding decryption key $K_B$, the following relationship is preserved
+\[
+K_B(K_A(m))=m
+\]
+where $m$ is the message Alice wants to send to Bob.\\
+There are two types of cryptography, namely \textbf{symmetric key} cryptography and \textbf{public key} cryptography.
+\subsubsection{Symmetric Key Cryptography}
+In symmetric key cryptography, Alice and Bob share and use the \textbf{same}(\textbf{symmetric}) key: $K_{A-B}$.\\Popular algorithms include Advanced Encryption Standard(AES).\\
+One simplistic example of symmetric key cryptography is \textbf{monoalphabetic cipher}. In this scheme, Alice and Bob share an identical mapping table from a permutation of 26 letters to another permutation, for translation between plaintext and ciphertext.\\
+Symmetric key cryptography has the following problem: sender and receiver cannot agree on the shared key in the first place.
+\subsubsection{Public Key Cryptography}
+In public key cryptography, each party has a pair of keys, namely the \textbf{public key}, $K^+$, and \textbf{private key}, $K^-$. The public key is known public and the private key is kept confidental. The choice of this pair of key requires:
+\begin{enumerate}
+  \item $K^-(K^+(m))=m$
+  \item Given public key $K^+$, it should be very difficult to find private key $K^-$.
+\end{enumerate}
+The most popular algorithm of public key cryptography is \textbf{RSA}, for which, the public key is the product of two \textit{very large prime} numbers and the private key is derived from these two large primes.
+\begin{theorem}[Property of RSA]
+\hfill\\\normalfont An important property of RSA is that the public key and private key are commutative:
+\[
+K^-K^+=K^+K^-=1
+\]
+where $1$ is the identity operator.
+\end{theorem}
+RSA, although resolves the problem of key sharing, is \textit{computationally intensive}, thus slower. Therefore in practive, the following standard is used:
+\begin{enumerate}
+  \item Use public key cryptography to establish secure connection, by exchanging the symmetric session key $K_S$.
+  \item Then use this session key for encryption and decryption.
+\end{enumerate}
+Note that $K_S$ is only valid for \textit{one} session.
+\subsection{Message Integrity and Digital Signatures}
+Two ways to ensure message integrity and meesage authenticity are \textbf{message authentication code}(MAC) and \textbf{digital signature}.
+\subsubsection{Cryptographic Hash Function}
+Cryptographic hash function is the basis of both methods above.
+\begin{definition}[Cryptographic Hash Function]
+\hfill\\\normalfont Cryptographic hash function is a hash function $H$ which takes an input $m$, and generate a \textit{fixed size} string $H(m)$, known as \textbf{message digest}(hash or finger print).\\
+Cryptographic hash function must adhere the property that it is computationally infeasible to find two different messages $m$ and $m^\prime$ such that $H(m)=H(m^\prime)$.
+\end{definition}
+The following property makes it impossible for Trudy to forge another message $m^\prime$ with the same message digest as $m$.\\
+Popular cryptographic hash functions include MD5 and SHA-1.
+\begin{theorem}[Work Flow of hash function]
+\hfill\\\normalfont For Alice, the sender of the message.
+\begin{enumerate}
+  \item Alice creates message $m$ and calculates the hash $H(m)$.
+  \item Alice then appends $H(m)$ to the message $m$, creating an extended message $(m, H(m))$, and sends the extended message to Bob.
+\end{enumerate}
+For Bob, the receiver,
+\begin{enumerate}
+  \item Bob receives an extended message $(m^\prime, h^\prime)$.
+  \item Bob calculates $H(m^\prime)$. If $H(m^\prime)=h^\prime$, Bob concludes that message integrity is preserved.
+\end{enumerate}
+\end{theorem}
+However, cryptographic hash function does not guarantee message authenticity, which leads to the invention of message authentication code.
+\subsubsection{Message Authentication Code}
+To ensure message authenticity, Alice and Bob agrees on a \textbf{message authentication code}, $s$. The extended work flow is as follows:
+\begin{theorem}[Work Flow of message authentication code]
+\hfill\\\normalfont For Alice, the sender of the message.
+\begin{enumerate}
+  \item Append, by method of string concatenation, $s$ after $m$ to form the modified message $m+s$.
+  \item Calculate the hash $H(m+s)$.
+  \item Alice then appends $H(m+s)$ to the message $m$, creating an extended message $(m, H(m+s))$, and sends the extended message to Bob.
+\end{enumerate}
+For Bob, the receiver,
+\begin{enumerate}
+  \item Bob receives an extended message $(m^\prime, h^\prime)$.
+  \item Bob calculates $H(m^\prime+s)$. If $H(m^\prime+s)=h^\prime$, Bob concludes that message integrity \textbf{and} message authenticity are preserved.
+\end{enumerate}
+\end{theorem}
+\subsubsection{Digital Signature}
+The problem of message authentication code is that either Bob and Alice could produce the same $H(m+s)$. Therefore, the producer of the message cannot be uniquely identified.\\
+Digital signature, which solves this problem, has the following properties:
+\begin{itemize}
+  \item \textbf{verifiable}: recipient(Bob) can verify that Alice, and \textbf{no one else}, has signed the document.
+  \item \textbf{non-repudiation}: when presented the document and digital signature to a third party, the third party is confident that this document is indeed signed by Alice but no one else.
+\end{itemize}
+One way to produce the digital signature is to utilise the \textbf{private key} of the public key encryption scheme.
+\begin{theorem}[Work flow of Digital Signature]
+\hfill\\\normalfont 
+For Alice,
+\begin{itemize}
+\item Alice signs $m$ be encrypting the message digest $H(m)$ with her private key $K_A^-$, creating a ``signed'' message digest $K_A^-(H(m))$.
+\item Alice sends both $m$ and $K_A^-(H(m))$ to Bob.
+\end{itemize}
+For Bob, he receives $(m^\prime, \text{signature})$
+\begin{itemize}
+  \item Verify the sender by computing the message digest $H(m)$.
+  \item and compare with $K^+(\text{signature})$.
+\end{itemize}
+\end{theorem}
+One problem of the above workflow is that, the public key Bob uses may not definitely be Alice's. To resolve this issue, certificate authority is used.\\\textbf{Certificate authority} is an entity that issues digital certificates, which is Alice's public key encrypted by Certificate Authority's private key, i.e. $K_\text{CA}^-K_A^+$.\\If Bob trusts the certificate authority's public key, it will trust Alice's public key, by applying $K_\text{CA}^+(DC)$.
+\subsection{Security Layer}
+\subsection{SSL: Secure Socket Layer}
+Secure socket layer is an layer interfaced between application and transport layer. It is applicable to \TCP conenctions.
+\subsection{IPSec: Internet Protocol Security}
+IPsec is a suite of protocols that secure communications by authenticating and ecrypting each \IP packet of a communication session. It is interfaced between Transport layer and \IP layer.\\Both SSL and IPsec can be used to build VPN. 
 \end{document}

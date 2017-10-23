@@ -34,6 +34,8 @@
 \DeclareMathOperator{\spn}{Span}
 \DeclareMathOperator{\proj}{proj}
 \DeclareMathOperator{\comp}{comp}
+\DeclareMathOperator{\curl}{curl}
+\DeclareMathOperator{\divg}{div}
 \setcounter{tocdepth}{1}
 \begin{document}
 
@@ -1189,4 +1191,53 @@ The flux across $S$ in the \textbf{negative} orientation is given by
 \iint_S\mathbf{F}\cdot\diff\mathbf{S}=\iint_D\langle P,Q,R\rangle \cdot\langle\frac{\partial g}{\partial x},\frac{\partial g}{\partial y}, -1 \rangle\diff A
 \]
 \end{theorem}
+\clearpage
+\section{Divergence and Curl}
+\subsection{Divergence}
+Divergence can be regarded as a measurement of the net \textit{outward} flux of vector field.
+\begin{definition}[Divergence]
+\hfill\\\normalfont Let $\mathbf{F}(x,y,z)=P(x,y,z)\mathbf{i}+Q(x,y,z)\mathbf{j}+R(x,y,z)\mathbf{k}$ be a vector field in space, where $P,Q,R$ have first order derivatives in some region $D$. The \textbf{divergence} of $\mathbf{F}$ is the scalar function defined by
+\[
+\divg \mathbf{F} = \frac{\partial P}{\partial x}+\frac{\partial Q}{\partial y}+\frac{\partial R}{\partial z}
+\]
+\end{definition}
+\begin{definition}[Del Operator]
+\hfill\\\normalfont The vector differential operator $\nabla$ is defined by
+\[
+\nabla = \langle \frac{\partial}{\partial x}, \frac{\partial}{\partial y},\frac{\partial}{\partial z}\rangle
+\]
+\end{definition}
+Divergence can be expressed in terms of the del operator:
+\[
+\divg \mathbf{F}=\nabla\cdot \mathbf{F}
+\]
+\subsection{Gauss/Divergence Theorem}
+\begin{theorem}[Divergence Theorem]
+\hfill\\\normalfont Let $E$ be a solid region where the boundary surface $S$ of $E$ is piecewise smooth with positive (outward) orientation.\\Let $\mathbf{F}(x,y,z)$ be a vector field whose component functions have continuous partial derivatives on an open region that contains $E$. Then,
+\[
+\iint_S\mathbf{F}\cdot\diff\mathbf{S}=\iiint_E\div\mathbf{F}\diff V
+\]
+\end{theorem}
+\subsection{Curl}
+Curl is the measure of microscopic circulation of the underlying vector field.
+\begin{definition}[Curl]
+\hfill\\\normalfont
+\[
+\curl \mathbf{F} = \begin{array}{|ccc|}
+\mathbf{i}&\mathbf{j}&\mathbf{k}\\
+\frac{\partial}{\partial x}&\frac{\partial}{\partial y}&\frac{\partial}{\partial z}\\
+P&Q&R\end{array}=\nabla\times\mathbf{F} 
+\]
+\end{definition}
+\subsection{Stokes' Theorem}
+\begin{definition}[Positive Orientation of Boundary Curve]
+\hfill\\\normalfont Let $C$ be the boundary curve of an open surface $S$ in space with unit normal $\mathbf{n}$. The positive orientation of the bounary curve is given by the \textbf{right hand rule}.
+\end{definition}
+\begin{theorem}[Stoke's Theorem]
+\hfill\\\normalfont Let $C$ be the boundary curve(simple closed curve) of a surface $S$ with unit normal $\mathbf{n}$. Suppose that $C$ is positively oriented with respect to $\mathbf{n}$.\\Let $\mathbf{F}$ be a vector field whose components have continuous partial derivatives on an open region in $\mathbb{R}^3$ that contains $S$. Then,
+\[
+\int_C\mathbf{F}\cdot\diff\mathbf{r}=\iint_S\curl\mathbf{F}\cdot\diff\mathbf{S}
+\]
+\end{theorem}
+Green's Theorem is a special case of Stoke's Theorem.
 \end{document}

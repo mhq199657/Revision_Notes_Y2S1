@@ -70,8 +70,12 @@ Accumulation function $a(s,t)$ can be derived from \textbf{force of interest} as
 a(s,t) = e^{\int_s^t \delta(r)\diff r}
 \]
 where $\delta(r)$ is the force of interest with $s\leq r\leq t$.
-\subsection{Standard Derivatives}
-
+\subsection{A result in Chapter 3}
+Given an initial wealth of $w_0$ and two investments $X_1$ and $X_2$ with rates of returns $r_1$ and $r_2$ respectively, where $r_i\sim N(\mu_i, \sigma_i^2)$, a risk averse investor whose utility function is any positive affine transformation of $U(x)=-e^{-\lambda x}, \lambda>0$ allocates $\alpha W_0$ in $X_1$ and $(1-\alpha)w_0$ in $X_2$ where $\alpha\in[0,1]$ in such a way that
+\[
+f(\alpha)=\alpha\mu_1+(1-\alpha)\mu_2-\frac{\lambda w_0}{2}(\alpha^2\sigma_1^2+(1-\alpha)^2\sigma_2^2)
+\]
+is maximised on $[0,1]$.
 \clearpage
 \section{Theory of Interest}
 \subsection{Interest}
@@ -527,7 +531,7 @@ An individual with an initial wealth of $w_0$ can invest a portion (say $\alpha 
 \[
 \expec[U(W)]=\expec[U(w_0(1+\alpha R))]
 \]
-Note that $\frac{\diff^2}{\diff\alpha^2}\expec[U(W)]<0$, hence setting the first order derivative to 0 always yields maxima $\alpha^\ast$, although there is no guarantee that such $\alpha^\ast\in[0,1]$.
+Note that $\frac{\diff^2}{\diff\alpha^2}\expec[U(W)]<0$ for any risk-averse individual, hence setting the first order derivative to 0 always yields maxima $\alpha^\ast$, although there is no guarantee that such $\alpha^\ast\in[0,1]$.
 \clearpage
 \section{Mean-Variance Analysis}
 In this chapter, the accumulation function is constant 1. Therefore, we do not consider time value.
@@ -549,7 +553,7 @@ Equivalently, $P_1 = P_0(1+r)$,
 \begin{definition}[Risk of Asset]
 \hfill\\\normalfont The standard deviation, $\sigma_i = \sqrt{\var(r_i)}$, of the rate of return of asset $i$, is a measure of the risk of asset $i$.
 \[
-\sigma_i = \sqrt{\var(r_i)}=\sqrt{\expec[(r_i-\expec(r_i))^2]} = \sqrt{\expec[r_i^2-E(r_i)^2]}
+\sigma_i = \sqrt{\var(r_i)}=\sqrt{\expec[(r_i-\expec(r_i))^2]} = \sqrt{\expec[r_i^2-\expec(r_i)^2]}
 \]
 \end{definition}
 \begin{definition}[Correlation of Returns]
@@ -580,18 +584,18 @@ r_p = \sum_{i=1}^n w_ir_i
 \]
 It follows that the expected rate of return of the portfolio, or \textbf{portfolio mean}, is
 \[
-\mu_p = \expec(r_p) = \sum_{i=1}^n w_i\mu_i = \mathbf{w}^T\mu
+\mu_p = \expec(r_p) = \sum_{i=1}^n w_i\mu_i = \mathbf{w}^T\bm{\mu}
 \]
 where 
 \[
-\mathbf{\mu} = (\mu_1,\ldots, \mu_n)^T
+\bm{\mu} = (\mu_1,\ldots, \mu_n)^T
 \]
 is the vector of expected rates of return of the assets $(r_1,\ldots, r_n)$ respectively. This vector is called \textbf{mean vector} for simplicity.\\
 The variance of rate of return of portfolio $\var(r_p)$, or simply \textbf{portfolio variance}, of $\mathbf{w}$, is
 \begin{align*}
 \sigma_p^2 &= \var(r_p) = \cov(\sum_{i=1}^n w_ir_i,\sum_{j=1}^n w_jr_j )\\
 &=\sum_{i=1}^n\sum_{j=1}^n w_iw_j\cov(r_i,r_j)\\
-&=\sum_{i=1}^n\sum_{k=1}^n \sigma_{ij}\\
+&=\sum_{i=1}^n\sum_{j=1}^n w_iw_j\sigma_{ij}\\
 &=\mathbf{w}^T\mathbf{C}\mathbf{w}\text{ in matrix notation}
 \end{align*}
 where
@@ -599,7 +603,7 @@ where
 \mathbf{C} = \begin{pmatrix}
 \sigma_{11}&\cdots&\sigma_{1n}\\
 \vdots&\ddots&\vdots\\
-\sigma_{n1}&\cdots&\sigma{nn}\end{pmatrix}
+\sigma_{n1}&\cdots&\sigma_{nn}\end{pmatrix}
 \]
 is known as the \textbf{covariance matrix} of the random vector $\mathbf{r} = (r_1,\cdots, r_n)$.
 We also have, by noting $\sigma_{ii} = \var(r_i) := \sigma_i^2$ and $\sigma_{ij} = \sigma_{ji}$,
@@ -711,7 +715,7 @@ It will be shown later that this minimum variance frontier is a \textbf{hyperbol
 \clearpage 
 \section{Portfolio Theory \& Capital Asset Pricing Model}
 \subsection{Markowitz's Portfolio Theory}
-Given $n$ risky assets with mean vector $\mathbf{\mu}=\begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ and covariance matrix $\mathbf{C}=(\rho_{ij})_{n\times n}$, we seek a portfolio $\mathbf{w}$ with the smallest portfolio risk.\\Let $\mu_p =\mathbf{w}^\text{T}\bm{\mu}$ denote the portfolio mean and $\sigma_p^2 = \mathbf{w}^\text{T}\mathbf{Cw}$ denote the portfolio variance.
+Given $n$ risky assets with mean vector $\bm{\mu}=\begin{pmatrix}\mu_1&\mu_2&\cdots&\mu_n\end{pmatrix}^\text{T}$ and covariance matrix $\mathbf{C}=(\sigma_{ij})_{n\times n}$, we seek a portfolio $\mathbf{w}$ with the smallest portfolio risk.\\Let $\mu_p =\mathbf{w}^\text{T}\bm{\mu}$ denote the portfolio mean and $\sigma_p^2 = \mathbf{w}^\text{T}\mathbf{Cw}$ denote the portfolio variance.
 
 We have two further assumptions:
 \begin{enumerate}
@@ -719,7 +723,7 @@ We have two further assumptions:
 \item[Assumption 2] $\mathbf{C} = (\sigma_{ij})_{n\times n}$ is \textit{positive definite}. Equivalently, $\forall \mathbf{x}\neq \mathbf{0}, \mathbf{x}^\text{T}\mathbf{Cx}>0$.\footnote{Note $C$ as the covariance matrix is positive semidefinite. Should $\exists \mathbf{x}\neq \mathbf{0}$, such that $\mathbf{x}^\text{T}\mathbf{Cx}=0$, we can normalise $\mathbf{x}$ using 1-norm, and the left hand side become some constant times some arbitrary porfolio variance, which equals 0. This suggests the portfolio variance induced by $\mathbf{C}$ is 0 for some portfolio, which is degenerate. Therefore, we exclude the degenerate case from consideration.}
 \end{enumerate}
 \subsubsection{Minimisation of Portfolio Risk}
-The first problem is to minimise the portfolio risk $\sigma_p^2$ given a portfolio mean $\mu_p=\mu$.\\It can be shown that the partial derivative of $\sigma_p^2 = \sum_{j=1}^n\sum_{i=1}^n w_iw_j\sigma_{ij}=\mathbf{w}^\text{T}\mathbf{Cw}$, with respect to $w_k$ is
+The first problem is to minimise the portfolio risk $\sigma_p^2$ \textbf{given} a portfolio mean $\mu_p=\mu$.\\It can be shown that the partial derivative of $\sigma_p^2 = \sum_{j=1}^n\sum_{i=1}^n w_iw_j\sigma_{ij}=\mathbf{w}^\text{T}\mathbf{Cw}$, with respect to $w_k$ is
 \[
 \frac{\partial}{\partial w_k}(\sigma_p^2)=2\sum_{j=1}^n\sigma_{kj}w_j
 \]
@@ -824,4 +828,70 @@ In fact, this theorem can be generalised.
   \item If $b=\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}>0$, then Fund 2 is \textbf{efficient}. In this case, any portfolio of the form $\alpha\mathbf{w}_\text{Fund 1}+(1-\alpha)\mathbf{w}_\text{Fund 2}$, with the \textbf{restriction} $\alpha<1$, is also an efficient portfolio. 
 \end{enumerate}
 \end{theorem}
+\subsection{One-Fund Theorem}
+This subsection concerns portfolios with a risk-free asset.\\
+Consider a portfolio comprising the risk-free asset $w_0$ with a \textit{deterministic} rate of return $r_f$ (also called the \textbf{risk free rate}) and the $n$ risky assets.\\For consistency, $\bm{\mu}$ be the mean vector for the \textbf{risky} assets and let $\mathbf{w}$ be the weight vector for the portfolio in the $n$ risky assets. Then the entire portfolio can be written as the following $(n+1)$-vector
+\[
+\mathbf{w}^\prime = \begin{pmatrix}1-\sum_{i=1}^n w_i&w_1&w_2&\cdots&w_n\end{pmatrix}^\text{T}=\begin{pmatrix}1-\mathbf{1}^\text{T}\mathbf{w}&w_1&w_2&\cdots&w_n\end{pmatrix}^\text{T}
+\]
+in which the first element is the proportion of capital invested in the risk-free asset.\\
+The rate of return $r_p$ of this portfolio is thus given by
+\[
+r_p=(1-\mathbf{1}^\text{T}\mathbf{w})r_f+\mathbf{w}^\text{T}\mathbf{r}
+\]
+where $\mathbf{r}=\begin{pmatrix}r_1&r_2&\cdots&r_n\end{pmatrix}^\text{T}$ is the vector of rates of return of risky assets.\\
+The portfolio mean and variance are
+\begin{align*}
+\mu_p &= \expec[r_p]=(1-\mathbf{1}^\text{T}\mathbf{w})r_f+\mathbf{w}^\text{T}\bm{\mu}\\
+\sigma_p^2&=\var(r_p)=\mathbf{w}^\text{T}\mathbf{Cw}
+\end{align*}
+In order to obtain a portfolio of minimum risk $\sigma_p$ for a given portfolio mean $\mu_p=\mu$, we use the same Lagrange multiplier technique.\\
+The optimal weight vector is
+\[
+\mathbf{w}^\ast = \frac{(\mu-r_f)\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})}{(\bm{\mu}-r_f\mathbf{1})^\text{T}\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})}
+\]
+The portfolio variance of the optimal portfolio is
+\[
+(\sigma^2)^\ast = \frac{(\mu-r_f)^2}{(\bm{\mu}-r_f\mathbf{1})^\text{T}\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})}\;\;\;(\#)
+\]
+By letting $\begin{pmatrix}a&b\\b&c\end{pmatrix}=\begin{pmatrix}\mathbf{1}^\text{T}\mathbf{C}^{-1}\mathbf{1}&\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}\\\mathbf{1}^\text{T}\mathbf{C}^{-1}\bm{\mu}&\bm{\mu}^\text{T}\mathbf{C}^{-1}\bm{\mu}\end{pmatrix}$, then it can be shown the denominator of (\#) $(\bm{\mu}-r_f\mathbf{1})^\text{T}\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})=c-2br_f+ar_f^2$, so 
+\[
+(\sigma^2)^\ast = \frac{(\mu-r_f)^2}{c-2br_f+ar_f^2}
+\]
+Therefore, by taking square roots,
+\[
+\sigma^\ast = \frac{1}{\sqrt{c-2br_f+ar_f^2}}|\mu-r_f|
+\]
+This shows that all minimum-variance portfolios lie on two rays emanating from the point $(0,r_f)$. The upper line is the efficient frontier, is known as the \textbf{capital market line}(CML).\\
+Note that any portfolio with these $n$ risky assets will lie within the feasible set of this $(n+1)$-asset frontier, by taking $w_0=0$.
+\subsubsection{Tangency Porfolio}
+Suppose the GMVP of portfolio consisting of $n$ risky assets has its mean exceeding the risk-free rate, that is
+\[
+\mu_\text{GMVP}=\frac{b}{a}>r_f
+\]
+This assumption will be true unless otherwise stated.
+\begin{definition}[Tangency Portfolio]
+\hfill\\\normalfont The \textbf{tangency portfolio} corresponds to the point of tangency between the minimum-variance frontier for risky assets and the capital market line. This unique portfolio satisfies the following properties:
+\begin{enumerate}
+  \item it lies on the efficient frontier line
+  \item it lies on the minimum-variance efficient frontier for risky assets
+  \item it invests only in the $n$ risky assets, that is, $\sum_{i=1}A^n w_i=1$.
+\end{enumerate}
+\end{definition}
+This tangency portfolio satisfies the equation (\#), and the constraint
+\[
+\sum_{i=1}^n w_1 = \mathbf{1}^\text{T}\mathbf{w}=1
+\]
+Solving, we have the weight portfolio $\mathbf{w}_\text{tan}$ as
+\[
+\mathbf{w}_\text{tan}=\frac{\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})}{\mathbf{1}^\text{T}\mathbf{C}^{-1}(\bm{\mu}-r_f\mathbf{1})}
+\]
+It foolows the mean and variance of the tangency portfolio are
+\[
+\mu_\text{tan}=\frac{c-r_fb}{b-r_fa}
+\]
+and
+\[
+\sigma^2_\text{tan}=\frac{c-2r_fb+ar_f^2}{(b-r_fa)^2}
+\]
 \end{document}
