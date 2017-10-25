@@ -1095,4 +1095,134 @@ One problem of the above workflow is that, the public key Bob uses may not defin
 Secure socket layer is an layer interfaced between application and transport layer. It is applicable to \TCP conenctions.
 \subsection{IPSec: Internet Protocol Security}
 IPsec is a suite of protocols that secure communications by authenticating and ecrypting each \IP packet of a communication session. It is interfaced between Transport layer and \IP layer.\\Both SSL and IPsec can be used to build VPN. 
+\clearpage
+\section{Link Layer}
+\textbf{Link Layer} is responsible of sending datagrams between adjacent nodes over a \textit{single} link.
+\begin{itemize}
+  \item \IP datagrams are encapsulated in link-layer \textbf{frames} for transmission.
+  \item Different link-layer protocols may be used on different links;\\each protocol may provide a different set of services.
+\end{itemize} 
+Link layer may offer the following services
+\begin{itemize}
+  \item \textbf{Framing}: encapsulate \IP datagram into link-layer fram, adding header and trailer\\\textbf{Remark}: different protocols have different header and trailer format; each header and trailer is valid for \textit{only one} hop
+  \item \textbf{Link access control}: Coordinate which nodes can send frames at a certain point of time, when multiple nodes \textit{share} a single link.
+  \item \textbf{Reliable delivery}
+  \item \textbf{Error detection}
+  \begin{itemize}
+    \item Errors are usually caused by signal attenuation or noise.
+    \item Receiver detedcts presence of errors. Receiver, when error is detected, may signal sender for retransmission or simply drop frame.
+  \end{itemize}
+  \item \textbf{Error correction}: Receiver may identify and correct bit error without resorting to retransmission.
+\end{itemize}
+Link layer is implemented in adapters, which contain both link and physical layer.
+\subsection{Error Detection and Correction}
+Commonly used error detection schemes include
+\begin{itemize}
+  \item Checksum(used in \TCP/\UDP/\IP)
+  \item Parity Checking
+  \item CRC(commonly used in link layer)
+\end{itemize}
+Note that error detection schemes are not 100\% reliable.
+\subsubsection{Parity Checking}
+\begin{definition}[Single Bit Parity]
+\hfill\\\normalfont Suppose the data is of the form of $d_n\cdots d_1$, the parity bit $p$ is chosen such that
+\[
+\sum_{i=1}^n d_i + p \equiv 0 \;\;\;\mod 2
+\]
+The sender, after computing the parity, will send data and parity bit, in the form of $d_n\cdots d_1 p$.
+\end{definition}
+\begin{definition}[Two-dimensional Bit Parity]
+\hfill\\\normalfont In two-dimensional bit parity, the data is arranged in a two-dimensional array, and the single bit parity is computed for each row and column. The augmented array with both data and parity bits will be sent.\\Two-dimensional bit parity can
+\begin{itemize}
+  \item Detect \textbf{and correct} single bit errors in data.
+  \item Detect two bits errors in data.
+\end{itemize} 
+\end{definition}
+\subsubsection{Cyclic Redundancy Check(CRC)}
+Cyclic Redundancy check is a power error-detection coding. It consists of
+\begin{itemize}
+  \item $D$: data bits viewed as a binary number
+  \item $G$: generator of length $(r+1)$ bits, agreed by sender and receiver beforehand
+  \item $R$: CRC checksum in length of $r$ bits
+\end{itemize}
+CRC checksum is computed as follows:
+\begin{enumerate}
+  \item Append $r$ bits of 0's after the data $D$.
+  \item Perform bitwise \texttt{XOR} operation on the augmented data $D\underbrace{0\cdots 0}_{r\text{ bits}}$.\\This \texttt{XOR} operation is done withour carry or borrow, between augmented data and $G$. The operations starts from the MSBs of augmented data and cascading to the LSBs.
+  \item The remainder will be set as $R$, which replaces the trailing 0's in augmented data, to form the CRC checksum $D+R$, where $+$ is the string contacenation.
+\end{enumerate}
+If $G\nmid D+R$, the error is detected. 
+\subsection{Multiple Access Links and Protocols}
+There are two types of network links, namely
+\begin{enumerate}
+  \item \textbf{Point-to-point link}, where a sender and receiver connected by a \textbf{dedicated} link, which do not need multiple access contol
+  \item \textbf{Broadcast link}, where
+  \begin{itemize}
+    \item Multiple nodes connected to a shared broadcast channel
+    \item When a node transmits a frame, the channel broadcasts the frame and each other node receives a copy
+  \end{itemize}
+\end{enumerate}
+In a broadcast channel, if two or more nodes transmit simultaneously, frames will \textbf{collide} at nodes and \textbf{none} will be correctly read.\\
+Therefore, multiple access protocol is required, to serve as an distributed algorithms that determines how the nodes share the channel, using the channel itself.\\
+Multiple access protocols can be categorised into three broad classes:
+\begin{enumerate}
+  \item \textbf{Channel Partitioning}: divide channel into smaller "pieces"; pieces are allocated to nodes for \textbf{exclusive} use.
+  \item \textbf{Taking turns}: nodes take turns to transmit
+  \item \textbf{Random access}: channel are not divided so collisions are still possible; the mechanism focuses on recovery from collision.
+\end{enumerate}
+\subsubsection{Channel Partitioning Protocols}
+\begin{definition}[Time Division Multiple Access(TDMA)]
+\hfill\\\normalfont 
+\begin{itemize}
+\item The channel is divided into equal time slots.
+\item Access to channel will be in ``rounds'', where each node gets \textbf{fixed} length slots(equivalently, equal transmission time) in each round.
+\item Unused slots go idle.
+\end{itemize}
+\end{definition}
+\begin{definition}[Frequency Division Multiple Access(FDMA)]
+\hfill\\\normalfont 
+\begin{itemize}
+\item Channel spectrum is divided into frequency bands.
+\item Each node is assigned a \textbf{fixed} frequency band.
+\item Unused transmission frequency bands go idle.
+\end{itemize}
+\end{definition}
+\subsubsection{``Taking Turns'' Protocols}
+\begin{definition}[Polling]
+\hfill\\\normalfont
+\begin{itemize}
+\item In polling, there is a \textbf{master} and rest of the nodes are the \textbf{slaves}.
+\item Master nodes invites slave nodes to transmit in turn.
+\end{itemize}
+\end{definition}
+Concerns of polling include (1)polling overhead and (2)single point of failure (at master node).
+\begin{definition}[Token Passing]
+\hfill\\\normalfont \begin{itemize}
+\item In token passing, there is a \textbf{control token}. 
+\item Control token is passed from one node to next sequentially.
+\item Only the node with the control token can send. \end{itemize}
+\end{definition}
+Concern of token passing include (1)token overhead and (2)single point of failure (at control token).
+\subsubsection{Random Access Protocols}
+For random access protocols, when node has packet to send, there is no \textit{a priori} coordination among nodes. A consequence is the presence of \textbf{collision}.\\Random access protocols instead specify:
+\begin{itemize}
+  \item How to detect collisions
+  \item How to recover from collisions
+\end{itemize}
+\begin{definition}[Slotted ALOHA]
+\hfill\\\normalfont In slotted ALOHA,
+\begin{itemize}
+  \item All frames require to have equal size.
+  \item Time is divided into slotes of equal length.
+  \item Node start to transmit only at the beginning of a slot.
+\end{itemize}
+The operation of each node includes
+\begin{itemize}
+\item \textbf{Collision Detection}: listens to the channel while transmissing
+\item \textbf{Collision resolution}: if collision happens, node retransmits a frame in \textit{each subsequent} slot with probability $p$ until success/
+\end{itemize}
+\end{definition}
+\begin{definition}[Pure ALOHA]
+\hfill\\\normalfont In pure ALOHA, there is no requirement of slot nor synchronisation: when there is a fresh frame, transmit immediately.\\Therefore, the chance of collision increases.
+\end{definition}
 \end{document}

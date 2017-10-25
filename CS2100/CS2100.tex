@@ -1969,6 +1969,12 @@ Subtraction is specified by opcode \texttt{sub}. It has the following syntax:
 \]
 where the opration \texttt{\$rd = \$rs - \$rt} is performed.\\
 Note that the position of \texttt{\$rs} and \texttt{\$rt} registers are important since subtraction is not commutative.
+\subsubsection{Set If Less Than}
+Set-if-less-than is specified by opcode \texttt{slt}. It has the following syntax:
+\[
+\texttt{slt \$rd, \$rs, \$rt}
+\]
+\textbf{Behaviour}: if the value stored in \texttt{\$rs} is less than that in \texttt{\$rt}, \texttt{\$rd} is set to \texttt{1}; otherwise, \texttt{\$rd} is set to \texttt{0}.
 \subsubsection{Complex Arithmetic Operations}
 Complex arithmetic operations are broken down into single instructions, by utilising the temporary registers to hold the intermediate result.
 \subsubsection{Constant/Immediate Operands}
@@ -2102,6 +2108,26 @@ Other instructions include
   \item \texttt{lh} and \texttt{sh}: load halfword and store halfword
   \item \texttt{lwl}, \texttt{lwr}, \texttt{swl}, \texttt{swr}: load word left, load word right, store word left, store word right.
 \end{itemize}
+\subsection{Procedure Call}
+\subsubsection{Jump and Link}
+Jump and link is specified by the opcode \texttt{jal}. It has the following syntax:
+\[
+\texttt{jal procedure\_address}
+\]
+\textbf{Behaviour}:
+\begin{enumerate}
+  \item \texttt{PC+4} is stored in \texttt{\$ra}. Note now \texttt{\$ra} refers to the second instruction after the \texttt{jal} instruction.
+  \item The next instruction, known located in the branch delay slot is executed.
+  \item Unconditional jump is performed: \texttt{j procedure\_address}.
+  \item At the end of the procedure, return with \texttt{jr \$ra}.
+\end{enumerate}
+\subsubsection{Jump return}
+The jump return instruction is specified by the opcode \texttt{jr}. It has the following syntax:
+\[
+\texttt{jr \$ra}
+\]
+\textbf{Behaviour}: It copies the contents of \texttt{\$ra} into the PC. Then it executes the \textit{next} instruction, before the next fetch occurs.\\
+\textbf{Remark}: \texttt{jr} can be used with any register, not just \texttt{\$ra}.
 \subsection{MIPS Instruction Classification}
 Instructions are classified according to numbers and types of operands. \\There are three types of instructions for MIPS:
 \begin{itemize}
@@ -2202,7 +2228,205 @@ Alternatively, suppose an 32-bit integer has the tag \textbf{exp}, then
   \item \texttt{lw \$s0 0(\$t0)}
 \end{itemize}
 \subsection{Decision Making} 
-If loop will utilise \texttt{beq}, \texttt{bne} and \texttt{j}, and tags to specify the jump.
+\subsubsection{If block}
+If block will utilise \texttt{beq}, \texttt{bne} and \texttt{j}, and tags to specify the jump.\\
+For efficiency, in terms of minimisation of branching instructions, \texttt{if (i == j) f = g + h; else f = g - h;} has the following code
+\begin{align*}
+&\texttt{bne \$s3, \$s4, Else}\\
+&\texttt{add \$s0, \$s1, \$s2}\\
+&\texttt{j Exit}\\
+\texttt{Else: }&\texttt{sub \$s0, \$s1, \$s2}\\
+\texttt{Exit: }&
+\end{align*}
+Note, in order to minimise jumps, always check for the negation of the condition in the higher-order code.
+\subsubsection{Loop Block}
+The steps to transform loops in higher-order code to MIPS instructions include
+\begin{enumerate}
+  \item Rewrite higher-order code with \texttt{if} and \texttt{goto} statements, and with labels.
+  \item Transform the \texttt{if} block and \texttt{goto} to branching instructions.
+\end{enumerate}
+\subsubsection{Inequalities}
+Branching-if-less-than is achieved by two instructions:
+\begin{align*}
+&\texttt{slt \$t0, \$s1, \$s2}\\
+&\texttt{bne \$t0, \$zero, L} 
+\end{align*}
+has the same effect as \texttt{if (a < b) goto L;}\\
+By changing the \texttt{bne} to \texttt{beq}, we can achieve branch-if-greater-than functionality instead.
+\subsection{Calling Procedures}
+Usually, \texttt{jal p\_address} is used to call a procedure, whose memory address can be accessed using \texttt{j p\_address}.\\
+After the execution of the procedure, \texttt{jr \$ra} is used to return. 
+\subsubsection{Register Use}
+Calling procedure concerns not only jumping, but also register management. Specifically, register \texttt{\$s0}-\texttt{\$s7} are \textbf{saved registers}; they \textit{must} be preserved by callee:
+\begin{itemize}
+  \item save in the \textbf{stack} at the start of procedure
+  \item restore at the end of procedure
+\end{itemize}
+In the contrary, temporary registers \texttt{\$t0}-\texttt{\$t9} does not need to be preserved by callee. Therefore, the attempt to save them are the responsibility of the caller.
+\subsubsection{Stack}
+In MIPS, stack is a continuous array in memory containing only 32-bit full words. The \textbf{stack pointer register} \texttt{\$sp} points at the \textit{top} item of the stack.\\
+Note the elements in the stack has increasing address when going inside the stack. 
+\begin{definition}[Push]
+\hfill\\\normalfont Push operation is used to storing item to the stack. The procedure involves the allocation of space and the storing of the word.
+\begin{align*}
+&\texttt{subu \$sp, \$sp, 4}\\
+&\texttt{sw \$t0, 0(\$sp)}
+\end{align*}
+\end{definition}
+\begin{definition}[Pop]
+\hfill\\\normalfont Pop operation is used to removing item from the stack. The procedure involves the removal of the word followed by a deallocation of space.
+\begin{align*}
+&\texttt{lw \$t0, 0(\$sp)}\\
+&\texttt{addu \$sp, \$sp, 4}
+\end{align*}
+\end{definition}
+\subsubsection{Jump and Link \texttt{jal}}
+With \texttt{j}, the subroutine, when get called, can only be used once. Therefore, the convention is to use \texttt{jal} to jump and link, and \texttt{jr \$ra} to return from subroutine.\\
+\textbf{Remark}: The \texttt{\$ra} holds the address of the \textit{second} instruction after the \texttt{jal} instruction.\\This is because the machine cycle has already incremented the PC by 4 when reaching \texttt{jal}, and the instruction \texttt{jal} increase PC by \textit{another} 4, and put that inside register \texttt{\$ra}.\\
+The first instruction after the \texttt{jal} is called a \textbf{branch delay slot}.\\
+The workflow of \texttt{jal} instruction is
+\begin{enumerate}
+  \item \textbf{Fetch}: When \texttt{jal} is fetched, $\text{PC}_\text{fetch}$ has the address of the \texttt{jal} instruction.
+  \item \textbf{Increment}: The $\text{PC}_\text{inc}$ is incremented to $\text{PC}_\text{fetch}+4$.
+  \item \textbf{Execute}: \texttt{\$ra} is set to $\text{PC}_\text{inc}+4$, and $\text{PC}_\text{execute}$ is updated to the address of the subroutine.
+  \item The instrcution in the branch delay slot is executed.
+  \item Execution continues with the instruction whose address is in the PC is being fetched. Control is passed to subroutine, whose return addess is \texttt{\$ra}.
+\end{enumerate} 
+\subsubsection{Return}
+\texttt{jr \$ra} will return from the subroutine, by working as following:
+\begin{itemize}
+  \item Copy addresses in \texttt{\$ra} to PC.
+  \item Execute the next instruction immediately below \texttt{jr}.
+  \item Execution continues with the instruction whose address is in the PC is being fetched. Control is surrendered by the subroutine.
+\end{itemize}
+\subsection{Simple Linkage Convention}
+In simple linkage convention, the following rules are preserved
+\begin{enumerate}
+  \item A subroutine is called using \texttt{jal}.
+  \item A subroutine will \textbf{NOT} call another subroutine.
+  \item The subroutine return to its called using \texttt{jr \$ra}.
+  \item Registers are used as follows:
+  \begin{itemize}
+    \item \texttt{\$t0}-\texttt{\$t9}: the subroutine is free to change these registers.
+    \item \texttt{\$s0}-\texttt{\$s7}: the subroutine must \textbf{not} change these registers.
+    \item \texttt{\$a0}-\texttt{\$a3}: these registers contain \textbf{arguments for the subroutine}. The subroutine can change them.
+    \item \texttt{\$v0-\$v1}: these registers contain values returned from the subroutine
+  \end{itemize}
+  \item the \texttt{main} routine returns control by using the exit service of the SPIM exception handler.
+\end{enumerate}
+\subsection{Stack Linkage}
+Simple linkage convention do not allow nested subroutine calls, as some registers should not change value, for example \texttt{\$ra}. \\
+Stack linkage resolves this problem by storing relevant registers in the memory stack, calling another subroutine, and when returned from subroutine, retrieve the correct \texttt{\$ra} from the memory stack.
+
+The stack linkage convention has the following rules
+\begin{itemize}
+  \item Subroutine call (done by the caller)
+  \begin{enumerate}
+    \item[1] Push onto the stack any registers \texttt{\$t0}-\texttt{\$t9} that contain value that must be saved.\footnote{This is because the subroutine can and might change these registers.}
+    \item[2] Put arguments values into \texttt{\$a0}-\texttt{\$a3}.
+    \item[3] Call the subroutine using \texttt{jal}.
+  \end{enumerate}
+  \item Subroutine Prolog (done by the subroutine/callee at the beginning)
+  \begin{enumerate}
+    \item[4] If this subroutine might call other subroutines, push \texttt{\$ra} onto the stack.
+    \item[5] Push onto the stack any registers \texttt{\$s0}-\texttt{\$s7} that this subroutine might alter.
+  \end{enumerate}
+  \item Subroutine Body
+  \begin{enumerate}
+    \item[6] The subroutine may alter and \texttt{\$t?} or \texttt{\$a?} registers, or any \texttt{\$s?} register that has been saved in the prolog(step 5).
+    \item[7] If the subroutine calls another subroutine, then it does so by following these rules again.
+  \end{enumerate}
+  \item Subroutine Epilog (done by the subroutine/callee just before it returns to the caller)
+  \begin{enumerate}
+    \item[8] Put returned values in \texttt{\$v0}-\texttt{\$v1}.
+    \item[9] Pop from the stack (in reverse order) any registers \texttt{\$s0}-\texttt{s7} that were pushed in the prolog (step 5)
+    \item[10] If the return address was pushed in the prolog(step 4), pop it from the stack into \texttt{\$ra}.
+    \item[11] return to the caller by \texttt{jr \$ra}.
+  \end{enumerate}
+  \item Regaining Control (done by the caller)
+  \begin{enumerate}
+    \item[12] Pop from the stack (in reverse order) any registers \texttt{\$t0}-\texttt{\$t9} that were previously pushed.
+  \end{enumerate}
+\end{itemize}
+\subsection{Frame Linkage}
+Frame-based linkage convention is similar to that of the stack linkage:
+\begin{itemize}
+\item Calling a subroutine (done by the caller)
+\begin{enumerate}
+\item Push any registers \texttt{\$t0-\$t9} that contain values that must be saved. Push the registers in numerical order.
+\item Put argument values into \texttt{\$a0-\$a3}.
+\item Call the subroutine using \texttt{jal}.
+\end{enumerate}
+\item Subroutine Prolog (done by the subroutine)
+\begin{enumerate}
+\item[4] Push \texttt{\$ra} (always).
+\item[5] Push the caller's frame pointer \texttt{\$fp}.
+\item[6] Push any of the registers \texttt{\$s0-\$s7} that the subroutine might alter.
+\item[7] Initialize the frame pointer: 
+\[
+\texttt{\$fp} = \texttt{\$sp} - \text{space\_for\_variables}
+\]
+The "space for variables" is four times the number of local variables. (Remember that subtracting from \texttt{\$sp} grows the stack, and that our variables are always four bytes wide).
+\item[8] Initialize the stack pointer: 
+\[
+\texttt{\$sp} = \texttt{\$fp}
+\]
+\end{enumerate}
+\item Subroutine Body:
+\begin{enumerate}
+\item[9] The subroutine may alter any \texttt{\$t?}, \texttt{\$a?}, or \texttt{\$v?} register, or any \texttt{\$s?} register that it saved in the prolog.
+\item[10] The subroutine refers to local variables as \texttt{disp(\$fp)}.
+\item[11] The subroutine may push and pop values on the stack using \texttt{\$sp}.
+\item[12] If the subroutine calls another subroutine, then it does so by these rules again.
+\end{enumerate}
+\item Subroutine Epilog (done at the end of the subroutine)
+\begin{enumerate}
+  \item[13] Put return values in \texttt{\$v0-\$v1}.
+\item[14] \texttt{\$sp} = \texttt{\$fp} + space\_for\_variables
+\item[15] Pop into \texttt{\$s0}-\texttt{\$s7} any values for them that were previously saved in the frame (in step 6).
+\item[16] Pop the caller's frame pointer into \texttt{\$fp}.
+\item[17] Pop \texttt{\$ra} (always).
+\item[18] Return to the caller using \texttt{jr \$ra}.
+\end{enumerate}
+\item Regaining Control from a Subroutine (done by the caller)
+\begin{enumerate}
+  \item[19] Pop any registers \texttt{\$t0}-\texttt{\$t9} that the caller previously pushed.
+\end{enumerate}
+\end{itemize}
+\subsection{Syscall}
+In MIPS, request to OS is done by the \texttt{syscall function}. It follows the 2 lines below
+\begin{align*}
+&\texttt{li \$v0, code}\\
+&\texttt{syscall}
+\end{align*}
+The OS will be invoked according to the code stored in \texttt{\$v0}. 
 \clearpage
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Service&Code in \texttt{\$v0}& Arguments &Returned Value\\\hline
+print integer&1&\texttt{\$a0}&\\\hline
+print float&2&\texttt{\$f12}&\\\hline
+print double&3&\texttt{\$f12, \$f13}&\\\hline
+print string&4&\texttt{\$a0}, address of the string&\\\hline
+read integer&5&&\texttt{\$v0}\\\hline
+read float &6&&\texttt{\$f0}\\\hline
+read double&7&&\texttt{\$f0, \$f1}\\\hline
+read string &8&\texttt{\$a0}, buffer address, \texttt{\$a1}, buffer length&\\\hline
+allocate memory&9&\texttt{\$a0}, number of bytes&\texttt{\$v0}, address\\\hline
+exit&10&&\\\hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+\clearpage
+
+
+
+
 \includepdf[pages = -]{1.pdf}
 \end{document}

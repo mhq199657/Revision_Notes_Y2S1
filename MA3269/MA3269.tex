@@ -894,4 +894,27 @@ and
 \[
 \sigma^2_\text{tan}=\frac{c-2r_fb+ar_f^2}{(b-r_fa)^2}
 \]
+Since the tangency portfolio $(\sigma_p,\mu_p)$ is on the capital market line(CML), the efficient frontier(CML) can be expressed in terms of $\mu_\text{tan}$ and $\sigma_\text{tan}$ as
+\[
+\sigma_p=r_f+\frac{\sigma_p}{\sigma_\text{tan}}(\mu_\text{tan}-r_f)
+\]
+\begin{definition}[Sharpe Ratio]
+\hfill\\\normalfont The Sharpe Ratio of a portfolio $p$, in $(n+1)$ assets, denoted by $\text{SR}_p$, is defined by
+\[
+\text{SR}_p=\frac{\mu_p-r_f}{\sigma_p}
+\]
+\end{definition}
+Obviously, portfolios that lie on the Capital Market Line attain the highest Sharpe Ratio.
+\begin{theorem}[One Fund Theorem]
+\hfill\\\normalfont In a financial market with risky asset and \textit{one risk-free} asset, an investor will choose to hold \textbf{only} the risk-free asset ad the tangency portfolio.\\Investors differ only in the proportion of total wealth allocated to the tangency porfolio.\\In terms of the weight vector, we have
+\[
+\mathbf{w}=\begin{pmatrix}1-\alpha&\alpha w_1&\cdots&\alpha w_n\end{pmatrix}
+\]
+\end{theorem}
+\subsubsection{Special Cases: Mean of GMVP does not exceed the risk-free rate}
+There are two other cases:
+\begin{itemize}
+  \item $\mu_\text{GMVP}=\frac{b}{a}<r_f$\\In this case, the tangency portfolio lies on the \textbf{inefficient} frontier.
+  \item $\mu_\text{GMVP}=\frac{b}{a}=r_f$\\In this case, tangency portfolio does not exist. The two frontier lines are asymptotic to the minimum-variance frontier.
+\end{itemize}
 \end{document}
