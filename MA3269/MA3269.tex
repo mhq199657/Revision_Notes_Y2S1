@@ -917,4 +917,85 @@ There are two other cases:
   \item $\mu_\text{GMVP}=\frac{b}{a}<r_f$\\In this case, the tangency portfolio lies on the \textbf{inefficient} frontier.
   \item $\mu_\text{GMVP}=\frac{b}{a}=r_f$\\In this case, tangency portfolio does not exist. The two frontier lines are asymptotic to the minimum-variance frontier.
 \end{itemize}
+\subsection{Capital Asset Pricing Model(CAPM)}
+\begin{definition}[Market Portfolio]
+\hfill\\\normalfont The market portfolio supplies \textbf{all risky} assets in the market. \\
+Suppose there are $u_i$ units of asset $i$, priced at $p_i$ per unit. We define the \textbf{market value} or \textbf{market capitalisation} of asset $i$ is the quantity $u_ip_i$.\\The market portfolio $\mathbf{w}=\begin{pmatrix}w_1&w_2&\cdots&w_n\end{pmatrix}^\text{T}$ is thus given by
+\[
+w_i=\frac{u_ip_i}{\sum_{i=1}^n u_ip_i}\;\;\;i=1,2,\ldots, n
+\]
+\end{definition}
+\textbf{Remark}: when market is in equilibrium, the \textit{tangency portfolio is the market portfolio}.
+\begin{definition}[Risk Premium/Expected return]
+\hfill\\\normalfont The capital market line(CML), with the tangency portfolio, now identified as the \textbf{market portfolio}, can be written as
+\[
+\mu_p-r_f=\frac{\sigma_p}{\sigma_m}(\mu_m-r_f)
+\]
+The term $\mu_p-r_f$ is called the \textbf{risk premium}/\textbf{excess return} of portfolio $p$.
+\end{definition}
+It can be easily seen that $\mu_m-r_f$ is the excess return of the market portfolio.\\
+Therefore, CML relates the return premium of an \textbf{efficient portfolio} to that of the market portfolio. This linear relationship can be established between \textit{any} asset and the market portfolio.
+\begin{theorem}[Capital Asset Pricing Model]
+\hfill\\\normalfont Let $\mu_i$ be the mean of asset $i$ and $\sigma_{im}$ be the covaraince of aseet $i$ with the market portfolio. Then,
+\[
+\mu_i-r_f=\frac{\sigma_{im}}{\sigma_m^2}(\mu_m-r_f)
+\]
+\end{theorem}
+\begin{definition}[Beta of Asset]
+\hfill\\\normalfont The \textbf{beta} of asset $i$, denoted by $\beta_i$, is defined by
+\[
+\beta_i=\frac{\sigma_{im}}{\sigma_m^2}
+\]
+\end{definition}
+\begin{definition}[Portfolio Beta]
+\hfill\\\normalfont Consider a portfolio $\mathbf{w}=\begin{pmatrix}w_1&w_2&\cdots&w_n\end{pmatrix}^\text{T}$ of the $n$ risky assets. Let the beta of security $i$ be $\beta_i,\;i=1,2,\ldots, n$, and define the portfolio beta $\beta_p$ by
+\[
+\beta_p=\frac{\sigma_{pm}}{\sigma_m^2}
+\]
+where $\sigma_{pm}=\cov(\sum_{i=1}^n w_ir_i,r_m)$ is the covariance between the portfolio $p$ and the market portfolio. Then,
+\[
+\beta_p=\sum_{i=1}^n w_i\beta_i=\mathbf{w}^\text{T}\bm{\beta}
+\]
+where $\bm{\beta}=\begin{pmatrix}\beta_1&\beta_2&\cdots&\beta_n\end{pmatrix}^\text{T}$.
+\end{definition}
+\textbf{Remark}:
+\begin{itemize}
+  \item CAPM holds for any portfolio of risky assets.
+  \item For any \textit{efficient} portfolio $p$ lying on the Capital Market Line(CML), the CAPM coincides with the equation of the CML. \footnote{This is due to the Cauchy-Schwartz Inequality.}
+  \item Portfolio beta $\beta_p = \frac{\mu_p-r_f}{\mu_m-r_f}$ measures the sensitivity of excess return of $p$ with respect to the excess return of the market portfolio.
+\end{itemize}
+\begin{definition}[Security Market Line(SML)]
+\hfill\\\normalfont Rearranging the CAPM equation, we obtain
+\[
+\mu_i=r_f+(\mu_m-r_f)\beta_i
+\]
+a linear relationship between mean return of and beta for any asset.
+\end{definition}
+Within the framework of the CAPM, the risk premium of any asset should fall \textit{on} its SML. Therefore, a portfolio is
+\begin{itemize}
+  \item \textbf{undervalued} if estimated return $>$ benchmark(CAPM) return, which investor shall buy
+  \item \textbf{fairly valued} if estimated return $=$ benchmark(CAPM) return
+  \item \textbf{overvalued} if estimated return $<$ benchmark(CAPM) return, which investor shall sell
+\end{itemize}
+Note that undervalued portfolio lies above SML while overvalued portfolio lies under SML.
+\begin{definition}[Alpha]
+\hfill\\\normalfont The difference between the estimated return and the benchmark return of an asset is known as the \textbf{alpha} of the return.\\Underpriced assets have positive alphas while overpriced assets have negative alphas.
+\end{definition}
+\subsection{Systematic and Non-systematic risk}
+Let $r_p$ be the rate of return of portfolio $p$ and let $r_m$ be the rate of return of the market portfolio. The CAPM suggests that
+\[
+r_p = r_f +\beta_p(r_m-r_f)+\varepsilon_p
+\]
+for some random variables $\varepsilon_p$.\\
+We can verify that $\expec[\varepsilon_p]=0$ and $\cov(\varepsilon_p,r_m)=0$. It follows that
+\[
+\var(r_p)=\beta_p^2\sigma_m^2+\var(\varepsilon_p)
+\]
+Hence, the total risk of any portfolio is a sum of two components: the \textbf{systematic risk} $\beta_p^2\sigma_m^2$ and the \textbf{non-systematic risk}, $\var(\varepsilon_p)$.\\
+\textbf{Remark}: The systematic risk is the market risk that cannot be diversified away since every asset with a non-zero beta contains this risk. The non-systematic risk is uncorrelated withe market and can thus be reduced through diversification.
+\begin{theorem}\hfill\\\normalfont
+Under the assumptions of the CAPM, an asset or portfolio carries only systematic risk \textit{if and only if} it lies \textbf{on} the Capital Market Line.
+\end{theorem}
+\clearpage
+
 \end{document}

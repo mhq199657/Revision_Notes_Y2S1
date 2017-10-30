@@ -1225,4 +1225,170 @@ The operation of each node includes
 \begin{definition}[Pure ALOHA]
 \hfill\\\normalfont In pure ALOHA, there is no requirement of slot nor synchronisation: when there is a fresh frame, transmit immediately.\\Therefore, the chance of collision increases.
 \end{definition}
+In fact, collision is the main issue of efficiency. 
+\begin{definition}[Carrier Sense Multiple Access(CSMA)]
+\hfill\\\normalfont CSMA senses the channel before transmission and 
+\begin{itemize}
+  \item if channel is \textit{sensed idle}, transmit frame
+  \item if channel is \textit{sensed  busy}, defer transmission
+\end{itemize}
+\end{definition}
+\textbf{Remark}:\\ Collision may still happen in CSMA. One scenario is when two nodes sense the channel idle at the same time and both start transmission.\\
+Even different nodes sense channel at \textit{different} time, collisions can still occur due to \textbf{propagation delay}.
+
+One issue of CSMA is that node may not detect collision if the frame size is too small. Therefore, a \textbf{minimum frame size} is imposed on the frame. Payload will be padded with 0 at the back if necessary to achieve minimum frame size.\\For example, Ethernet requires a minimum of frame size of 64 bytes.
+\begin{definition}[CSMA/CD]
+\hfill\\\normalfont CSMA/CD (Collision Detection) is an extension from CSMA. It specifies the following rules:
+\begin{itemize}
+  \item When collision is detected, transmission is aborted, to reduce channel wastage.
+  \item Retransmit after a random amount of time.
+\end{itemize}
+\end{definition}
+\begin{definition}[CSMA/CA]
+\hfill\\\normalfont CSMA/CA (Collision Avoidance) is an extension from CSMA. It specifies the receiver to return ACK if a frame is received OK and NAK if not.
+\end{definition}
+CSMA/CA is used in 802.11 as collision detection by hosts is difficult in wireless context.
+\clearpage
+\section{Local Area Network}
+\subsection{Link Layer Addressing \& ARP}
+\subsubsection{MAC address}
+\begin{definition}[MAC address]
+\hfill\\\normalfont Every adaptor has a \textbf{MAC address} aka physical or LAN address. MAC address is used to send and receive link layer frames.\\
+MAC address is typically 48 bits long, the first three bytes of which identifies the vendor of an adaptor.
+\end{definition}
+Adapter handles frames by checking if the destination MAC address of the frame matches its own MAC address.
+\begin{itemize}
+  \item If yes, adapter extracts the enclosed datagram and passes it to the protocol stack.
+  \item If no, adaptor discards the frame without interrupting the host.
+\end{itemize}
+The key difference between \IP address and MAC address is that, \IP address is dynamically assigned and hierarchical to facilitate routing, whereas MAC address is permanent for the identification of the hardware.
+\subsubsection{Address Resolution Protocol(ARP)}
+Address Resolution Protocol is used to translate the \IP address to the MAC address.\\Each \IP node has an ARP table, in which mappings of \IP address and MAC address of other nodes in the \textbf{same subnet} is stored, in the following format:
+\[
+\langle\IP \text{ address, MAC address, TTL}\rangle
+\]
+\begin{theorem}[Workflow of ARP in Subset]
+\hfill\\\normalfont Suppose node $A$ sends frames to node $B$ in the same subnet,
+\begin{itemize}
+  \item If node $A$ has MAC address of node $B$ in its ARP table, node $A$
+  \begin{itemize}
+    \item creates a frame with $B$'s MAC address and send it.
+    \item Only node $B$ will process this frame.
+    \item All other nodes will receive but ignore this frame/
+  \end{itemize} 
+  \item If node $A$ do not have MAC address of node $B$ in the ARP table, node $A$
+  \begin{itemize}
+    \item \textbf{broadcast} an ARP query packet, containing $B$'s \IP address
+    \begin{itemize}
+      \item Destination MAC address set to FF-FF-FF-FF-FF-FF
+      \item All nodes in the same subnet will receive this ARP query packet, but only node $B$ will \textbf{reply} it.
+    \end{itemize}
+    \item node $B$ replies to node $A$ with its MAC address.
+    \item node $A$ caches $B$'s \IP-to-MAC address mapping in its ARP table.
+    \item node $A$ then follows the steps of the first bullet point.
+  \end{itemize}
+\end{itemize}
+\end{theorem}
+\begin{theorem}[Workflow of ARP between Subset]
+\hfill\\\normalfont If node $B$ is not in the same subset as node $A$, node $A$, when transmitting frames, should create a link layer frame with
+\begin{itemize}
+  \item $R$'s MAC address as destination MAC address, where $R$ is the router interfaced with $A$
+  \item $B$'s \IP address as destination \IP address.
+\end{itemize}
+When the packet reaches the router $R$, $R$ will move datagram to outgoing link by constructing a new frame with $B$'s MAC address.
+\end{theorem}
+\subsection{Ethernet}
+\begin{definition}[Local Area Network]
+\hfill\\\normalfont Local Area Network(LAN) is a computer network that interconnects computers within a geographical area such as office building or university campus.
+\end{definition}
+LAN technologies include:
+\begin{itemize}
+  \item IBM Token Ring
+  \item Ethernet
+  \item Wi-Fi
+  \item Others
+\end{itemize}
+\textbf{Ethernet} is the dominant \textit{wired} LAN technology. It comprises of a series of Ethernet standards of different speeds, different physical layer media, but \textbf{MAC protocol} and \textbf{frame format} remain unchanged.
+
+Ethernet has two physical topology, namely 
+\begin{itemize}
+\item \textbf{bus} topology, where all nodes can collide with each other
+\item \textbf{star} topology, where the \textbf{switch} in center eliminates collision
+\end{itemize}
+\subsubsection{Ethernet Frame Structure}
+Ethernet frame are of the following format:
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{9_1_1.png}
+\end{figure}
+\clearpage
+\textbf{Remark}: Preamble is not part of the Ethernet frame. It is
+\begin{itemize}
+  \item 7 bytes with pattern 10101010 followed by 1 byte with pattern 10101011
+  \item used to synchronize receiver and sender clock rates.
+\end{itemize}
+The Ethernet frame has the following components:
+\begin{itemize}
+  \item \textbf{Source and Destination MAC address}
+  \begin{itemize}
+    \item If nodes receive a frame with matching destination address, or with \textbf{broadcast address}, it passes data in the frame to network layer protocol
+    \item Otherwise, the frame is discarded
+  \end{itemize}
+  \item \textbf{Type}: indicates higher layer protocol
+  \item \textbf{CRC}: used for error detection; corrupted frame will be dropped
+\end{itemize}
+\subsubsection{Ethernet Data Delivery Service}
+Ethernet is
+\begin{itemize}
+  \item \textbf{Connectionless}: no handshaking required between sending and receiving nodes
+  \item \textbf{Unreliable}: receiving nodes doesn't send ACK or NAK to sending nodes\\
+  A consequence is that data in dropped frames will be recovered only if initial sender uses higher layer Reliable Data Trasfer Protocol.
+  \item \textbf{Ethernet's multiple access protocol}: CSMA/CD with binary backoff
+\end{itemize}
+\begin{theorem}[Ethernet CSMA/CD Algorithm]
+\hfill\\\normalfont
+\begin{enumerate}
+  \item Sending nodes receives datagram from network layer, and creates frame
+  \item If channel is sensed idle, start frame transmission.\\If channel is sensed busy, waits until channel is sensed idle, then transmits
+  \item If the entire frame is trasmitted without detecting another transmission, the frame is finished.
+  \item If there is another transmission while transmitting, aborts and sends jam signal.
+  \item After aborting, the nodes enters binary back-off:
+  \begin{itemize}
+    \item After $m$th collision, node chooses $K$ at random from $\{0,1,2,\ldots, 2^m-1\}$
+    \item node waits $512K$ bit times and return to step 2.
+  \end{itemize}
+\end{enumerate}
+\end{theorem}
+\textbf{Remark}: sometimes there is an upper bound of $m$, after which the frame is dropped.
+\subsection{Link Layer Switches}
+\begin{definition}[Ethernet Switch]
+\hfill\\\normalfont Ethernet switch is a link-layer device used in LAn that 
+\begin{itemize}
+  \item Store and forward Ethernet frames
+  \item Examine incoming frames' MAC addresses and selectively forward frame to one-or-more outgoing links
+\end{itemize}
+\end{definition}
+Ethernet switch has the following properties:
+\begin{itemize}
+\item Ethernet switch is transparent to hosts in the sense that it has no \IP address and hosts are unware of the presence of switches.
+\item In Ethernet of star topology, hosts have dedicated connection to switch.
+\item Switch buffers frames and is full duplex.
+\item CSMA/CD is used on each link, despite no collisions.
+\end{itemize}
+\begin{definition}[Switch Forwarding Table]
+\hfill\\\normalfont Each switch has a \textbf{switch table}, which stores entry of the following format:
+\[
+\langle\text{MAC address of host, interface to reach host, TTL}\rangle
+\]
+\end{definition}
+\begin{theorem}[Self-learning of switch table]
+\hfill\\\normalfont Switch learns which hosts can be reached through which interfaces. Specifically,
+\begin{itemize}
+  \item When receiving a frame from $A$, the location and interface of $A$ is noted down in switch table.
+  \item If destination $B$ is found in the table, forward the frame onto that link.
+  \item If destination $B$ is unknown, broadcast the frame to all outgoing links
+  \item The destination $B$ will send the ACK signal, from which the switch learns the location and interface of $B$ and notes down them in the switch table.
+\end{itemize}
+\end{theorem}
+\textbf{Remark}: Switches can be connected in hierarchy.
 \end{document}

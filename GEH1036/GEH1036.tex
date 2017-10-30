@@ -756,4 +756,72 @@ where $a^\prime$ is the inverse of $a$ modulo $26$.
 a^{p-1}\equiv 1\;\;\;\mod p
 \]
 \end{theorem}
+\subsection{Public Key Codes: RSA}
+\begin{theorem}[RSA Enciphering]
+\hfill\\\normalfont \begin{itemize}
+\item Pick two large primes $p$ and $q$. Let $n=pq$.
+\item Pick any integer $k$ that is \textbf{coprime} to $(p-1)(q-1)$. That is,
+\[
+\gcd(k, (p-1)(q-1))=1
+\]
+\item The pair of integers $(n,k)$ is the \textbf{enciphering key}.
+\item Let $M$ be the number formed from the string of digits of the plaintext. We require that $0\leq M<n$.
+\item Compute the remainder $r$ of $M^k$ on division by $n$, i.e.,
+\[
+r\equiv M^k\;\;\;\mod n
+\]
+\item The \textbf{ciphertext} is the string of digits of $r$.
+\end{itemize}
+\end{theorem}
+\begin{theorem}[RSA Deciphering]
+\hfill\\\normalfont \begin{itemize}
+\item Find the inverse of $k$ modulo $(p-1)(q-1)$ where $1<j<n$. The inverse exists as $k$ and $(p-1)(q-1)$ are coprime. Note that
+\[
+kj\equiv 1\;\;\;\mod (p-1)(q-1)
+\]
+This means, for some integer $t$:
+\[
+kj=t(p-1)(q-1)+1
+\]
+The integer $j$ is the \textbf{deciphering key}.
+\item To decipher the ciphertext $r$, compute $r^j$.
+\item Then the plaintext $M$ is the remainder of $r^j$ modulo $n$:
+\[
+r^j\equiv M^{kj}\equiv M^{t(p-1)(q-1)+1}\equiv M\;\;\;\mod n
+\]
+\end{itemize}
+\end{theorem}
+\clearpage
+\section{Chancing}
+\subsection{Sample Space}
+\begin{definition}[Sample Space]
+\hfill\\\normalfont The set of all possible outcomes of an experiment is called the \textbf{sample space} associated with the experiment/game.
+\end{definition}
+\subsection{Event and Probability}
+\begin{theorem}
+\hfill\\\normalfont Suppose that the sample space $S$ of an experiment is \textbf{finite} and that each outcome is \textbf{equally likely}.\\For any event $E$ where $E\subseteq S$, we assign to $E$ a numerical value called the probability of $E$ and denoted by $\mathbb{P}(E)$, as follows:
+\[
+\mathbb{P}(E)=\frac{|E|}{|S|}
+\]
+\end{theorem}
+\begin{theorem}\normalfont We find that for any events $A, B, C$,
+\begin{itemize}
+  \item $\mathbb{P}(A\cup B)=\mathbb{P}(A)+\mathbb{P}(B)-\mathbb{P}(A\cap B)$
+  \item $\mathbb{P}(A^c)=1-\mathbb{P}(A)$.
+\end{itemize}
+\end{theorem}
+\subsection{Independent Events}
+\begin{definition}[Independent events -- 2 events]\hfill\\\normalfont Let $A$ and $B$ be two events. We say that $A$ and $B$ are \textbf{independent events} if
+\[
+\mathbb{P}(A\cap B)=\mathbb{P}(A)\cdot \mathbb{P}(B)
+\]
+\end{definition}
+\begin{definition}[Independent events -- 3 events]\hfill\\\normalfont We say that events $A, B, C$ are \textbf{independent events} if
+\begin{align*}
+\mathbb{P}(A\cap B)&=\mathbb{P}(A)\cdot \mathbb{P}(B)\\
+\mathbb{P}(A\cap C)&=\mathbb{P}(A)\cdot \mathbb{P}(C)\\
+\mathbb{P}(B\cap C)&=\mathbb{P}(B)\cdot \mathbb{P}(C)\\
+\mathbb{P}(A\cap B\cap C)&=\mathbb{P}(A)\cdot \mathbb{P}(B)\mathbb{P}(C)\\
+\end{align*}
+\end{definition}
 \end{document}

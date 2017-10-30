@@ -2418,15 +2418,161 @@ allocate memory&9&\texttt{\$a0}, number of bytes&\texttt{\$v0}, address\\\hline
 exit&10&&\\\hline
 \end{tabular}
 \end{table}
+\clearpage
+\section{Basic Datapath}
+\begin{definition}[Single Cycle Datapath]
+\hfill\\\normalfont In \textbf{single cycle datapath}, \textit{all} instructions execute in a single cycle of the clock.
+\end{definition}
+The generic implementation of processor requires the realisation of instruction processing cycle. MIPS has the following implementation:
+\begin{itemize}
+  \item Use the program counter(PC) to supply the instruction address, fetch the instruction from instruction memory and update PC
+  \item Decode the instruction in Register File
+  \item Execute the instruction
+\end{itemize}
+Note that all instructions except \texttt{j} involves the ALU after reading the registers.
+\subsection{Clocking methodology}
+The clocking methodology defines when signals can be read and when they are written. MIPS uses a \textbf{edge-triggered} methodology.\\
+Typical execution involves
+\begin{itemize}
+  \item Read contents of state elements
+  \item Send values through combinatorial logic
+  \item Write results to one or more state elements
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{12_1.png}
+\end{figure}
+State elements are assumed to be written on every clock cycle.\\
+If there is explicit \textbf{write control} signal, then write will only occur when \textbf{both} the write control is asserted \textbf{and} clock edge occurs.
+\subsection{Fetching Instructions}
+Fetching instructions involves
+\begin{itemize}
+  \item Reading the instruction from the \textbf{Instruction Memory}\footnote{It shall be distinguished from data memory.}
+  \item Updating the PC to hold the address of the next instruction
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{12_2.png}
+\end{figure}
+\textbf{Remark:}
+\begin{enumerate}
+  \item The clock input of PC is not shown on the diagram.
+  \item Since PC is updated \textit{every} cycle, so it does not need an explicit write control signal.
+  \item Instruction Memory is read \textit{every} cycle, so it doesn't need an explicit read control signal.
+  \item There will be delay in the output of PC and further delay in the output of Instruction Memory.
+  \item Register is built from an array of 32 $D$ flip-flops.
+\end{enumerate}
+\subsection{Decoding Instructions}
+Decoding instructions involves
+\begin{itemize}
+  \item Sending the fetched instruction's opcode and function field bits to the control unit.
+  \item Reading two values from the Register File
+\end{itemize}
+\subsubsection{Register File}
+Register File is the interface of registers. It consists of two read ports and one write port to accomodate the most demanding R-format instructions.\\
+Following is the implementation of Register File.
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{12_3.png}
+\end{figure}
+The Register File interfaces with the ALU:
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{12_4.png}
+\caption{Datapath during \texttt{add} instruction}
+\end{figure}\\
+\textbf{Remark}: the Register File is not written every cycle, so an explicit write control signal is required.
+\subsubsection{ALU}
+ALU is a combination of arithmetic instructions and logical operations. Operations to be done is selected by control signals, which is generated during \textit{decode time}.\\
+ALU has additional outputs, say zero and overflow.\\
+ALU interfaces with Data Memory, during load and store operations.\\
+\textbf{Remark}:
+\begin{itemize}
+  \item Sign Extend combinatorial logic is used in I-format instructions to realise \texttt{ZeroExtImm} and \texttt{SignExtImm}.\footnote{Refer to MIPS Instruction Sheet for details.}
+  \item Register File can accept data either from ALU or from Data Memory output Read Data, depending on the instructions.
+  \item During \texttt{lw} and \texttt{sw}, ALU interfaces with Data Memory and specifies the data address. In \texttt{sw}, one data output Read Data 2 from Register File interfaces with Data Memory instead of ALU and specifies what data to write. 
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{12_5.png}
+\caption{Datapath during \texttt{lw} instruction}
+\end{figure}
+  \item During branching instructions \texttt{beq} and \texttt{bne}, ALU interfaces with branch control logic using its \texttt{zero} ALU input, which indicates whether the two registers has the same data.\\Note that the left shift 2 and addition operations are performed by combinatorial logic \textit{outside} ALU.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{12_6.png}
+\caption{Datapath during \texttt{beq} instruction}
+\end{figure}
+\item ALU will not be used in jump instructions \texttt{jr}, since it is unconditional.
+\end{itemize}
+\clearpage
+From the above we can conclude the role of each building block, allowing us to design a \textbf{single cycle} processor. In addition, we need 
+\begin{itemize}
+  \item \textbf{multiplexors}, at the input of shared elements with control lines to do the selection
+  \item \textbf{control signals}
+\end{itemize}
+\textbf{Remark}: \\
+\begin{itemize}
+\item No datapath resource can be used more than once per instruction in single cycle processor, a shortcoming overcome by pipelined processor.
+\item Cycle time is determined by length of the longest path.
+\end{itemize}
+On the next page is the outline of single cycle processor.\\
+Control signals will follow the convention of the table below.
+\begin{table}[h]
+\hspace*{-3.9pt}\makebox[\linewidth][c]{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Instruction {[}31..26{]}                                & RegDst & ALUSrc & MemtoReg & RegWrite & MemRead & MemWrite & Branch & ALUOp\footnote{In the order of ALUOp1 followed by ALUOp0} & Jump \\ \hline
+\begin{tabular}[c]{@{}c@{}}R type\\ 000000\end{tabular} & 1      & 0      & 0        & 1        & 0       & 0        & 0      & 10    & 0    \\ \hline
+\begin{tabular}[c]{@{}c@{}}lw\\ 100011\end{tabular}     & 0      & 1      & 1        & 1        & 1       & 0        & 0      & 00    & 0    \\ \hline
+\begin{tabular}[c]{@{}c@{}}sw\\ 101011\end{tabular}     & X      & 1      & X        & 0        & 0       & 1        & 0      & 00    & 0    \\ \hline
+\begin{tabular}[c]{@{}c@{}}beq\\ 000100\end{tabular}    & X      & 0      & X        & 0        & 0       & 0        & 1      & 01    & 0    \\ \hline
+\begin{tabular}[c]{@{}c@{}}j\\ 000010\end{tabular}      & X      & X      & X        & 0        & 0       & 0        & 0      & 00    & 1    \\ \hline
+\end{tabular}
+}
+\end{table}
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.95\textwidth]{12_7.png}
+\end{figure}
+\clearpage
+The ALUControl is another control signal of length 4 bits.
+\begin{itemize}
+  \item 0000: AND
+  \item 0001: OR
+  \item 0010: add
+  \item 0110: subtract
+  \item 0111: set less than
+  \item 1100: NOR
+\end{itemize}
+However, ALUControl also depends on ALUOp:
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+ALUOp1&ALUOp0&Funct&ALUOperation\\\hline
+0&0&XXXXXX&0010\\\hline
+X&1&XXXXXX&0110\\\hline
+1&X&XX0000&0010\\\hline
+1&X&XX0010&0110\\\hline
+1&X&XX0100&0000\\\hline
+1&X&XX0101&0001\\\hline
+1&X&XX1010&0111\\\hline
+\end{tabular}
+\end{table}
+
+
+
+
+
+
+
 
 
 
 
 
 \clearpage
-
-
-
-
 \includepdf[pages = -]{1.pdf}
 \end{document}
