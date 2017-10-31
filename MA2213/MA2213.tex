@@ -1380,4 +1380,60 @@ I(f) =\frac{b-a}{2}\int_{-1}^1f\left(\frac{(b+a)+t(b-a)}{2}\right)\diff t = \fra
 \]
 where $g(t)=f\left(\frac{(b+a)+t(b-a)}{2}\right)$.
 \clearpage
+\section{Solutions of Nonlinear Equations}
+There are three numerical methods for finding the root of $f(x)=0$, namely
+\begin{itemize}
+  \item Bisection Method
+  \item Fixed Point Method
+  \item Newton-Rhapson Method
+\end{itemize}
+\subsection{Bisection Method}
+Intermediate value theorem is an important theorem used in bisection method, to demonstrate the existence of root.
+\begin{theorem}[Intermediate value theorem]
+\hfill\\\normalfont If the function $f(x)$ is defined and continuous on the real interval $[a,b]$ and if
+\[
+f(a)f(b)<0
+\]
+then there exists at least one real number $x^\ast$ such that
+\[
+f(x^\ast)=0\;\;\text{and}\;\;a<x^\ast<b
+\]
+\end{theorem}
+The uniqueness of the root can be guaranteed if we have 
+\[
+f^\prime(x)>0\;\;\text{or}\;\;f^\prime(x)<0\;\;\text{on}\;[a,b]
+\]
+provided that $f^\prime(x)$ exists on $[a,b]$.
+\begin{theorem}[Algorithm: Bisection Method]
+\hfill\\\normalfont Let $f(x)$ be continuous on the interval $[a,b]$.\\Suppose $f(a_0)f(b_0)<0$, then for $k=1,2,\ldots$, compute
+\[
+x_k=\frac{1}{2}(a_{k-1}+b_{k-1})
+\]
+and the new interval $I_k$ is
+\[
+I_k=(a_k,b_k)=\begin{cases}
+(x_k,b_{k-1})&\text{ if }f(x_k)f(b_{k-1})<0\\
+(a_{k-1},x_k)&\text{ if }f(x_k)f(a_{k-1})<0
+\end{cases}
+\]
+Note that the solution lies in $I_k=(a_k,b_k)$.\\
+If $f(x_k)=0$, then we have computed a solution. If $f(x_k)\neq 0$ we can continue till $b_k-a_k\leq$ a specified tolerance and $x_k$ will be an approximate solution.
+\end{theorem}
+\begin{theorem}[Error of Bisection Method]
+\hfill\\\normalfont From the estimate of solution after the $k$th bisection,
+\[
+x_k=\frac{1}{2}(a_{k-1}+b_{k-1})
+\]
+Since the exact solution is bounded in the interval $[a_{k-1}, b_{k-1}]$, the error estimates for $x_k$ the approximated solution to $f(x)=0$, is
+\[
+|x^\ast-x_k|\leq \frac{b_{k-1}-a_{k-1}}{2}=\frac{b_0-a_0}{2^k}
+\]
+where $x^\ast$ is the exact solution to $f(x)=0$.
+\end{theorem}
+\textbf{Remark}:
+\begin{itemize}
+  \item Error of bisection method will always converges to $0$.
+  \item The rate of convergence is independent of the function $f(x)$.
+  \item Error of estimate $x_k$ is said to be within $t$ correct places, if $|x^\ast-x_k|<\frac{1}{2}\times 10^{-t}$ is satisfied.
+\end{itemize}
 \end{document}
