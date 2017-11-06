@@ -997,5 +997,144 @@ Hence, the total risk of any portfolio is a sum of two components: the \textbf{s
 Under the assumptions of the CAPM, an asset or portfolio carries only systematic risk \textit{if and only if} it lies \textbf{on} the Capital Market Line.
 \end{theorem}
 \clearpage
-
+\section{Basic Option Theory}
+\subsection{Introduction}
+\begin{definition}[Derivatives]
+\hfill\\\normalfont A derivative is a financial instrument whose value depends on those of some underlying assets such as stocks and bonds. 
+\end{definition}
+An \textbf{option} is an example of a derivative.
+\subsubsection{Call and Put Options}
+Call and put options concerns the terms of the options.
+\begin{itemize}
+  \item A \textbf{call option} is the contract that gives its \textbf{holder} the right to \textbf{buy} the financial asset.
+  \item A \textbf{put option} is the contract that gives its \textbf{holder} the right to \textbf{sell} the financial asset.
+\end{itemize}
+\subsubsection{Long and Short Position}
+Long and short positions concerns the role of parties.
+\begin{itemize}
+  \item The party that \textbf{holds} the right (to either buy or sell) is the \textbf{buyer/holder} of the contract and is said to be in the \textbf{long position}.
+  \item The party on the other side is called the \textbf{seller/writer} of the contract and is said to be in the \textbf{short position}.
+\end{itemize}
+\subsubsection{Notations}
+The following are notations in this section.
+\begin{itemize}
+\item $T$: maturity date of option
+\item $K$: strike price
+\item $S_t$: the price of the underlying asset at time $t$
+\item $C$: current call option price
+\item $P$: current put option price
+\end{itemize}
+\textbf{Remark}: Unless stated otherwise, all option prices are based on \textbf{one} unit of the underlying aseet.
+\subsection{Call option}
+A call option is said to be
+\begin{itemize}
+  \item \textbf{out-of-the-money} if $S_T<K$
+  \item \textbf{at-the-money} if $S_T=K$
+  \item \textbf{in-the-money} if $S_T>K$
+\end{itemize}
+\begin{theorem}[Payoff and Profit of Long Call Option]
+\hfill\\\normalfont The payoff from a \textbf{long} position in a \textbf{call} option is
+\[
+\max(S_T-K,0)
+\]
+and the profit is defined as
+\[
+\max(S_T-K,0)-\TV(C,T)
+\]
+\end{theorem}
+\begin{theorem}[Payoff and Profit of Short Call Option]
+\hfill\\\normalfont By the principle of zero sum game, the payoff from a \textbf{short} position in a \textbf{call} option is
+\[
+-\max(S_T-K,0)=\min(K-S_T,0)
+\]
+and the profit is defined as
+\[
+\TV(C,T)-\max(S_T-K,0)
+\]
+\end{theorem}
+\subsection{Put Option}
+A put option is said to be
+\begin{itemize}
+  \item \textbf{out-of-the-money} if $S_T>K$
+  \item \textbf{at-the-money} if $S_T=K$
+  \item \textbf{in-the-money} if $S_T<K$
+\end{itemize}
+\begin{theorem}[Payoff and Profit of Long Put Option]
+\hfill\\\normalfont The payoff from a \textbf{long} position in a \textbf{put} option is
+\[
+\max(K-S_T,0)
+\]
+and the profit is defined as
+\[
+\max(K-S_T,0)-\TV(P,T)
+\]
+\end{theorem}
+\begin{theorem}[Payoff and Profit of Short Put Option]
+\hfill\\\normalfont By the principle of zero sum game, the payoff from a \textbf{short} position in a \textbf{put} option is
+\[
+-\max(K-S_T,0)=\min(S_T-K,0)
+\]
+and the profit is defined as
+\[
+\TV(P,T)-\max(K-S_T,0)
+\]
+\end{theorem}
+\subsection{Arbitrage-Based Restriction on Option Prices}
+\begin{definition}[Arbitrage Opportunity]\hfill\\\normalfont
+Suppose $V(0)$ is the value of a portfolio today and $V(t)$ is the value at some future time $t$, then an arbitrage opportunity arises if the following three condition hold.
+\begin{enumerate}
+  \item $V(0)\leq 0$
+  \item $P(V(t)<0)=0$ for all $t>0$
+  \item $P(V(t_0)>0)>0$ for some $t_0>0$
+\end{enumerate}
+\end{definition}
+\begin{theorem}[No-arbitrage Principle]
+\hfill\\\normalfont Arbitrage opportunities \textbf{do not} exist.
+\end{theorem}
+No-arbitrage principle can provide bounds of option prices. Specifically,
+\begin{theorem}[Bounds of Call Option Price]
+\hfill\\\normalfont For European \textbf{call} options, we have
+\[
+\max\{0,S_0-Ke^{-rT}\}\leq C_E\leq S_0
+\]
+and for American options, we have
+\[
+\max\{0, S_0-Ke^{-rT}\}\leq C_A\leq S_0
+\]
+\end{theorem}
+In fact, the bounds of American options is derived from those of European options based on the following inequalities:
+\begin{align*}
+&C_A\geq C_E\\
+&P_A\geq P_E
+\end{align*}
+\begin{theorem}[Bounds of Put Option Price]
+\hfill\\\normalfont For European \textbf{put} options, we have
+\[
+\max\{0, Ke^{-rT}-S_0\leq P_E\leq Ke^{-rT}\}
+\]
+and for American options, we have
+\[
+\max\{0, K-S_0\}\leq P_A\leq K
+\]
+\end{theorem}
+\begin{theorem}[Procedure to Construct Arbitrage]
+\hfill\\\normalfont
+\begin{enumerate}
+\item Suppose an inequality of bounds of prices is violated, first write down the converse.
+\item Move all the term to one side to make the inequality in the form of $\cdots<0$.
+\item For the LHS, long the financial assets in positive sign and short those in negative sign.
+\end{enumerate}
+\end{theorem}
+\begin{theorem}[Call Prices]
+\hfill\\\normalfont Call price $C(K)$ is a \textbf{decreasing} function of the Strike Price $K$. \\Equivalently, let $K_2>K_1$, then
+\[
+C(K_2)\leq C(K_1)
+\]  
+\end{theorem}
+\begin{theorem}[Put Prices]
+\hfill\\\normalfont Put price $P(K)$ is an \textbf{increasing} function of the Stike Price $K$.\\Equivalently, let $K_2>K_1$, then
+\[
+P(K_2)\geq P(K_1)
+\]
+\end{theorem}
 \end{document}

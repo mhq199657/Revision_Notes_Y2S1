@@ -2528,6 +2528,7 @@ Instruction {[}31..26{]}                                & RegDst & ALUSrc & Memt
 \begin{tabular}[c]{@{}c@{}}sw\\ 101011\end{tabular}     & X      & 1      & X        & 0        & 0       & 1        & 0      & 00    & 0    \\ \hline
 \begin{tabular}[c]{@{}c@{}}beq\\ 000100\end{tabular}    & X      & 0      & X        & 0        & 0       & 0        & 1      & 01    & 0    \\ \hline
 \begin{tabular}[c]{@{}c@{}}j\\ 000010\end{tabular}      & X      & X      & X        & 0        & 0       & 0        & 0      & 00    & 1    \\ \hline
+nop&0&0&0&0&0&0&0&00&0\\\hline
 \end{tabular}
 }
 \end{table}
@@ -2561,8 +2562,203 @@ X&1&XXXXXX&0110\\\hline
 1&X&XX1010&0111\\\hline
 \end{tabular}
 \end{table}
-
-
+\clearpage
+\section{Basic Pipelining}
+\subsection{Introduction}
+A \textbf{pipelined} MIPS processor starts the next instruction before the current one has completed. Pipelining
+\begin{itemize}
+  \item improves \textbf{throughput} - total amount of work done in a given time, but
+  \item instruction \textbf{latency} remains the same
+\end{itemize}
+Modification of datapath is required for enabling pipelining. Specifically, \textbf{state registers} are added between each \textbf{pipeline stage} to \textit{isolate} them.
+\begin{definition}[State Registers]
+\hfill\\\normalfont Pipeline registers are arrays of $D$ flip-flops driven by the clock. The clock rate is determined by the \textbf{slowest stage}.
+\end{definition}
+\begin{figure}[h]
+\centering
+\includegraphics[width = \textwidth]{13_1.png}
+\caption{A simplistic modification to accommodate pipelining}
+\end{figure}
+\subsection{MIPS Pipeline}
+MIPS pipelining follows the Instruction Execution Cycle.\\
+In this pipeline, once the pipeline is full, one instruction will be completed every cycle, so CPI
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{13_2.png}
+\end{figure}
+\subsection{Pipeline Hazards}
+There are three types of pipeline hazards:
+\begin{itemize}
+  \item \textbf{Structural hazards}: attempt to use the \textbf{same resource} by two different instructions at the same time
+  \item \textbf{Data hazards}: attempt to use data \textbf{before it is ready}
+  \item \textbf{Control hazards}: attempt to make a decision about program control flow before the evaluation of condition
+\end{itemize}
+One simplistic but suboptimal way to resolve hazards is \textbf{waiting}.
+\subsubsection{Structural Hazard}
+Register usage can cause data hazards in terms of \textbf{dependencies backward in time}. \footnote{Suppose \texttt{\$rd} is also the \texttt{\$rs} of the next instruction, then the register will not be updated in the decode stage next instruction. }\\
+Dependencies backward in time can cause
+\begin{itemize}
+  \item Read before write data hazard
+  \item Load-use data hazard
+\end{itemize}
+Proper way to fix a data hazard is \textbf{forwarding} results as soon as they are available to where they are needed.\\
+\textbf{Read before write} data hazard can be resolved by forwarding the ALU output towards the ALU input.\\
+\textbf{Load-use} data hazard can be resolved by forwarding the Data Memory output towards the ALU input, and \textbf{stall for one cycle} if the immediately next instruction needs the output.
+\subsubsection{Control Hazard}
+Control hazards can be caused by dependencies backward in time too, in branching instructions.\\Proper way to fix a control hazard is to stall (3 clock cycles) until address to be branched to is determined by the ALU output.
+\subsection{Corrected Datapath (Without Forwarding)}
+Next instructions could \textbf{corrupt Register Write information and control signals}. Therefore, the datapath need to be modified, so that these information are saved in the state registers and propagates along with the instruction execution.
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = \textwidth]{13_3.png}
+\end{figure}
+\subsection{Data Forwarding}
+Data forwarding can be used to resolve structural hazard by using multiplexors at ALU input to enable inputs from any pipeline register. Forwarding can happen from both ALU output and DM output to ALU input.\\The logic of forwarding is as following:
+\begin{itemize}
+  \item EX/MEM Hazard: Data needs to be forwarded from ALU output to ALU input.
+  \begin{verbatim}
+  if(EX/MEM.RegWrite        //Current Instruction has things to write back to register file
+  and (EX/MEM.RegisterRd!=0)//$rd is not zero register(which is not modifiable)
+  and (EX/MEM.ReigisterRd=ID/EX.RegisterRs))   //Current $rd is used as next instruction's $rs
+    ForwardA = 10           //Control Signal at Multiplexor A
+  if(EX/MEM.RegWrite        
+  and (EX/MEM.RegisterRd!=0)
+  and (EX/MEM.ReigisterRd=ID/EX.RegisterRs))   //Current $rd is used as next instruction's $rt
+    ForwardB = 10           //Control Signal at Multiplexor B
+  \end{verbatim}
+  \item MEM/WB Hazard: Data needs to be forwarded from DM output to ALU input. \\An hazard can be identified concurrently as this and the above hazard; if so, the above way to resolve will override.
+  \begin{verbatim}
+  if(MEM/WB.RegWrite
+  and (MEM/WB.RegisterRd!=0)
+  and (EX/MEM.RegisterRd!=ID/EX.RegisterRs) //Do nothing if being overrided
+  and (MEM/WB.RegisterRd=ID/EX.RegisterRs))
+    ForwardA = 01
+    if(MEM/WB.RegWrite
+  and (MEM/WB.RegisterRd!=0)
+  and (EX/MEM.RegisterRd!=ID/EX.RegisterRt) //Do nothing if being overrided
+  and (MEM/WB.RegisterRd=ID/EX.RegisterRt))
+    ForwardB = 01
+  \end{verbatim}
+\end{itemize}
+\textbf{Remark:}Forwarding always crosses the stages. In MIPS, the data will always be forwarded to the EX stage, so the data source are from DM and WB stage respectively.
+\subsubsection{Forwarding Unit}
+Forwarding Unit is a combinatorial logic which has
+\begin{itemize}
+  \item 5 inputs
+  \begin{enumerate}
+    \item \texttt{ID/EX.RegisterRs}
+    \item \texttt{ID/EX.RegisterRt}
+    \item \texttt{EX/MEM.RegisterRd}
+    \item \texttt{MEM/WB/RegisterRd}
+    \item \texttt{MEM/WB.RegWrite} control signal
+  \end{enumerate}
+  \item 2 outputs
+  \begin{enumerate}
+    \item \texttt{FA} selection bits
+    \item \texttt{FB} selection bits
+  \end{enumerate}
+\end{itemize}
+The forwarding also requires multiplexor, which selects according to the following rule:
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Signal&Source\\\hline
+00&Register File\\\hline
+01&Data to be written back to Register File in \texttt{WB} stage\\\hline
+10&Output from ALU in \texttt{DM} stage\\\hline
+\end{tabular}
+\end{table}
+\subsubsection{Memory-to-Memory Copies}
+Memory-to-Memory copies is a forwarding strategy in DM stage. It is applicable in cases that load instruction is immediately followed by store instruction.\\
+Memory-to-Memory copies can be realised by adding a forward unit and MUX to the DM stage, which will not be implemented later.
+\subsection{Hazard Unit}
+As noted above, load-use data hazard will still need one cycle of stall of the instruction in the \texttt{ID} stage\footnote{Since the current instruction is in \texttt{EX} stage and data will only be available at the next unit time when current instruction is in \texttt{DM} stage}. Therefore, we need the \textbf{hazard unit} to detect and implement the stall.\\
+The hazard can be detected by the following logic:
+\begin{verbatim}
+  if(ID/EX.MemRead  //Current Instruction loads from DM
+  and ((ID/EX.RegisterRt = IF/ID.RegisterRs)  //next instruction uses loaded data
+  or (ID/EX/RegisterRt = IF/ID/RegisterRt)))
+    //stall the pipeline
+    IF/ID.write = 0
+    IsZeroForEX/MEM/WB = 1
+\end{verbatim}
+The stall operation includes the following operations:
+\begin{itemize}
+  \item Prevent the instruction in the \texttt{IF} and \texttt{ID} stages from progessing down the pipeline.\\
+  This is achieved by 
+  \begin{itemize}
+    \item Prevent writing of PC, by controlling the control signal of PC: \texttt{PC.write}
+    \item Prevent writing of IF/ID state register, by controlling the control signal of IF/ID: \texttt{IF/ID.write}
+  \end{itemize}
+  \item Insert NOP instruction between load instruction in \texttt{EX} stage and the use instruction in \texttt{ID} stage.\\This is achieved by
+  \begin{itemize}
+    \item Set the control bits in the \texttt{EX, MEM, WB} control fields of ID/EX state register to \texttt{0}, by means of multiplexors.
+  \end{itemize}
+  \item Let the load instruction and instructions after it proceed normally down the pipeline.
+\end{itemize}
+Therefore, the hazard unit has
+\begin{itemize}
+  \item 5 inputs
+  \begin{enumerate}
+    \item \texttt{ID/EX.MemRead} Control Signal
+    \item \texttt{IF/ID.RegisterRs}
+    \item \texttt{IF/ID.RegisterRt}
+    \item \texttt{ID/EX.RegisterRt}
+    \item Branch Control Signal
+  \end{enumerate}
+  \item 2 outputs
+  \begin{enumerate}
+  \item \texttt{IF/ID.write} control signal
+  \item Control signal to all \texttt{EX, MEM, WB} control signal output from control unit
+  \end{enumerate}
+\end{itemize} 
+\subsubsection{Zeroing Control Signal}
+The following figure shows the proper way to zeroing the control signal, where the original data is cycled back to the multiplexor $0$ position and $0$ is connected to the $1$ position.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.3\textwidth]{13_4.png}
+\end{figure}
+\subsubsection{NOP Instruction}
+\begin{definition}[NOP]
+\hfill\\\normalfont The NOP instruction is defined as
+\[
+\texttt{sll \$0, \$0, 0}
+\]
+Equivalently, NOP has instruction value \texttt{0x0000 0000}.
+\end{definition}
+\subsection{Further Corrected Datapath (Without Jump and Branch Optimisation)}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.7\textwidth]{13_5.png}
+\end{figure}
+\subsection{Control Hazard}
+Control hazard arises when the flow of instruction addresses is not sequential, which is incurred by the change of flow using branch and jump instruction.\\
+Control hazard can be solved by
+\begin{itemize}
+  \item Stall
+  \item Move decision point as early as possible to reduce stall
+  \item Delay decision with compiler support
+  \item Predict and Hope for the best
+\end{itemize}
+\subsubsection{Jump}
+Jump instruction mandates one flush, since new address is only available at the second half of ID stage.\\
+There are two ways to implement the stall, either by inserting NOP instruction(used in solving load-use hazard), or by replacing the instruction in the pipeline with a NOP instruction(used in instructions sequentially after \texttt{j} instruction).
+\subsubsection{Branch}
+Branch instructions can incur minimum one stall after itself, by adding hardware in \texttt{ID} stage to evaluate the branch decision.\\
+However, previous instructions may a dependency, so it is possible there is one stall before branching instruction. This can be implemented by teh hazard unit.\\
+After resolving the aforementioned stall, the branch decision involves the following logic:
+\begin{verbatim}
+  if(IDcontrol.Branch  //is Branch Instruction
+  and (EX/MEM.RegisterRd!=0)  //Previous Instruction will affect evaluation
+  and (EX/MEM.RegisterRd = IF/ID.RegisterRs)) //Two instructions before
+    ForwardC = 1  
+  if(IDcontrol.Branch  
+  and (EX/MEM.RegisterRd!=0)  
+  and (EX/MEM.RegisterRd = IF/ID.RegisterRt)) 
+    ForwardD = 1  
+\end{verbatim}
 
 
 

@@ -32,6 +32,7 @@
 \DeclareMathOperator{\spn}{Span}
 \DeclareMathOperator{\perm}{P}
 \DeclareMathOperator{\combi}{C}
+\DeclareMathOperator{\expec}{E}
 \setcounter{tocdepth}{1}
 \begin{document}
 
@@ -824,4 +825,41 @@ r^j\equiv M^{kj}\equiv M^{t(p-1)(q-1)+1}\equiv M\;\;\;\mod n
 \mathbb{P}(A\cap B\cap C)&=\mathbb{P}(A)\cdot \mathbb{P}(B)\mathbb{P}(C)\\
 \end{align*}
 \end{definition}
+\subsection{Conditional Probability}
+\begin{definition}[Conditional Probability] \hfill\\\normalfont Let $A$, $B$ be events in a given sample space $S$. The \textbf{conditional probability} of $A$ given that $B$ has occurred is denoted by $\mathbb{P}(A\mid B)$ and is defined to be
+\[
+\mathbb{P}(A\mid B)=\frac{\mathbb{P}(A\cap B)}{\mathbb{P}(B)}
+\]
+\end{definition}
+\begin{theorem}\hfill\\\normalfont If $A$ and $B$ are independent, then
+\[
+\mathbb{P}(A)=\mathbb(A\mid B) = \mathbb{A\mid B^c}
+\]
+\end{theorem}
+\subsection{Expectation}
+\begin{definition}[Random Variable]
+\hfill\\\normalfont Let $S$ be the sample space. A \textbf{random variable} $X$ is a real-valued function defined on $S$. That is
+\[
+X:S\to \mathbb{R}
+\]
+\end{definition}
+\begin{definition}[Expectation]
+\hfill\\\normalfont If $X$ is a discrete random variable, the \textbf{expected value} of $X$, denoted by $\expec[X]$, is defined by
+\[
+\expec[X]=\sum_{x}x\cdot \mathbb{P}(X=x)
+\] 
+\end{definition}
+\begin{theorem}[Linearity of Expectation]
+\hfill\\\normalfont Suppose $X=X_1+\cdots+X_k$, where each $X_i$ is a random variable. Then
+\[
+\expec[X]=\expec[X_1]+\cdots+\expec[X_k]
+\]
+\end{theorem}
+\subsection{Poisson Distribution}
+Binomial distribution $\text{B}(N,p)$ can be approximated by Poisson distribution $\text{Poi}(\lambda)$ if the following conditions are satisfied:
+\begin{itemize}
+  \item $N$ is large
+  \item $\lambda = Np$
+\end{itemize}
+Then, $\mathbb{P}(X=k)=\binom{N}{k}p^k(1-p)^{N-k}=\frac{e^{-\lambda}\lambda^k}{k!}$.
 \end{document}

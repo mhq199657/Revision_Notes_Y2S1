@@ -1391,4 +1391,144 @@ Ethernet switch has the following properties:
 \end{itemize}
 \end{theorem}
 \textbf{Remark}: Switches can be connected in hierarchy.
+\clearpage
+\section{Physical Layer}
+Physical layer moves data in the form of \textbf{electromagnetic signals} across transmission medium. Signals can be in the form of analog singal or digital signal.
+\begin{itemize}
+  \item \textbf{Analog signal} is continuous with infinitely many levels
+  \item \textbf{Digital signal} has a limited number of defined values.
+\end{itemize}
+\subsection{Digital Transmission}
+In digital transmission, we encode $0$s and $1$s with different voltatges to be transmitted over the wire. Following are some protocols.
+\begin{definition}[Non-Return-to-Zero]
+\hfill\\\normalfont NRZ encoding uses \textbf{two} voltage levels. It has two variations:
+\begin{itemize}
+  \item NRZ-L: \textbf{absolute} voltage level determines value of a bit
+  \item NRZ-I: \textbf{inverts} voltage level if bit $1$ is encountered next
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_1_1.png}
+\end{figure}
+\end{definition}
+\begin{definition}[Return-to-Zero]
+\hfill\\\normalfont RZ encoding uses \textbf{three} voltage levels.\\It \textit{always} returns the voltage to zero \textbf{halfway through} a bit interval.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_1_2.png}
+\end{figure}
+\end{definition}
+\begin{definition}[Manchester]
+\hfill\\\normalfont Manchester coding \textbf{inverts} the signal in the \textit{middle} of a bit. Specifically, 
+\begin{itemize}
+  \item A \textit{negative} to \textit{positive} transition represents $1$.
+  \item A \textit{positive} to \textit{negative} transition represents $0$.
+\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_1_3.png}
+\end{figure}
+\end{definition}
+\textbf{Remark}: Receiver needs to know the beginning and end of each signal before decoding.
+\subsection{Analog Transmission}
+\begin{definition}[Analog Signal]
+\hfill\\\normalfont The most basic analog signal is a sine wave.
+\[
+f(t)=A\sin(2\pi ft+\phi)
+\]
+where $A$ is the peak amplitude, $f$ the frequency and $\phi$ the phase.
+\end{definition}
+A transmission channel only allows signals in a certain frequency range to pass through.
+\begin{definition}[Bandwidth]
+\hfill\\\normalfont Bandwidth of the channel is the \textbf{difference} in the \textit{highest} frequency and \textit{lowest} frequency that can pass through a channel.
+\end{definition}
+A transmission channel introduces noise that distorts signal.
+\begin{definition}[Signal-to-Noise Ratio(SNR)]
+\hfill\\\normalfont Signal-to-Noise Ratio measures the strength of signal over noise.
+\end{definition}
+\begin{definition}[Shannon Channel Capacity]
+\hfill\\\normalfont Shannon capacity, $C$, denotes the theoretical maximum bit rate of a noisy channel.
+\[
+C=B\log_2(1+\text{SNR})
+\]
+where $B$ denotes the channel bandwidth and SNR denotes the signal to noise ratio.
+\end{definition}
+Analog transmission requires \textbf{modulator} and \textbf{demodulator}, which translates from(resp. to) digital signal to(resp. from) analog signal.\\
+Following are some analog encoding protocol.
+\clearpage
+\begin{definition}[Amplitude Shift Keying(ASK)]
+\hfill\\\normalfont In Amplitude Shift Keying, different peak amplitudes represent different data values.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{10_2_1.png}
+\end{figure}
+\end{definition}
+\textbf{Remark}: ASK is susceptible to noise.
+
+\begin{definition}[Frequency Shift Keying(FSK)]
+\hfill\\\normalfont In Frequency Shift Keying, different frequencies represent different data values.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\textwidth]{10_2_2.png}
+\end{figure}
+\end{definition}
+\textbf{Remark}:
+\begin{itemize}
+  \item FSK is limited by the bandwidth of the channel
+  \item In theory, if $2^k$ frequencies are specified, then one signal can represent $k$ bits.
+\end{itemize}
+\begin{definition}[Phase Shift Keying(PSK)]
+\hfill\\\normalfont In Phase Shift Keying, different phases represent different data values.
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_2_3.png}
+\end{figure}
+\end{definition}
+\textbf{Remark}:
+\begin{itemize}
+  \item PSK is susceptible to noise.
+  \item In theory, if $2^k$ phases are specified, then one signal can represent $k$ bits.
+\end{itemize}
+\begin{definition}[QPSK Constellation]
+\hfill\\\normalfont Quad-PSK Constallatioin specifies 4 pair of phases used to represent 4 data values.
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Phase&Value\\\hline
+$0^\circ$&11\\\hline
+$90^\circ$&01\\\hline
+$180^\circ$&00\\\hline
+$270^\circ$&10\\\hline
+\end{tabular}
+\end{table}
+\end{definition}
+\begin{definition}[8-PSK Constellation]
+8-PSK Constellation has 8 phases.
+\hfill\\\normalfont
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_2_4.png}
+\caption{8-PSK Constellation Diagram}
+\end{figure}
+\end{definition}
+\begin{definition}[Quadrature Amplitude Modulation(QAM)]
+\hfill\\\normalfont Quadrature Amplitude Modulation combines ASK and PSK, which uses (phase, amplitude) pairs to uniquely represent data values.\\
+\textbf{Baud rate} is the number of signal units per second.\\
+\textbf{Bit rate} is the number of bits receiver receives per second.
+\clearpage
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.5\textwidth]{10_2_5.png}
+\caption{16-QAM}
+\end{figure}
+\end{definition}
+\textbf{Remark}: 
+\begin{itemize}
+  \item Wi-Fi transmits analog signal and Ethernet transmits digital signal.
+  \item Ethernet, RFID and NFC use Manchester coding.
+  \item USB uses NRZ-I.
+  \item Singapore TV broadcast uses DVB-T, which uses QPSK,, 16-QAM or 64-QAM.
+  \item Wi-Fi uses PSK, QPSK, 16-QAM or 64-QAM, depending on signal strength.
+\end{itemize}
 \end{document}

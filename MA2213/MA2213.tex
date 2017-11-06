@@ -1436,4 +1436,55 @@ where $x^\ast$ is the exact solution to $f(x)=0$.
   \item The rate of convergence is independent of the function $f(x)$.
   \item Error of estimate $x_k$ is said to be within $t$ correct places, if $|x^\ast-x_k|<\frac{1}{2}\times 10^{-t}$ is satisfied.
 \end{itemize}
+\subsection{Fixed Point Method}
+\begin{definition}[Fixed Point]
+\hfill\\\normalfont Consider the equation $g(x)=x$ where $g$ is the given function and $x$ is in some finite interval.\\A solution $\eta$ satisfies 
+\[
+g(\eta)=\eta
+\]
+is called a \textbf{fixed point} of $g$.
+\end{definition}
+\begin{theorem}[Existence and Uniqueness of Fixed Point]
+\hfill\\\normalfont If $g$ is continuous on $[a,b]$ and $a\leq g(x)\leq b$ for all $x\in[a,b]$, then $g$ has a fixed point $\eta\in[a,b]$.\\
+If, in addition, $g^\prime(x)$ exists on $(a,b)$ and
+\[
+|g^\prime(x)|\leq \alpha < 1,\;\;\forall x\in(a,b) \;\;\;(\#)
+\]
+then $g$ has a \textbf{unique} fixed point $\eta\in[a,b]$.
+\end{theorem}
+\begin{theorem}[Error Bound]
+\hfill\\\normalfont Suppose $(\#)$ holds, an error bound is
+\[
+|x_n-\eta|\leq \alpha^n|x_0-\eta|
+\]
+A computable error bound is
+\[
+|x_0-\eta|\leq \frac{\alpha^n}{1-\alpha}|x_0-x_1|
+\]
+\end{theorem}
+\textbf{Remark}: The important step is to find a qualifying $g$ before applying fixed point method.
+\subsection{Order of Convergence}
+\begin{definition}[Order of Convergence]
+\hfill\\\normalfont In general, a sequence $\{x_n\}_{n=1}^\infty$ is said to \textbf{converge with order} $k$ to the limit $\eta$ if there is a constant $\lambda\neq 0$ such that
+\[
+\lim_{n\to\infty}\frac{|x_{n+1}-\eta|}{|x_n-\eta|^k}=\lambda
+\]
+\end{definition}
+An iterative method
+\[
+x_{n+1}=g(x_n)\;\;\;n=0,1,\ldots
+\]
+is said to be of \textbf{order} $k$ if $\{x_n\}$ converges with order $k$ to the fixed point of $g$.
+\begin{theorem}[Degree of Convergence]
+\hfill\\\normalfont Suppose that the iterative method
+\[
+x_{n+1}=g(x_n)\;\;\;n=0,1,\ldots
+\]
+converges to a fixed point $\eta$ of $g$.\\
+If $g^\prime(\eta)=g^{\prime\prime}(\eta)=\cdots=g^{(k-1)}(\eta)=0$ and $g^{(k)}(\eta)\neq 0$, and $g^{(k)}$ is continuous on an interval containing $\eta$, then
+\[
+\lim_{n\to\infty}\frac{|x_{n+1}-\eta|}{|x_n-\eta|^k}\neq 0
+\]
+that is, the convergence $x_n\to \eta$ is of order $k$.
+\end{theorem}
 \end{document}

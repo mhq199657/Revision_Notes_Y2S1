@@ -3,7 +3,7 @@
 
 
 
-\usepackage[margin=0in]{geometry}  
+\usepackage[margin=0in, landscape, a4paper]{geometry}  
 \usepackage{graphicx}             
 \usepackage{amsmath}              
 \usepackage{amsfonts}              
@@ -36,767 +36,857 @@
 \begin{document}
 
 %\twocolumn
+
 \begin{minted}{java}
-//BST.java
-import java.util.NoSuchElementException;
+//Author: Ma Hongqiang
+//Email: mhq199657@163.com
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.Stack;
-class BST<E extends Comparable<E>>{
-  public BSTVertex<E> _root;
-  public static final boolean __DEBUG = false; 
-  BST(){
-    _root = null;
+import java.util.Collections;
+import java.util.PriorityQueue;
+import java.util.Comparator;
+import java.util.Arrays;
+class Graph<E extends Comparable<E>>{
+  public boolean isDirected;
+  public static final int NO_VERTEX = 0;
+  public static final int UNWEIGHTED = 1;
+  public static int UID = 0;
+  public static final int INF = Integer.MAX_VALUE;
+  public ArrayList<ArrayList<Integer>> _adjacencyMatrix;
+  public ArrayList<ArrayList<IntegerPair>> _adjacencyList;
+  public ArrayList<IntegerTriple> _edgeList;
+  public ArrayList<Vertex<E>> _vertexList;
+  HashMap<E, Integer> _vertexMap;
+  boolean isWeightedGraph;
+  ArrayList<Integer> _parentList;
+  public Graph(boolean isDirected){
+    _adjacencyMatrix = new ArrayList<ArrayList<Integer>>();
+    _adjacencyList = new ArrayList<ArrayList<IntegerPair>>();
+    _edgeList = new ArrayList<IntegerTriple>();
+    _vertexMap = new HashMap<E, Integer>();
+    this.isDirected = isDirected;
+    _vertexList = new ArrayList<Vertex<E>>();
+    _parentList = new ArrayList<Integer>();
   }
-  BST(BSTVertex<E> root){
-    _root = root;
-  }
-  BST(ArrayList<E> arr){
-    for(int i = 0; i<arr.size(); i++){
-      this.insert(arr.get(i));
-    }
-  }
-  public BSTVertex<E> vertexOf(E e){
-    BSTVertex<E> result = vertexOf(_root, e);
-    return result;
-  }
-  private BSTVertex<E> vertexOf(BSTVertex<E> vertex, E e){
-    if(vertex == null){
-      return null;
-    }else if(vertex.item.compareTo(e)==0){
-      return vertex;
-    }else if(vertex.item.compareTo(e)<0){
-      return vertexOf(vertex.right, e);
-    }else{
-      return vertexOf(vertex.left, e);
-    }
-  }
-  public void insert(E e){
-    _root = insert(_root, e);
-    if(__DEBUG)
-      inOrder();
-  }
-  //insert method assumes no repetitive entry
-  private BSTVertex<E> insert(BSTVertex<E> vertex, E e){
-    if(vertex == null){
-      return new BSTVertex<E>(e);
-    }else if(vertex.item.compareTo(e)<0){
-      vertex.right = insert(vertex.right, e);
-      vertex.right.parent = vertex;
-    }else{
-      vertex.left = insert(vertex.left,e);
-      vertex.left.parent = vertex;
-    }
-    //after immediate insert down the path, check for imbalance for every level
-    int balance = vertex.isBalanced();
-    if(balance<=1&&balance>=-1){
-      //balance
-      vertex.updateHeight();
-      vertex.updateWeight();
-    }else if(balance>1){
-      //vertex is right heavy
-      vertex =fixLeftHeavy(vertex);
-    }else{
-      //vertex is left heavy
-      vertex = fixRightHeavy(vertex);
-    }
-    return vertex;
-  }
-  private BSTVertex<E> fixLeftHeavy(BSTVertex<E> vertex){
-    //left heavy suggest vertex.left = null
-    BSTVertex<E> left = vertex.left;
-    int leftBalance = left.isBalanced();
-    if(leftBalance==0){
-      vertex = rightRotate(vertex);
-    }else if(leftBalance>=1){
-      vertex = rightRotate(vertex);
-    }else if(leftBalance<=-1){
-      vertex.left = leftRotate(left);
-      vertex.updateHeight();
-      vertex.updateWeight();
-      vertex = rightRotate(vertex);
-    }
-    return vertex;
-  }
-  private BSTVertex<E> fixRightHeavy(BSTVertex<E> vertex){
-    //left heavy suggest vertex.left = null
-    BSTVertex<E> right = vertex.right;
-    int rightBalance = right.isBalanced();
-    if(rightBalance==0){
-      vertex = leftRotate(vertex);
-    }else if(rightBalance<=-1){
-      vertex = leftRotate(vertex);
-    }else if(rightBalance>=1){
-      vertex.right = rightRotate(right);
-      vertex.updateHeight();
-      vertex.updateWeight();
-      vertex = leftRotate(vertex);
-    }
-    return vertex;
-  }
-  public void preOrder(){
-    preOrder(_root);
-    System.out.println();
-  }
-  private void preOrder(BSTVertex<E> vertex){
-    if(vertex==null){
-      return;
-    }
-    System.out.printf("%d", vertex.item);
-    preOrder(vertex.left);
-    preOrder(vertex.right);
-  }
-  public void inOrder(){
-    inOrder(_root);
-    System.out.println();
-  }
-  private void inOrder(BSTVertex<E> vertex){
-    if(vertex == null){
-      return;
-    }
-    inOrder(vertex.left);
-    System.out.printf(" [%d,%d]", vertex.item,vertex.height);
-    inOrder(vertex.right);
-  }
-  public BSTVertex<E> findMin(){
-    return findMin(_root);
-  }
-  private BSTVertex<E> findMin(BSTVertex<E> vertex){
-    if(vertex == null){
-      throw new NoSuchElementException("BST is empty, no minimum");
-    }else if(vertex.left == null){
-      return vertex;
-    }else{
-      return findMin(vertex.left);
-    }
-  }
-  public BSTVertex<E> findMax(){
-    return findMax(_root);
-  }
-  private BSTVertex<E> findMax(BSTVertex<E> vertex){
-    if( vertex == null){
-      throw new NoSuchElementException("BST is empty, no maximum");
-    }else if(vertex.right == null){
-      return vertex;
-    }else{
-      return findMax(vertex.right);
-    }
-  }
-  public BSTVertex<E> successor(BSTVertex<E> vertex){
-    if(vertex.right!=null){
-      return findMin(vertex.right);
-    }else{
-      BSTVertex<E> parent = vertex.parent;
-      BSTVertex<E> current = vertex;
-      while((parent!=null)&&(current == parent.right)){
-        current = parent;
-        parent = current.parent;
+  public Graph(boolean isDirected, ArrayList<E> vertexItemList){
+    this(isDirected);
+    int size = vertexItemList.size();
+    for(int i = 0; i<size; i++){
+      _vertexMap.put(vertexItemList.get(i), UID);
+      UID++;
+      ArrayList<Integer> newList = new ArrayList<Integer>();
+      for(int j = 0; j<size; j++){
+        newList.add(0);
       }
-      return parent;
+      _adjacencyMatrix.add(newList);
+      _adjacencyList.add(new ArrayList<IntegerPair>());
+      _vertexList.add(new Vertex<E>(vertexItemList.get(i)));
+      _parentList.add(-1);
     }
   }
-  public BSTVertex<E> predecessor(BSTVertex<E> vertex){
-    if(vertex.left!=null){
-      return findMax(vertex.left);
-    }else{
-      BSTVertex<E> parent = vertex.parent;
-      BSTVertex<E> current = vertex;
-      while((parent!=null)&&(current == parent.left)){
-        current = parent;
-        parent = current.parent;
+  //TODO: initialise pq from edgelist
+  public void addVertex(E e){
+    Vertex<E> newVertex = new Vertex<E>(e);
+    _vertexMap.put(e, UID);
+    UID++;
+    _adjacencyMatrix.add(new ArrayList<Integer>());
+    resizeAdjacencyMatrix();
+    _adjacencyList.add(new ArrayList<IntegerPair>());
+    _vertexList.add(newVertex);
+    _parentList.add(-1);
+  }
+  public void addEdge(E from, E to){
+    addEdge(from, to, UNWEIGHTED);
+  }
+  public void addEdge(E from, E to, int weight){
+    assert _vertexMap.containsKey(from);
+    assert _vertexMap.containsKey(to);
+    int fromIndex = _vertexMap.get(from);
+    int toIndex = _vertexMap.get(to);
+    _adjacencyMatrix.get(fromIndex).set(toIndex, weight);
+    _adjacencyList.get(fromIndex).add(new IntegerPair(toIndex, weight)); //Possibly use Sorted Array to reduce access time
+    if(!isDirected){
+      _adjacencyMatrix.get(toIndex).set(fromIndex, weight);
+      _adjacencyList.get(toIndex).add(new IntegerPair(fromIndex, weight));
+    }
+    _edgeList.add(new IntegerTriple(_vertexMap.get(from),_vertexMap.get(to),weight));
+  }
+  private void resizeAdjacencyMatrix(){
+    int newLength = _adjacencyMatrix.size();
+    for(int i = 0; i<newLength; i++){
+      ArrayList<Integer> currList = _adjacencyMatrix.get(i);
+      while(currList.size()<newLength){
+        currList.add(NO_VERTEX);
       }
-      return parent;
     }
   }
-  public void delete(E e){
-    _root = delete(_root, e);
-    if(__DEBUG)
-      inOrder();
-  }
-  
-  private BSTVertex<E> delete(BSTVertex<E> vertex, E e){
-    if(vertex == null){
-      return vertex;
+  //Query method: Breadth first search
+  //O(V+E)
+  public void BFS(int vertexIndex){
+    assert vertexIndex <=_adjacencyList.size();
+    resetParentList();
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    Queue<Integer> q = new LinkedList<Integer>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(false);
     }
-    if(vertex.item.compareTo(e)<0){
-      vertex.right = delete(vertex.right, e);
-    }else if(vertex.item.compareTo(e)>0){
-      vertex.left = delete(vertex.left,e);
-    }else{
-      //this is the vertex to be deleted
-      if(vertex.left==null&&vertex.right == null){
-        BSTVertex<E> parent = vertex.parent;
-        vertex = null;
-        return vertex;
-      }else if(vertex.left==null&&vertex.right!=null){
-        vertex.right.parent = vertex.parent;
-        if(vertex.parent == null){
-          _root= vertex.right;
-        }else if(vertex.parent.left==vertex){
-          vertex.parent.left = vertex.right;
-        }else{
-          vertex.parent.right = vertex.right;
+    q.offer(vertexIndex);
+    visited.set(vertexIndex,true);
+    while(!q.isEmpty()){
+      int currVertex = q.poll();
+      System.out.println(currVertex);
+      ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(currVertex);
+      for(int i = 0; i<neighbourList.size(); i++){
+        int neighbourIndex =neighbourList.get(i).getFirst();
+        if(visited.get(neighbourIndex)==false){
+          visited.set(neighbourIndex,true);
+          _parentList.set(neighbourIndex,currVertex);
+          q.offer(neighbourIndex);
         }
-        vertex = vertex.right;
-      }else if(vertex.left!=null&&vertex.right==null){
-        vertex.left.parent = vertex.parent;
-        if(vertex.parent == null){
-          _root= vertex.left;
-        }else if(vertex.parent.left==vertex){
-          vertex.parent.left = vertex.left;
-        }else{
-          vertex.parent.right = vertex.left;
-        }
-        vertex = vertex.left;
-      }else{
-        BSTVertex<E> successor = successor(vertex);
-        E successorV = successor.item;
-        vertex.item = successorV;
-        vertex.right = delete(vertex.right,successor.item);
       }
     }
-    //after delete need to check balance
-    int balance = vertex.isBalanced();
-    if(balance<=1&&balance>=-1){
-      //balance
-      vertex.updateHeight();
-      vertex.updateWeight();
-    }else if(balance>1){
-      //vertex is right heavy
-      vertex = fixLeftHeavy(vertex);
-    }else{
-      //vertex is left heavy
-      vertex = fixRightHeavy(vertex);
+  }
+  //Query method: Depth first search
+  //O(V+E)
+  public void DFS(int vertexIndex){
+    resetParentList();
+    assert vertexIndex <=_adjacencyList.size();
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(false);
     }
-    return vertex;
+    DFS(vertexIndex,visited);
   }
-  //Assume left heavy
-  public BSTVertex<E> rightRotate(BSTVertex<E> vertex){
-    BSTVertex<E> heavy = vertex.left;
-    BSTVertex<E> middleSubtree = heavy.right;
-    //fix B parent double linkage
-    heavy.parent = vertex.parent;
-    if(vertex.parent == null){
-      _root = heavy;
-    }else if(vertex.parent.left == vertex){
-      vertex.parent.left = heavy;
-    }else{
-      vertex.parent.right = heavy;
+  public void DFS(int vertexIndex, ArrayList<Boolean> visited){
+    visited.set(vertexIndex, true);
+    ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(vertexIndex);
+    for(int i = 0; i<neighbourList.size();i++){
+      int neighbourIndex =neighbourList.get(i).getFirst();
+      if(visited.get(neighbourIndex)==false){
+        visited.set(neighbourIndex,true);
+        _parentList.set(neighbourIndex, vertexIndex);
+        DFS(neighbourIndex, visited);
+      }
     }
-    //fix A parent double linkage
-    vertex.parent = heavy;
-    heavy.right = vertex;
-    //fix A left double linkage
-    vertex.left = middleSubtree;
-    if(middleSubtree!=null)
-      middleSubtree.parent = vertex;
-    vertex.updateHeight();
-    heavy.updateHeight();
-    vertex.updateWeight();
-    heavy.updateWeight();
-    return heavy;
   }
-  public BSTVertex<E> leftRotate(BSTVertex<E> vertex){
-    BSTVertex<E> heavy = vertex.right;
-    BSTVertex<E> middleSubtree = heavy.left;
-    //fix B parent double linkage
-    heavy.parent = vertex.parent;
-    if(vertex.parent == null){
-      _root = heavy;
-    }else if(vertex.parent.left == vertex){
-      vertex.parent.left = heavy;
-    }else{
-      vertex.parent.right = heavy;
+  //getCutVertex modified from DFS
+  //O(V+E)
+  public ArrayList<Boolean> getCutVertex() {
+    resetParentList();
+      ArrayList<Boolean> visited = new ArrayList<Boolean>();
+      ArrayList<Integer> timeOfFirstEncounter = new ArrayList<Integer>();
+      ArrayList<Integer> timeOfFirstDiscovery = new ArrayList<Integer>();
+      ArrayList<Boolean> cutVertex = new ArrayList<Boolean>();
+      for(int i = 0; i<_adjacencyList.size(); i++){
+        visited.add(false);
+        timeOfFirstEncounter.add(-1);
+        timeOfFirstDiscovery.add(-1);
+        cutVertex.add(false);
+      }
+      int time = 0;
+      getCutVertex(0, visited, timeOfFirstEncounter, timeOfFirstDiscovery, cutVertex,time);
+      System.out.println(timeOfFirstDiscovery);
+      System.out.println(timeOfFirstEncounter);
+      return cutVertex;
     }
-    //fix A parent double linkage
-    vertex.parent = heavy;
-    heavy.left = vertex;
-    //fix A left double linkage
-    vertex.right = middleSubtree;
-    if(middleSubtree!=null)
-      middleSubtree.parent = vertex;
-    vertex.updateHeight();
-    heavy.updateHeight();
-    vertex.updateWeight();
-    heavy.updateWeight();
-    return heavy;
+  private void getCutVertex(int index, ArrayList<Boolean> visited, ArrayList<Integer> timeOfFirstEncounter, 
+                            ArrayList<Integer> timeOfFirstDiscovery, ArrayList<Boolean> cutVertex, int time){
+      int numOfChildren = 0;
+      visited.set(index, true);
+      time++;
+      timeOfFirstEncounter.set(index, time);
+      timeOfFirstDiscovery.set(index, time);
+      ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(index);
+      for(int i = 0; i<neighbourList.size(); i++){
+          int neighbourIndex = neighbourList.get(i).getFirst();
+          if(visited.get(neighbourIndex)==false){
+            numOfChildren++;
+            _parentList.set(neighbourIndex, index);
+            getCutVertex(neighbourIndex, visited, timeOfFirstEncounter, timeOfFirstDiscovery, cutVertex,time);
+            timeOfFirstDiscovery.set(index, Math.min(timeOfFirstDiscovery.get(index), timeOfFirstDiscovery.get(neighbourIndex)));
+            if(_parentList.get(index)==-1&&numOfChildren>1){
+                cutVertex.set(index,true);
+            }
+            if(_parentList.get(index)!=-1&&timeOfFirstDiscovery.get(neighbourIndex)>=timeOfFirstEncounter.get(index)){
+                cutVertex.set(index,true);
+            }
+          }else{
+            if(neighbourIndex!=_parentList.get(index)){
+                timeOfFirstDiscovery.set(index, Math.min(timeOfFirstDiscovery.get(index), timeOfFirstEncounter.get(neighbourIndex)));
+            }
+          }
+      }
   }
-  public static boolean isValidBST(BST<Integer> b){
-    Range<Integer> rootRange = new Range<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE);
-    BSTVertex<Integer> root = b._root;
-    return isValidBST(root, rootRange);
+  //Cycle Detection modified from DFS applied on Undirected Graph
+  //O(V+E)
+  public boolean hasCycle(){
+    resetParentList();
+    HashMap<Integer, Integer> backVertexMap = new HashMap<Integer,Integer>();
+    return hasCycle(0, backVertexMap);
   }
-  public static boolean isValidBST(BSTVertex<Integer> v, Range<Integer> r){
-    if(v ==null){
+  private boolean hasCycle(int vertexIndex, HashMap<Integer,Integer> backVertexMap){
+    //System.out.println("Checking has cycle on vertex:" + vertexIndex);
+    if(backVertexMap.containsKey(vertexIndex)){
       return true;
-    }
-    if(r.inRange(v.item)){
-      return isValidBST(v.left, new Range<Integer>(r.getLow(),v.item-1))&&
-             isValidBST(v.right, new Range<Integer>(v.item+1, r.getHigh()));
     }else{
-      return false;
+      backVertexMap.put(vertexIndex, 1);
     }
-  }
-  public int rank(E e){
-    return rank(e,_root);
-  }
-  private int rank(E e, BSTVertex<E> vertex){
-    if(vertex == null){
-      return 0;
-    }else if(e.compareTo(vertex.item)<=0){
-      return rank(e, vertex.left);
-    }else{
-      if(vertex.left == null){
-        return 1+rank(e, vertex.right);
-      }else{
-        return 1+vertex.left.weight+rank(e, vertex.right);
+    ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(vertexIndex);
+    boolean ret = false; 
+    for(int i = 0; i<neighbourList.size();i++){
+      int neighbourIndex =neighbourList.get(i).getFirst();
+      if(hasCycle(neighbourIndex, backVertexMap)){
+        return true;
       }
     }
+    backVertexMap.remove(vertexIndex);
+    return false;
   }
-  public E select(int rank) throws Exception{
-    if(rank<0||rank>_root.weight)
-      throw new Exception("out of range");
-    return select(rank,_root);
-  }
-  private E select(int rank, BSTVertex<E> vertex){
-    if(vertex==null){
-      return null;
+  //Path discovery modified from DFS
+  //O(V+E)
+  public ArrayList<Integer> findPath(int start, int end){
+    resetParentList();
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(false);
     }
-    int weightLeft = vertex.left==null? 0 : vertex.left.weight;
-    if(rank>weightLeft){
-      return select(rank-weightLeft-1,vertex.right);
-    }else if(rank<weightLeft){
-      return select(rank, vertex.left);
-    }else{
-      return vertex.item;
-    }
+    Stack<Integer> pathStack = new Stack<Integer>();
+    return findPath(start,end,visited, pathStack);
   }
-  public static BST<Integer> buildFromPreorder(ArrayList<Integer> arr){
-    if(arr.size()==0){
-      return null;
-    }else{
-      BSTVertex<Integer> root = new BSTVertex<Integer>(arr.get(0));
-      BSTVertex<Integer> currVertex = root;
-      Stack<Range<Integer>> s = new Stack<Range<Integer>>();
-      s.push(new Range<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-      for(int i = 1; i<arr.size(); i++){
-        Integer e = arr.get(i);
-        if(e.compareTo(currVertex.item)<0){
-          BSTVertex<Integer> newVertex = new BSTVertex<Integer>(e);
-          newVertex.parent = currVertex;
-          currVertex.left = newVertex;
-          s.push(new Range<Integer>(s.peek().getLow(),currVertex.item));
-          currVertex = newVertex;
-        }else{
-          while(e.compareTo(currVertex.item)>0){
-            if(e.compareTo(s.peek().getHigh())<0){
-              BSTVertex<Integer> newVertex = new BSTVertex<Integer>(e);
-              newVertex.parent = currVertex;
-              currVertex.right = newVertex;
-              s.push(new Range<Integer>(currVertex.item, s.peek().getHigh()));
-              currVertex = newVertex;
-            }else{
-              currVertex = currVertex.parent;
-              s.pop();
+  private ArrayList<Integer> findPath(int vertexIndex, int end, ArrayList<Boolean> visited, Stack<Integer> pathStack){
+    //System.out.println("Finding path in vertex "+vertexIndex);
+    visited.set(vertexIndex, true);
+    pathStack.push(vertexIndex);
+    if(vertexIndex==end){
+      return new ArrayList<Integer>(pathStack);
+    }
+    ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(vertexIndex);
+    for(int i = 0; i<neighbourList.size();i++){
+      int neighbourIndex =neighbourList.get(i).getFirst();
+      //System.out.println("recursing in vertex "+neighbourIndex);
+      if(visited.get(neighbourIndex)==false){
+        visited.set(neighbourIndex,true);
+        _parentList.set(neighbourIndex, vertexIndex);
+        ArrayList<Integer> a = findPath(neighbourIndex, end, visited, pathStack);
+        if(a.size()!=0){
+          return a;
+        }
+      }
+    }
+    pathStack.pop();
+    return new ArrayList<Integer>();
+  }
+  //Topological Sort modified from DFS
+  //O(V+E)
+  public ArrayList<Integer> topologicalSort(){
+    resetParentList();
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(false);
+    }
+    Stack<Integer> topologicalStack = new Stack<Integer>();
+    for(int i = 0; i<visited.size();i++){
+      if(visited.get(i)==false)
+        topologicalSort(i,visited, topologicalStack);
+    }
+    ArrayList<Integer> topologicalOrder = new ArrayList<Integer>();
+    while(!topologicalStack.empty()){
+      topologicalOrder.add(topologicalStack.pop());
+    }
+    return topologicalOrder;
+  }
+  private void topologicalSort(int vertexIndex, ArrayList<Boolean> visited, Stack<Integer> topologicalStack){
+    visited.set(vertexIndex, true);
+    ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(vertexIndex);
+    for(int i = 0; i<neighbourList.size();i++){
+      int neighbourIndex =neighbourList.get(i).getFirst();
+      if(visited.get(neighbourIndex)==false){
+        visited.set(neighbourIndex,true);
+        _parentList.set(neighbourIndex, vertexIndex);
+        topologicalSort(neighbourIndex, visited, topologicalStack);
+      }
+    }
+    topologicalStack.push(vertexIndex);
+  }
+  public ArrayList<Integer> kahnTopologicalSort(){
+    ArrayList<Integer> inDegreeArray = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      //For each entry of inDegreeArray
+      inDegreeArray.add(new Integer(0));
+      for(int j = 0; j<_adjacencyList.size(); j++){
+        if(_adjacencyMatrix.get(j).get(i)!=0){
+          inDegreeArray.set(i, inDegreeArray.get(i)+1);
+        }
+      }
+    }
+    Queue<Integer> q = new LinkedList<Integer>();
+    for(int i = 0; i<inDegreeArray.size(); i++){
+      if(inDegreeArray.get(i)==0){
+        q.add(i);
+      }
+    }
+    ArrayList<Integer> topologicalOrder = new ArrayList<Integer>();
+    while(!q.isEmpty()){
+      int currVertex = q.poll();
+      topologicalOrder.add(currVertex);
+      ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+      for(int i = 0; i<neighbourList.size(); i++){
+        IntegerPair currPair = neighbourList.get(i);
+        int vertexTo = currPair.getFirst();
+        int vertexToDegree = inDegreeArray.get(vertexTo);
+        inDegreeArray.set(vertexTo, vertexToDegree-1);
+        if(vertexToDegree-1==0){
+          q.offer(vertexTo);
+        }
+      }
+    }
+    //System.out.println(inDegreeArray);
+    return topologicalOrder;
+  }
+  public int allTopologicalSort(){
+    ArrayList<Integer> inDegreeArray = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      //For each entry of inDegreeArray
+      inDegreeArray.add(new Integer(0));
+      for(int j = 0; j<_adjacencyList.size(); j++){
+        if(_adjacencyMatrix.get(j).get(i)!=0){
+          inDegreeArray.set(i, inDegreeArray.get(i)+1);
+        }
+      }
+    }
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    LinkedList<Integer> result = new LinkedList<Integer>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      visited.add(false);
+    }
+    return allTopologicalSortUtil(visited, result, inDegreeArray, 0);
+  }
+  private int allTopologicalSortUtil(ArrayList<Boolean> visited, LinkedList<Integer> result, ArrayList<Integer> inDegreeArray, int count){
+    boolean flag = false;
+    
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      if(inDegreeArray.get(i)==0&&!visited.get(i)){
+        visited.set(i, true);
+        ArrayList<IntegerPair> neighbourList = _adjacencyList.get(i);
+        for(int j = 0; j < neighbourList.size(); j++){
+          IntegerPair currPair = neighbourList.get(j);
+          int vertexTo = currPair.getFirst();
+          int vertexToDegree = inDegreeArray.get(vertexTo);
+          inDegreeArray.set(vertexTo, vertexToDegree-1);
+        }
+        result.add(i);
+        count = allTopologicalSortUtil(visited, result, inDegreeArray, count);
+        visited.set(i, false);
+        result.removeLast();
+        for(int j = 0; j < neighbourList.size(); j++){
+          IntegerPair currPair = neighbourList.get(j);
+          int vertexTo = currPair.getFirst();
+          int vertexToDegree = inDegreeArray.get(vertexTo);
+          inDegreeArray.set(vertexTo, vertexToDegree+1);
+        }
+        flag = true;
+      }
+    }
+    if(!flag){
+      System.out.println(result);
+      count++;
+    }
+    return count;
+  }
+  //Count walks with exactly k edges from given source to given destination
+  //O(V^3)
+  int countWalksWithKEdges(int start, int end, int k){
+    int numOfVertex = _adjacencyMatrix.size();
+    int count[][][] = new int[numOfVertex][numOfVertex][k+1];
+    for(int e = 0; e<=k;e++){
+      for(int i = 0; i<numOfVertex; i++){
+        for(int j = 0; j<numOfVertex; j++){
+          count[i][j][e]=0;
+          if(e==0&&i==j){
+            count[i][j][e]=1;
+          }
+          if(e==1&&_adjacencyMatrix.get(i).get(j)!=0){
+            count[i][j][e]=1;
+          }
+          if(e>1){
+            for(int a = 0; a<numOfVertex;a++){
+              if(_adjacencyMatrix.get(i).get(a)!=0){
+                count[i][j][e]+=count[a][j][e-1];
+              }
             }
           }
         }
       }
-      return new BST<Integer>(root);
     }
+    return count[start][end][k];
   }
-  public static void main(String[] args) throws Exception{
-    ArrayList<Integer> arr = new ArrayList<Integer>();
-    arr.add(4);
-    arr.add(2);
-    arr.add(1);
-    arr.add(3);
-    arr.add(5);
-    arr.add(6);
-    arr.add(7);
-    BST<Integer> bst = buildFromPreorder(arr);
-    System.out.println(isValidBST(bst));
-    bst.inOrder();
-  }
-
-}
-
-class Range<E extends Comparable<E>>{
-  E _low;
-  E _high;
-  Range(E low, E high){
-    _low = low;
-    _high = high;
-  }
-  public boolean inRange(E that){
-    return _low.compareTo(that)<=0&&that.compareTo(_high)<=0;
-  }
-  public E getLow(){
-    return _low;
-  }
-  public E getHigh(){
-    return _high;
-  }
-}
-class BSTVertex<E extends Comparable<E>>{
-  public BSTVertex<E> parent;
-  public BSTVertex<E> left;
-  public BSTVertex<E> right;
-  public E item;
-  public int height;
-  public int weight;
-  private static final int NULL_HEIGHT = -1;
-  private static final int INIT_HEIGHT = 0;
-  private static final int NULL_WEIGHT = 0;
-  private static final int INIT_WEIGHT = 1;
-  BSTVertex(E item){
-    parent = null;
-    left = null;
-    right = null;
-    this.item = item;
-    height = INIT_HEIGHT;
-    weight = INIT_WEIGHT;
-  }
-  BSTVertex(E item, int UID){
-    parent = null;
-    left = null;
-    right = null;
-    this.item = item;
-    height = INIT_HEIGHT;
-    weight = INIT_WEIGHT;
-  }
-  public int compareTo(BSTVertex<E> that){
-    return item.compareTo(that.item);
-  }
-  public void updateHeight(){ //O(1)
-    int heightLeft = left==null? NULL_HEIGHT :left.height;
-    int heightRight = right == null? NULL_HEIGHT :right.height;
-    height = 1+Math.max(heightLeft,heightRight);
-  }
-  public void updateWeight(){
-    int weightLeft = left==null? NULL_WEIGHT: left.weight;
-    int weightRight = right==null?NULL_WEIGHT: right.weight;
-    weight = 1+weightLeft+weightRight;
-  }
-  public int isBalanced(){
-    int heightLeft = left==null? NULL_HEIGHT :left.height;
-    int heightRight = right == null? NULL_HEIGHT :right.height;
-    int diff = heightLeft - heightRight;
-    return diff;
-  }
-}
-\end{minted}
-\clearpage
-\begin{minted}{java}
-//BinaryHeap.java
-import java.util.*;
-class BinaryHeap<E extends Comparable<E>>{
-  private static final int NO_PARENT = -1;
-  private static final int NO_CHILD = -1;
-  private static final int ITEMNOTFOUND = -1;
-  int _heapSize;
-  ArrayList<E> _heapArray;
-  public BinaryHeap(){
-    _heapSize = 0;
-    _heapArray = new ArrayList<E>();
-    _heapArray.add(null);
-  }
-  public ArrayList<E> biggerThanK(E k){
-    return biggerThanK(1, k, new ArrayList<E>());
-  }
-  private ArrayList<E> biggerThanK(int index, E k, ArrayList<E> arr){
-    if(index>_heapSize||index==NO_CHILD){
-      return arr;
+  //Shortest Path given a DAG from Topological sorting
+  //O(V+E)
+  public void shortestPathinDAG(int source){
+    ArrayList<Integer> topologicalOrder = topologicalSort();
+    ArrayList<Integer> distance = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyMatrix.size();i++){
+      distance.add(INF);
     }
-    E curr = _heapArray.get(index);
-    if(curr.compareTo(k)>0){
-      arr = biggerThanK(getLeftChildID(index), k, arr);
-      arr = biggerThanK(getRightChildID(index), k, arr);
-      arr.add(curr);
-      return arr;
-    }else{
-      return arr;
-    }
-  }
-  private int getParentID(int index){
-    if(index==1){
-      return NO_PARENT;
-    }else{
-      return (int) Math.floor(index/2);
-    }
-  }
-  private int getLeftChildID(int index){
-    assert index!=-1;
-    int ID = index*2;
-    if(ID>_heapSize){
-      return NO_CHILD;
-    }else{
-      return ID;
-    }
-  }
-  private int getRightChildID(int index){
-    assert index!=-1;
-    int ID = index*2+1;
-    if(ID>_heapSize){
-      return NO_CHILD;
-    }else{
-      return ID;
-    }
-  }
-  public E extractMax(){
-    if(_heapSize==0){
-      return null;
-    }
-    E output = _heapArray.get(1);
-    _heapArray.set(1,_heapArray.get(_heapSize));
-    _heapSize--;
-    shiftDown(1);
-    //System.out.println(this.toString());
-    return output;
-  }
-  private void shiftDown(int index){
-    //System.out.println(index);
-    while(index<=_heapSize){
-      E currMax = _heapArray.get(index);
-      int maxID = index;
-      if(getLeftChildID(index)!=NO_CHILD&&currMax.compareTo(_heapArray.get(getLeftChildID(index)))<0){
-        currMax = _heapArray.get(getLeftChildID(index));
-        maxID = getLeftChildID(index);
-      }
-      if(getRightChildID(index)!=NO_CHILD&&currMax.compareTo(_heapArray.get(getRightChildID(index)))<0){
-        currMax = _heapArray.get(getRightChildID(index));
-        maxID = getRightChildID(index);
-      }
-      if(maxID!=index){
-        swap(_heapArray, maxID, index);
-        index = maxID;
-      }else{
-        break;
-      }
-    }
-  }
-  public void insert(E value){
-    _heapSize++;
-    if(_heapArray.size()-1<_heapSize){
-      _heapArray.add(value);
-    }else{
-      _heapArray.set(_heapSize,value);
-    }
-    shiftUp(_heapSize);
-  }
-  public void shiftUp(int index){
-    while(index>1&&_heapArray.get(getParentID(index)).compareTo(_heapArray.get(index))<0){
-      swap(_heapArray, index, getParentID(index));
-      index = getParentID(index);
-    }
-  }
-  private void swap(ArrayList<E> arr, int a, int b){
-    E temp;
-    temp = arr.get(a);
-    arr.set(a, arr.get(b));
-    arr.set(b, temp);
-  }
-  public String toString(){
-    String output = "";
-    for(int i = 1; i<=_heapSize; i++){
-      output +=_heapArray.get(i).toString()+" ";
-    }
-    return output;
-  }
-  public int size(){
-    return _heapSize;
-  }
-  public E peekMax(){
-    return _heapArray.get(1);
-  }
-  public void set(int index, E item){
-    _heapArray.set(index, item);
-  }
-  public int indexOf(E item){
-    for(int i = 1; i<=_heapSize; i++){
-      if(_heapArray.get(i).equals(item)){
-        return i;
-      }
-    }
-    return ITEMNOTFOUND;
-  }
-  public E get(int index){
-    return _heapArray.get(index);
-  }
-  public E getKthLargest(int k){
-    int eliminated = 0;
-    BinaryHeap<E> b = new BinaryHeap<E>();
-    HashMap<E, Integer> indexMap = new HashMap<E, Integer>();
-    b.insert(_heapArray.get(1));
-    indexMap.put(_heapArray.get(1),1);
-    while(eliminated<k){
-      E value = b.extractMax();
-      int index = indexMap.get(value);
-      if(2*index<_heapSize){
-        E left = _heapArray.get(2*index);
-        b.insert(left);
-        indexMap.put(left, 2*index);
-      }
-      if(2*index<_heapSize+1){
-        E right = _heapArray.get(2*index+1);
-        b.insert(right);
-        indexMap.put(right, 2*index+1);
-      }
-      eliminated++;
-      if(eliminated == k){
-        return value;
-      }
-    }
-    return null;
-  }
-  public static void main(String[] args){
-    BinaryHeap<Integer> bh = new BinaryHeap<Integer>();
-    bh.insert(1);
-    bh.insert(99);
-    bh.insert(88);
-    bh.insert(16);
-    bh.insert(37);
-    bh.insert(24);
-    bh.insert(54);
-    System.out.println(bh.getKthLargest(7));
-  }
-}
-\end{minted}
-\clearpage
-\begin{minted}{java}
-//UnionFind.java
-import java.util.ArrayList;
-class UnionFind<E extends Comparable<E>>{
-  private static UID = 0;
-  HashMap<Integer, E> _itemMap; 
-  ArrayList<E> _unionFindArray;
-  ArrayList<Integer> _parentArray;
-  ArrayList<Integer> _rankArray;
-  public UnionFind(){
-    _unionFindArray = new ArrayList<E>();
-    _parentArray = new ArrayList<Integer>();
-    _rankArray = new ArrayList<Integer>();
-  }
-  public UnionFind(ArrayList<E> arr){
-    for(int i = 0; i<arr.size(); i++){
-      _itemMap.put(UID, arr.get(i));
-      UID++;
-      _parentArray.add(UID);
-      _rankArray.add(0);
-    }
-  }
-  public int findSet(int index){
-    if(_parentArray.get(index)==index)
-      return index;
-    else{
-      int ret = findSet(_parentArray.get(index));
-      _parentArray.set(index, ret);
-      return ret;
-    }
-  }
-  public int isSameSet(int i, int j){
-    return findSet(i)==findSet(j);
-  }
-  public int rank(int index){
-    return _rankArray.get(index);
-  }
-  public void unionSet(int i, int j){
-    if(!isSameSet(i,j)){
-      int repItemOfI = findSet(i);
-      int repItemOfJ = findSet(j);
-      if(_rankArray.get(x)>_rankArray.get(y))
-        _parentArray.set(repItemOfJ,repItemOfI);
-      else{
-        _parentArray.set(repItemOfI, repItemOfJ);
-        if(_rankArray.get(repItemOfI)==_rankArray.get(repItemOfJ))
-          _rankArray.set(repItemOfJ,_rankArray.get(repItemOfJ)+1);
-      }
-    }
-  }
-  public int getIndex(E e){
-    return _itemMap.get(e);
-  }
-  //TODO: Construct UFDS from SetForest
-}
-\end{minted}
-\clearpage
-\begin{minted}{java}
-//KthSmallestElement.java
-import java.util.*;
-public class KthSmallestElement{
-  private static final boolean __DEBUG = false;
-  ArrayList<Integer> _arr;
-  ArrayList<Integer> _temp;
-  KthSmallestElement(){
-    _arr = new ArrayList<Integer>();
-    _temp = new ArrayList<Integer>();
-  }
-  public void add(int item){
-    _arr.add(item);
-  }
-  public int random(int low, int high){
-    assert low<=high;
-    return (int) Math.floor(Math.random()*(high-low)+low);
-  }
-  
-  public int getKthSmallestElement(int k, int low, int high){
-    int newPivot = partition(low,high);
-    if(newPivot==k){
-      return _arr.get(k);
-    }else if(newPivot>k){
-      return getKthSmallestElement(k, low, newPivot-1);
-    }else{
-      return getKthSmallestElement(k, newPivot+1,high);
-    }
-  }
-  public int getKthSmallestElement(int k){
-    return getKthSmallestElement(k, 0 , _arr.size()-1);
-  }
-  
-  public int partition(int low, int high){
-    if(low==high){
-      return low;
-    }else{
-      int pivot = random(low, high);
-      int posPivot = 0;
-      assert pivot>=low&&pivot<=high;
-      _temp = new ArrayList<Integer>();
-      int pivotValue = _arr.get(pivot);
-      _temp.add(pivotValue);
-      int numOperationsDone = 0;
-      while(numOperationsDone<=high-low){
-        if(numOperationsDone+low!=pivot){
-          int currValue = _arr.get(low+numOperationsDone);
-          if(currValue<=pivotValue){
-            _temp.add(0,currValue);
-            posPivot++;
-          }else{
-            _temp.add(currValue);
+    distance.set(source, 0);
+    for(int i = 0; i<topologicalOrder.size();i++){
+      int currVertex = topologicalOrder.get(i);
+      if(distance.get(currVertex)!=INF){
+        ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+        for(int j = 0; j<neighbourList.size();j++){
+          IntegerPair currPair = neighbourList.get(j);
+          if(distance.get(currPair.getFirst())>distance.get(currVertex)+currPair.getSecond()){
+            distance.set(currPair.getFirst(),distance.get(currVertex)+currPair.getSecond());
           }
         }
-        numOperationsDone++;
       }
-      for(int i = low; i<=high; i++){
-        _arr.set(i, _temp.get(i-low));
+    }
+    for(int i = 0; i<_adjacencyMatrix.size();i++){
+      if(distance.get(i)==INF){
+        System.out.print("INF ");
+      }else{
+        System.out.print(distance.get(i)+" ");
       }
-      return posPivot+low;
     }
   }
-  public String toString(){
-    return _arr.toString();
+  //Check whether a graph is bipartite modified from DFS
+  //O(V+E)
+  public boolean isBipartite(){
+    ArrayList<Integer> visited = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(-1);
+    }
+    return isBipartite(0, visited, 1);
   }
-  public static void main(String[] args){
-    KthSmallestElement kse = new KthSmallestElement();
-    kse.add(3);
-    kse.add(9);
-    kse.add(4);
-    kse.add(8);
-    kse.add(1);
-    kse.add(5);
-    kse.add(7);
-    System.out.println(kse);
-    for(int i = 0; i<7; i++)
-      System.out.println(kse.getKthSmallestElement(i));
+  private boolean isBipartite(int vertexIndex, ArrayList<Integer> visited, int color){
+    visited.set(vertexIndex, color);
+    ArrayList<IntegerPair> neighbourList = _adjacencyList.get(vertexIndex);
+    boolean ret = true;
+    for(int i = 0; i<neighbourList.size();i++){
+      int neighbourIndex = neighbourList.get(i).getFirst();
+      if(visited.get(neighbourIndex)==-1){
+        ret = ret&&isBipartite(neighbourIndex, visited, 1-color);
+        if(ret==false){
+          return false;
+        }
+      }else{
+        if(visited.get(neighbourIndex)+color!=1){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  //Find bridge in graph modified from DFS
+  //O(V+E)
+  public ArrayList<IntegerPair> getBridge() {
+    resetParentList();
+      ArrayList<Boolean> visited = new ArrayList<Boolean>();
+      ArrayList<Integer> timeOfFirstEncounter = new ArrayList<Integer>();
+      ArrayList<Integer> timeOfFirstDiscovery = new ArrayList<Integer>();
+      ArrayList<IntegerPair> bridge = new ArrayList<IntegerPair>();
+      for(int i = 0; i<_adjacencyList.size(); i++){
+        visited.add(false);
+        timeOfFirstEncounter.add(-1);
+        timeOfFirstDiscovery.add(-1);
+      }int time = 0;
+      getBridge(0, visited, timeOfFirstEncounter, timeOfFirstDiscovery, bridge, time);
+      return bridge;
+    }
+  private void getBridge(int index, ArrayList<Boolean> visited, ArrayList<Integer> timeOfFirstEncounter,
+                         ArrayList<Integer> timeOfFirstDiscovery, ArrayList<IntegerPair> bridge, int time){
+      visited.set(index, true);
+      time++;
+      timeOfFirstEncounter.set(index, time);
+      timeOfFirstDiscovery.set(index, time);
+      ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(index);
+      for(int i = 0; i<neighbourList.size(); i++){
+          int neighbourIndex = neighbourList.get(i).getFirst();
+          if(visited.get(neighbourIndex)==false){
+            _parentList.set(neighbourIndex, index);
+            getBridge(neighbourIndex, visited, timeOfFirstEncounter, timeOfFirstDiscovery, bridge,time);
+            timeOfFirstDiscovery.set(index, Math.min(timeOfFirstDiscovery.get(index), timeOfFirstDiscovery.get(neighbourIndex)));
+            if(timeOfFirstDiscovery.get(neighbourIndex)>timeOfFirstEncounter.get(index)){
+                bridge.add(new IntegerPair(index, neighbourIndex));
+              }
+          }else{
+            if(neighbourIndex!=_parentList.get(index)){
+                timeOfFirstDiscovery.set(index, Math.min(timeOfFirstDiscovery.get(index), timeOfFirstEncounter.get(neighbourIndex)));
+            }
+          }
+    }
+  }
+  //Prim algorithm for MST generation given a source vertex...return edge(with weight info)
+  //O(ElogV)
+  public ArrayList<IntegerTriple> primMST(int source){
+    ArrayList<Boolean> taken = new ArrayList<Boolean>();
+    ArrayList<IntegerTriple> edgeInMST = new ArrayList<IntegerTriple>();
+    PriorityQueue<IntegerTriple> edgeQueue = new PriorityQueue<IntegerTriple>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      taken.add(false);
+    }
+    process(source, edgeQueue, edgeInMST, taken);
+    int mstWeight = 0;
+    while(edgeQueue.isEmpty()==false){
+      IntegerTriple leastWeight = edgeQueue.poll();
+      if(taken.get(leastWeight.getThird())==false){
+        mstWeight+=leastWeight.getFirst();
+        edgeInMST.add(new IntegerTriple(leastWeight.getSecond(), leastWeight.getThird(), leastWeight.getFirst()));
+        process(leastWeight.getThird(), edgeQueue, edgeInMST, taken);
+      }
+    }
+    System.out.println(edgeInMST);
+    System.out.println("Total cost: "+mstWeight);
+    return edgeInMST;
+  }
+  private void process(int vertexIndex, PriorityQueue<IntegerTriple> edgeQueue, ArrayList<IntegerTriple> edgeInMST, ArrayList<Boolean> taken){
+    taken.set(vertexIndex, true);
+    ArrayList<IntegerPair> neighbourList = _adjacencyList.get(vertexIndex);
+    for(int i = 0; i<neighbourList.size(); i++){
+      IntegerPair weightedVector = neighbourList.get(i);
+      if(taken.get(weightedVector.getFirst())==false){
+        edgeQueue.offer(new IntegerTriple(weightedVector.getSecond(), vertexIndex, weightedVector.getFirst()));//weight, from, to
+      }
+    }
+  }
+  public ArrayList<IntegerTriple> kruskalMST(){
+    sortEdgeListByWeight();
+    UnionFind<IntegerTriple> edgeUnionFind = new UnionFind<IntegerTriple>(_edgeList);
+    ArrayList<IntegerTriple> edgeInMST = new ArrayList<IntegerTriple>();
+    int mstWeight = 0;
+    for(int i = 0; i<_edgeList.size();i++){
+      IntegerTriple currEdge = _edgeList.get(i);
+      if(!edgeUnionFind.isSameSet(currEdge.getFirst(), currEdge.getSecond())){
+        mstWeight+=currEdge.getThird();
+        edgeInMST.add(currEdge);
+        edgeUnionFind.unionSet(currEdge.getFirst(), currEdge.getSecond());
+      }
+    }
+    System.out.println(edgeInMST);
+    System.out.println("Total cost: "+mstWeight);
+    return edgeInMST;
+  }
+  //Strongly connected components
+  //O(V+E)
+  public void printSCC(){
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    for(int i = 0; i<_adjacencyMatrix.size(); i++){
+      visited.add(false);
+    } 
+    Stack<Integer> s = new Stack<Integer>();
+    for(int i = 0; i<_adjacencyMatrix.size(); i++){
+      if(visited.get(i)==false){
+        fillOrder(i, visited, s);
+      }
+    }
+    int[][] transposedAdjacencyMatrix = new int[_adjacencyMatrix.size()][_adjacencyMatrix.size()];
+    for(int i = 0; i<_adjacencyMatrix.size(); i++){
+      for(int j=0; j<_adjacencyMatrix.size(); j++){
+        transposedAdjacencyMatrix[i][j]=_adjacencyMatrix.get(j).get(i);
+      }
+    }
+    visited = new ArrayList<Boolean>();
+    for(int i = 0; i<_adjacencyMatrix.size(); i++){
+      visited.add(false);
+    }
+    while(!s.empty()){
+      int currVertex =s.pop();
+      if(visited.get(currVertex)==false){
+        DFSUtil(currVertex, visited, transposedAdjacencyMatrix);
+        System.out.println();
+      }
+    }
+  }
+  private void fillOrder(int currVertex, ArrayList<Boolean> visited, Stack<Integer> s){
+    visited.set(currVertex, true);
+    ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+    for(int i = 0; i<neighbourList.size(); i++){
+      IntegerPair currPair = neighbourList.get(i);
+      int nextVertex = currPair.getFirst();
+      if(!visited.get(nextVertex)){
+        fillOrder(nextVertex, visited, s);
+      }
+    }
+    s.push(new Integer(currVertex));
+  }
+  private void DFSUtil(int currVertex, ArrayList<Boolean> visited, int[][] transposedAdjacencyMatrix){
+    visited.set(currVertex, true);
+    System.out.print(currVertex+" ");
+    for(int i = 0; i<transposedAdjacencyMatrix.length; i++){
+      if(transposedAdjacencyMatrix[currVertex][i]==0){
+        continue;
+      }
+      if(visited.get(i)==false){
+        DFSUtil(i, visited, transposedAdjacencyMatrix);
+      }
+    }
+  }
+  //PS: Strong Cut Vertex and Strong Bridges algorithms awaiting implementation
+
+  //Bellman Ford SSSP
+  //O(VE)
+  public ArrayList<Integer> BellmanFordSSSP(int source){
+    int size = _adjacencyList.size();
+    ArrayList<Integer> distanceArray = new ArrayList<Integer>();
+    resetParentList();
+    for(int i = 0; i<size;i++){
+      distanceArray.add(INF);
+    }
+    distanceArray.set(source, 0);
+    //System.out.println(_edgeList);
+    for(int timeRelaxed = 0; timeRelaxed<size-1; timeRelaxed++){
+      for(IntegerTriple currEdge: _edgeList){
+        relax(currEdge.getFirst(), currEdge.getSecond(), currEdge.getThird(), distanceArray);
+        if(!isDirected)
+          relax(currEdge.getSecond(), currEdge.getFirst(), currEdge.getThird(), distanceArray);
+      }
+      //System.out.println(distanceArray);
+    }
+    boolean hasNegativeCycle = false;
+    for(IntegerTriple currEdge:_edgeList){
+      if(distanceArray.get(currEdge.getFirst())!=INF&&distanceArray.get(currEdge.getSecond())>
+                                                      distanceArray.get(currEdge.getFirst())+currEdge.getThird()){
+        hasNegativeCycle = true;
+        System.out.println("Has negative Cycle, program terminated prematurely.");
+        return new ArrayList<Integer>();
+      }
+    }
+    return distanceArray;
+  }
+  private void relax(int from, int to, int weight, ArrayList<Integer> distanceArray){
+    if(distanceArray.get(from)!=INF&&distanceArray.get(to)>distanceArray.get(from)+weight){
+      distanceArray.set(to, distanceArray.get(from)+weight);
+      _parentList.set(to, from);
+    }
+  }
+  //O(V)
+  private ArrayList<Integer> backtrack(int dest, int source){
+    if(_parentList.get(dest)==-1){
+      return new ArrayList<Integer>();
+    }else{
+      ArrayList<Integer> ret = new ArrayList<Integer>();
+      backtrack(dest, source, ret);
+      return ret; 
+    }
+  }
+  private void backtrack(int dest, int source, ArrayList<Integer> path){
+    int currVertex = dest;
+    while(currVertex!=source){
+      path.add(path.size(), currVertex);
+      currVertex = _parentList.get(currVertex);
+    }
+    path.add(path.size(),source);
+  }
+  //Shortest Path Fast Algorithm
+  //O(VE) but O(E) for an random graph
+  public ArrayList<Integer> SPFA(int source){
+    resetParentList();
+    int size = _adjacencyList.size();
+    ArrayList<Integer> distanceArray = new ArrayList<Integer>();
+    resetParentList();
+    for(int i = 0; i<size;i++){
+      distanceArray.add(INF);
+    }
+    
+    LinkedList<Integer> q = new LinkedList<Integer>();
+    q.offer(source);
+    distanceArray.set(source, 0);
+    while(!q.isEmpty()){
+      int currVertex = q.poll();
+      //System.out.println(currVertex);
+      ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+      for(int i = 0; i<neighbourList.size();i++){
+        int neighbourIndex = neighbourList.get(i).getFirst();
+        //System.out.println("Processing ("+currVertex+","+neighbourIndex+")");
+        int weight = neighbourList.get(i).getSecond();
+        relaxSPFA(currVertex, neighbourIndex, weight, distanceArray, q);
+      }
+    }
+    return distanceArray; 
+  }
+  private void relaxSPFA(int from, int to, int weight, ArrayList<Integer> distanceArray, LinkedList<Integer> queue){
+    if(distanceArray.get(from)!=INF&&distanceArray.get(to)>distanceArray.get(from)+weight){
+      distanceArray.set(to, distanceArray.get(from)+weight);
+      _parentList.set(to, from);
+      if(!queue.contains(to)){
+        queue.offer(to);
+        //System.out.println(queue);
+      }
+    }
+  }
+  //SSSP for unweighted graph: BFS//Tree
+  //O(V+E)
+  public ArrayList<Integer> SSSP_BPS(int source){
+    ArrayList<Integer> distanceArray = new ArrayList<Integer>();
+    resetParentList();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      distanceArray.add(INF);
+    }
+    distanceArray.set(source, 0);
+    ArrayList<Boolean> visited = new ArrayList<Boolean>();
+    Queue<IntegerPair> q = new LinkedList<IntegerPair>();
+    for(int i = 0; i<_adjacencyList.size();i++){
+      visited.add(false);
+    }
+    q.offer(new IntegerPair(source, 0));
+    visited.set(source,true);
+    while(!q.isEmpty()){
+      IntegerPair p= q.poll();
+      int currVertex = p.getFirst();
+      int currLayer = p.getSecond();
+      ArrayList<IntegerPair> neighbourList =  _adjacencyList.get(currVertex);
+      for(int i = 0; i<neighbourList.size(); i++){
+        int neighbourIndex =neighbourList.get(i).getFirst();
+        if(visited.get(neighbourIndex)==false){
+          visited.set(neighbourIndex,true);
+          _parentList.set(neighbourIndex,currVertex);
+          distanceArray.set(neighbourIndex, currLayer+1);
+          q.offer(new IntegerPair(neighbourIndex, currLayer+1));
+        }
+      }
+    }
+    return distanceArray;
+  }
+  
+  public ArrayList<Integer> SSSP_DAG(int source){
+    ArrayList<Integer> topologicalOrder = this.topologicalSort();
+    ArrayList<Integer> distanceArray = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      distanceArray.add(INF);
+    }
+    resetParentList();
+    distanceArray.set(topologicalOrder.get(0), 0);
+    for(int i = 0; i<topologicalOrder.size();i++){
+      int currVertex = topologicalOrder.get(i);
+      ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+      for(int j =  0; j<neighbourList.size(); j++){
+        IntegerPair currPair = neighbourList.get(j);
+        int toVertex = currPair.getFirst();
+        int weight = currPair.getSecond();
+        if(distanceArray.get(currVertex)!=INF&&distanceArray.get(currVertex)+weight<distanceArray.get(toVertex)){
+          distanceArray.set(toVertex, distanceArray.get(currVertex)+weight);
+          _parentList.set(toVertex, currVertex);
+        }
+      }
+    }
+    return distanceArray;
+  }
+  /*
+  //Original Dijkstra
+  public ArrayList<Integer> dijkstra_original(int source){
+    
+  }
+  */
+  //Modified Dijkstra
+  public ArrayList<Integer> dijkstra_modified(int source){
+    ArrayList<Integer> distanceArray = new ArrayList<Integer>();
+    for(int i = 0; i<_adjacencyList.size(); i++){
+      distanceArray.add(INF);
+    }
+    resetParentList();
+    distanceArray.set(source, 0);
+    PriorityQueue<IntegerPair> pq = new PriorityQueue<IntegerPair>();
+    pq.offer(new IntegerPair(0, source));
+    while(!pq.isEmpty()){
+      IntegerPair currPair = pq.poll();
+      int currVertex = currPair.getSecond();
+      int cost= currPair.getFirst();
+      if(distanceArray.get(currVertex)==cost){
+        ArrayList<IntegerPair> neighbourList = _adjacencyList.get(currVertex);
+        for(int i = 0; i<neighbourList.size(); i++){
+          IntegerPair p = neighbourList.get(i);
+          int toVertex = p.getFirst();
+          int weight = p.getSecond();
+          if(distanceArray.get(currVertex)!=INF&&distanceArray.get(toVertex)>distanceArray.get(currVertex)+weight){
+            distanceArray.set(toVertex, distanceArray.get(currVertex)+weight);
+            _parentList.set(toVertex, currVertex);
+            pq.offer(new IntegerPair(distanceArray.get(toVertex), toVertex));
+          }
+        }
+      }
+    }
+    return distanceArray;
+  }
+  //Floyd Warshall
+  //O(V^3)
+  public int[][] floydWarshall(){
+    int numOfVertex = _adjacencyList.size();
+    int[][] ret = new int[numOfVertex][numOfVertex];
+    for(int i = 0; i < numOfVertex; i++){
+      for(int j = 0; j< numOfVertex; j++){
+        if(i==j){
+          ret[i][j]=0;
+        }else{
+          ret[i][j]=_adjacencyMatrix.get(i).get(j)==0?INF:_adjacencyMatrix.get(i).get(j);
+        }
+      }
+    }
+
+    for(int k = 0; k<numOfVertex; k++){
+      for(int i = 0; i< numOfVertex; i++){
+        for(int j = 0; j<numOfVertex; j++){
+          if(ret[i][k]!=INF&&ret[k][j]!=INF&&ret[i][k]+ret[k][j]<ret[i][j]){
+            ret[i][j]=ret[i][k]+ret[k][j];
+          }
+        }
+      }
+    }
+    return ret;
+  }
+  //Shortest Path from u to v with k edges
+  public int shortestPathWithKEdges(int source, int dest, int k){
+    int numOfVertex = _adjacencyMatrix.size();
+    int sp[][][] = new int[numOfVertex][numOfVertex][k+1];
+    for(int e = 0; e<=k; e++){
+      for(int i = 0; i< numOfVertex; i++){
+        for(int j = 0; j<numOfVertex; j++){
+          sp[i][j][e]=INF;
+          if(e==0&&i==j){
+            sp[i][j][e]=0;
+          }
+          if(e==1&&_adjacencyMatrix.get(i).get(j)!=0){
+            sp[i][j][e]=_adjacencyMatrix.get(i).get(j);
+          }
+          if(e>1){
+            for(int a = 0; a< numOfVertex; a++){
+              if(_adjacencyMatrix.get(i).get(a)!=INF&&i!=a&&j!=a&&sp[a][j][e-1]!=INF){
+                sp[i][j][e]=Math.min(sp[i][j][e], _adjacencyMatrix.get(i).get(a)+sp[a][j][e-1]);
+              }
+            }
+          }
+        }
+      }
+    }
+    return sp[source][dest][k];
+  }
+
+  //Auxilliary method
+  //O(V)
+  public void resetParentList(){
+    for(int i = 0; i<_parentList.size();i++){
+      _parentList.set(i,-1);
+    }
+  }
+  public void sortAdjacencyList(){
+    for(int i = 0; i <_adjacencyList.size();i++){
+      ArrayList<IntegerPair> currList = _adjacencyList.get(i);
+      Collections.sort(currList);
+    }
+  }
+  public void sortEdgeList(){
+    Collections.sort(_edgeList);
+  }
+  public void sortEdgeListByWeight(){
+    final Comparator<IntegerTriple> weightAsendingOrder = new Comparator<IntegerTriple>(){
+      public int compare(IntegerTriple o1, IntegerTriple o2){
+        return o1.getThird()-o2.getThird();
+      }
+    };
+    Collections.sort(_edgeList, weightAsendingOrder);
   }
 }
 \end{minted}
