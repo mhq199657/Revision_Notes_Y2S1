@@ -1487,4 +1487,31 @@ If $g^\prime(\eta)=g^{\prime\prime}(\eta)=\cdots=g^{(k-1)}(\eta)=0$ and $g^{(k)}
 \]
 that is, the convergence $x_n\to \eta$ is of order $k$.
 \end{theorem}
+\subsection{Newton-Rhapson's Method}
+\begin{definition}[Newton-Rhapson's Method]
+\hfill\\\normalfont Newton-Rhapson's algorithm computes the solution of $f(x)=0$ with tolerance $\varepsilon$. It follows the steps below:
+\begin{enumerate}
+  \item Choose an initial approximation $x_0$.
+  \item For $k=0,1,2,\ldots$
+  \[
+x_{k+1}=x_k-\frac{f(x_k)}{f^\prime(x_k)}
+  \]
+  Stop if
+  \[
+  \frac{|x_{k+1}-x_k|}{|x_k|}<\varepsilon
+  \]
+  Otherwise, continue with next $k$.
+\end{enumerate}
+\end{definition}
+\textbf{Remark}: For this algorithm, it is required that $f^\prime(\eta)\neq 0$ to achieve quadratic convergence.
+\begin{definition}[Mutiplicity of Solution]
+\hfill\\\normalfont In general, if $f(\eta)=f^{(1)}(\eta)=\cdots=f^{(m-1)}(\eta)=0$ and $f^{(m)}(\eta)\neq 0$, we say that $\eta$ is a solution of \textbf{multiplicity} $m$ of $f(x)=0$.
+\end{definition}
+Specifically, if $f(\eta)=0$ and $f^\prime(\eta)\neq 0$, $\eta$ is a \textbf{simple solution}. Otherwise, $\eta$ is a multiple solution.
+\begin{definition}[Modified Newton Rhapson's Method]
+\hfill\\\normalfont If $\eta$ is a solution of $f(x)=0$ of multiplicity $m$, then the iterative scheme is
+\[
+x_{n+1}=x_n-m\frac{f(x_n)}{f^\prime(x_n)}
+\]
+\end{definition}
 \end{document}
