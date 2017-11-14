@@ -2747,7 +2747,7 @@ Jump instruction mandates one flush, since new address is only available at the 
 There are two ways to implement the stall, either by inserting NOP instruction(used in solving load-use hazard), or by replacing the instruction in the pipeline with a NOP instruction(used in instructions sequentially after \texttt{j} instruction).
 \subsubsection{Branch}
 Branch instructions can incur minimum one stall after itself, by adding hardware in \texttt{ID} stage to evaluate the branch decision.\\
-However, previous instructions may a dependency, so it is possible there is one stall before branching instruction. This can be implemented by teh hazard unit.\\
+However, previous instructions may a dependency, so it is possible there is one stall before branching instruction. This can be implemented by the hazard unit, with additional inputs. \\
 After resolving the aforementioned stall, the branch decision involves the following logic:
 \begin{verbatim}
   if(IDcontrol.Branch  //is Branch Instruction
@@ -2759,16 +2759,125 @@ After resolving the aforementioned stall, the branch decision involves the follo
   and (EX/MEM.RegisterRd = IF/ID.RegisterRt)) 
     ForwardD = 1  
 \end{verbatim}
-
-
-
-
-
-
-
-
-
-
+If the branching is found to be taken, a flush will be done for the instruction in \texttt{IF} stage, performed by the Hazard Unit.\\
+The branch/jump detection and forwarding is realised by another Forward Unit. The Forward Unit has
+\begin{itemize}
+  \item 3 inputs
+  \begin{itemize}
+    \item \texttt{IF/ID.RegisterRs}
+    \item \texttt{IF/ID.RegisterRt}
+    \item \texttt{EX/MEM.RegisterRd}
+  \end{itemize}
+  \item 2 outputs
+  \begin{itemize}
+    \item \texttt{ForwardC} selector bit
+    \item \texttt{ForwardD} selector bit
+  \end{itemize}
+\end{itemize}
+\subsection{Final Corrected Datapath}
+\begin{figure}[h]
+\centering
+\includegraphics[width = \textwidth]{13_6.png}
+\end{figure}
+\subsection{Other Resolutions}
+\subsubsection{Delayed Decision}
+Aforementioned is one way to resolve control hazard, that is to move decision point earlier. Another way is \textbf{delayed decision}, where compiler will \textbf{reorder}  instruction in attempt to reduce stall hence decreases CPI.
+\subsubsection{Static Branch Prediction}
+\textbf{Static Branch Prediction} is another way to resolve control hazard, by \textit{assuming} a given outcome and proceeding \textit{without} waiting to see the actual branch outcome. \\
+For example, in \textbf{predict not taken} scheme, pipeline will always predict branches not to be taken and continue to fetch from the sequential instruction stream. Only when branch is taken, the pipeline will be stalled:
+\begin{itemize}
+  \item If the branch logic is realised in \texttt{MEM/WB}, then 3 stalls are required since \texttt{IF, ID, EX} stages need to be flushed.
+  \item If the branch logic is realised in \texttt{EX}, then 2 stalls.
+  \item If the branch logic is realised in \texttt{IF}, then 1 stall.
+\end{itemize}
+\textbf{Remark}:\\
+\textbf{Predict not taken} works well for ``top of the loop'' branching instructions, but not well for ``bottom of the loop'' branching instructions.
+\subsubsection{Dynamic Branch Prediction}
+\textbf{Dynamic Branch Prediction} works with a \textbf{branch prediction buffer}, on which its action depends.\\
+In 1-bit predictor scheme will invert the prediction if incorrect, whereas the 2-bit predictor will only invert if it predicts incorrectly \textbf{twice}.
+\clearpage
+\section{Processor Cache}
+\subsection{Cache Basics}
+\begin{definition}[Cache Block]
+\hfill\\\normalfont Cache block/line is the unit of transfer between memory and cache
+\end{definition}
+Block size is typically one or more words.\\
+\textbf{Remark}: Addresses of words within a $2^N$ byte block have identical $(32-N)$ most significant bits.\\
+Specifically, bit $31\sim N$ is the \textbf{block number}, whereas $N-1\sim 0$ is the \textbf{byte offset}.
+\begin{definition}[Hit, Miss]
+\hfill\\\normalfont \textbf{Hit} happens when block is in cache. Hit rate is the fraction of memory accesses that hit and hit time is the time to access cache.\\
+\textbf{Miss} happens when block is not in cache. Miss rate $=$1$-$hit rate. Miss penalty denotes the time to \textbf{replace} cache block and deliver data.
+\end{definition}
+Usually, hit time $<$ miss penalty.
+\begin{definition}[Average Memory Access Time]
+\hfill\\\normalfont Average access time is calculated by
+\[
+\text{Hit rate}\times\text{Hit Time}+(1-\text{Hit rate})\times\text{Miss penalty}
+\]
+\end{definition}
+\subsection{Directed Mapped Cache}
+\begin{definition}[Cache Index]
+\hfill\\\normalfont
+In directed mapped cache, cache index is determined as follows
+\[
+\text{Cache Index} = \text{MemoryBlockNumber}\mod \text{NumberOfCacheBlocks}
+\]
+\end{definition}
+\text{Remark}: Suppose there are $2^M$ cache blocks, the last $M$ bits of the memory block number is the \textbf{cache index}.
+\begin{definition}[Tag Number]
+\hfill\\\normalfont 
+Tag is a unique identifier for blocks of the same cache index. It is determined by
+\[
+\text{Tag} = \text{Block Number}/\text{Number of Cache Blocks}
+\]
+\end{definition}
+Therefore, a memory address can be regarded as
+\[
+\underbrace{\text{Tag}}_{32-N-M}\mid\underbrace{\text{Index}}_{M}\mid\underbrace{\text{Offset}}_{N}
+\]
+where there are $2^M$ cache blocks, and each cache block has size of $2^N$ bytes.
+\subsubsection{Cache Structure}
+Along with a data block, cache contains
+\begin{itemize}
+  \item \textbf{Tag} of the memory block
+  \item textbf{Valid bit} indicating whether the cache line contains validd ata.
+\end{itemize}
+\begin{theorem}[Cache Hit Check]
+\hfill\\\normalfont A cache hit happens when
+\[
+\texttt{Tag[index]=Tag[Memory Address]\&\&Valid[index]=true}
+\]
+\end{theorem}
+\subsection{Memory Load Instruction}
+Cache initially is empty. All valid bits are set to $0$. When loading data from memory, cache performs as such
+\begin{itemize}
+  \item Suppose there is a cold/compulsory \textbf{miss}, load from memory the cache line; and set tag and valid bit.
+  \item Suppose there is a hit, return the requested word to register.
+\end{itemize}
+\subsection{Memory Store Instruction}
+There are two write policies, namely \textbf{write-through} cache and \textbf{write-back} cache. 
+\subsubsection{Write-through Cache}
+In write-through cache, data will be written to both cache \textbf{and} main memory. Writing to memory uses \textbf{write buffer}, a FIFO divice, which works without overflow if store frequency $<$ 1/DRAM write cycle.
+\subsubsection{Write-back Cache}
+In write-back cache, an additional \textbf{dirty} bit is added to each cache block.\\
+If there is a write request to memory, write data to cache and set dirty bit to $1$, without writing to main memory.\\
+Only when a cache block is replaced, if the dirty bit is $1$, write that cache block to main memory. Equivalently, cache write occurs \textbf{only} on replacement.
+\subsection{Cache Miss on Write}
+On a read miss, the only option is to load data into the cache and load cache into register.\\
+In contrast, there are two options on a write miss, namely \textbf{write allocate} and \textbf{write around}.
+\subsubsection{Write Allocate}
+In write allocate, 
+\begin{itemize}
+  \item Load the complete block into cache,
+  \item Change only the required word in cache
+  \item Write to main memory depends on the write policy
+\end{itemize}
+\subsubsection{Write Around}
+In write around,
+\begin{itemize}
+  \item Do not load the block to cache
+  \item Write directly to \textbf{main memory} only
+\end{itemize}
 \clearpage
 \includepdf[pages = -]{1.pdf}
 \end{document}

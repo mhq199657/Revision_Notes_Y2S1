@@ -1137,4 +1137,121 @@ C(K_2)\leq C(K_1)
 P(K_2)\geq P(K_1)
 \]
 \end{theorem}
+\subsection{Early Exercise and Put-Call Parity}
+\begin{theorem}[Early Exercise of American Call]
+\hfill\\\normalfont When underlying assets pays \textbf{no dividends}, it is never optimal to exercise an American call option early.S
+\end{theorem}
+One important equation connecting the value of European call and put options written on the \textbf{same non-dividend paying} asset and having the \textbf{same} exercise price and \textbf{same} maturity is the following put-call parity equation. 
+\begin{theorem}[Put-Call Parity]
+\hfill\\\normalfont 
+\[
+C_E+Ke^{-rT}=P_E+S_0
+\]
+\end{theorem}
+This theorem is a consequence of the law of one price:
+\begin{theorem}
+\hfill\\\normalfont 
+\[
+U(T)=V(T)\Rightarrow U(0)=V(0)
+\]
+\end{theorem}
+\textbf{Remark}: For American options, the put-call parity extends to the following inequality:
+\[
+S_0-K\leq C_A-P_A\leq S_0-Ke^{-rT}
+\]
+\subsection{Binomial Option Pricing}
+Consider an option on an underlying asset which trades during a fixed time interval $[0,T]$, divided into $N$ equally spaced subintervals $[t_{i-1}, t_i]\;\; i=1,2,\ldots, N$.\\
+Let $S_i$ be the price of the underlying asset at time $t_i$. Let $\delta t = \frac{T}{N}$.\\
+Under the Binomial Model, we presume
+\[
+S_i = \begin{cases}
+S_i^u=uS_0&\text{ with probability }p\\
+S_i^d = dS_0&\text{ with probability }1-p
+\end{cases}
+\]
+for some constants $d, u$ such that $0<d<1<u$.\\
+We also presume no arbitrage principle, which bounds the continuously compounded risk-free rate $r$ by
+\[
+d<e^{-r\delta t}<u
+\]
+\subsubsection{One-step Binomial Model}
+Let $F_i$ be the value of an option on an underlying asset at time $t_i$. \\
+For a one-step binomial model, $N=1$ and the option expires at $t:=t_1$.\\
+Using the one price principle, we construct a portfolio $(\Delta, B)$ consisting of
+\begin{itemize}
+	\item $\Delta$ units of the underlying
+	\item an amount $B$ invested in at the risk free asset
+\end{itemize}
+which has the same final value as the option, $F_1$.\\
+Considering both the cases where the underlying asset price may go up and go down, we have the following equations:
+\[
+\begin{cases}
+&\Delta uS_0+Be^{r\delta t}=F_1^u\\
+&\Delta dS_0+Be^{r\delta t}=F_1^d
+\end{cases}
+\]
+where
+\[
+F_1^u=\begin{cases}
+\max(uS_0-K, 0)&\text{ if option is a call}\\
+\max(K-uS_0, 0)&\text{ if option is a put}
+\end{cases}
+\]
+and
+\[
+F_1^d=\begin{cases}
+\max(dS_0-K, 0)&\text{ if option is a call}\\
+\max(K-dS_0, 0)&\text{ if option is a put}
+\end{cases}
+\]
+Solving the above equations, we have
+\[
+\begin{cases}
+&\Delta = \frac{F_1^u-F_1^d}{S_0(u-d)}\\
+&B=\frac{uF_1^d-dF_1^u}{e^{r\delta t}(u-d)}
+\end{cases}
+\]
+Also, since the portfolio has the same final value as the option, their initial values shall equal. Therefore,
+\[
+\Delta S_0+B=F_0
+\]
+So,
+\[
+F_0=e^{-r\delta t}\left(\frac{e^{r\delta t}-d}{u-d}F_1^u+\frac{u-e^{r\delta t}}{u-d}F_1^d\right)
+\]
+If we let $q = \frac{e^{r\delta t}-d}{u-d}$, then
+\[
+F_0 = e^{-r\delta t}[qF_1^u+(1-q)F_1^d)]
+\]
+\begin{definition}[{$\expec^Q(V)$}]
+\hfill\\\normalfont For any random variable $V$ such that $P(V=v_1)=q$ and $P(V=v_2)=1-q$ for some $0<p<1$, we define $\expec^Q(V)$ by
+\[
+\expec^Q(V)=qv_1+(1-q)v_2
+\]
+\end{definition}
+Using the above expression, we have
+\[
+F_0=e^{-r\delta t}\expec^Q(F_1)
+\]
+We call $q$ the risk neutral probability.\\
+\textbf{Remark}:
+\begin{itemize}
+	\item The above option pricing formula does not involve the probability $p$ of the asset price moving up or down.
+	\item It can be easily verified that
+	\[
+qu+(1-q)d=e^{r\delta t}
+	\]
+	and immediately,
+	\[
+S_0=e^{-r\delta t}\expec^Q(S_1)
+	\]
+\end{itemize}
+Steps to compute $F_0$ and replicating portfolio include:
+\begin{enumerate}
+  \item Compute, from $S_0$, $dS_0$ and $uS_0$.
+  \item Compute $F_1^u$ and $F_1^d$.
+  \item Compute $q$.
+  \item Compute $F_0$, $\Delta$ and $B$.
+\end{enumerate}
+In two-step binomial model, apply this single step binomial model thrice.
 \end{document}
